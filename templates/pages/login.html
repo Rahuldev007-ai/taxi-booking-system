@@ -1,0 +1,51 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Taxi Booking System | Admin Portal{% endblock %}
+
+{% block body_class %}login-page-body{% endblock %}
+
+{% block content %}
+<div class="login-wrapper">
+    <div class="brand-header">
+        <h1 class="brand-title">Cabzy Taxi Booking</h1>
+    </div>
+
+    <div class="login-card">
+        <div class="card-top-accent"></div>
+        <div class="card-body-custom">
+            <div class="text-center">
+                <span class="badge-access">Admin Login</span>
+            </div>
+
+            {% if form.errors %}
+            <div class="custom-alert-error">
+                Invalid administrator credentials. Please check your username and password.
+            </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'admin_login' %}">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label class="form-label-custom">Admin Username</label>
+                    <input type="text" name="username" class="form-control custom-input" placeholder="Enter admin username" required autofocus>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label-custom">Password</label>
+                    <input type="password" name="password" class="form-control custom-input" placeholder="Enter admin password" required>
+                </div>
+
+                <button type="submit" class="btn btn-custom-primary">
+                    Login In to Dashboard
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <div class="footer-note">
+        Cabzy Taxi Booking System &copy; 2026<br>
+    </div>
+</div>
+{% endblock %}

@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
+
 
 # Create your views here.
-def demo(request):
-    pass
+def admin_login(request):
+    return render(request,'pages/login.html')
