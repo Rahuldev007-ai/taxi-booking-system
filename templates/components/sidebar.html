@@ -1,0 +1,104 @@
+<!-- Desktop & Laptop Sticky Sidebar (Visible on LG screens >= 992px) -->
+<aside class="admin-sidebar d-none d-lg-flex">
+    <div>
+        <div class="sidebar-header">
+            <div class="sidebar-brand-subtitle">Urban Fleet</div>
+            <h1 class="sidebar-brand-title">Admin Control</h1>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{% url 'admin_dashboard' %}" class="sidebar-link active">
+                <span>Dashboard</span>
+            </a>
+            <a href="#drivers" class="sidebar-link">
+                <span>Fleet Drivers</span>
+            </a>
+            <a href="#bookings" class="sidebar-link">
+                <span>Rides & Dispatch</span>
+            </a>
+            <a href="#passengers" class="sidebar-link">
+                <span>Passengers</span>
+            </a>
+            <a href="#analytics" class="sidebar-link">
+                <span>Analytics</span>
+            </a>
+            <a href="#settings" class="sidebar-link">
+                <span>Settings</span>
+            </a>
+        </nav>
+    </div>
+
+    <div class="sidebar-footer">
+        <div class="sidebar-profile">
+            <div class="avatar-circle">
+                {{ admin_user.full_name|default:request.session.admin_full_name|slice:":1"|default:"A" }}
+            </div>
+            <div>
+                <div class="fw-bold" style="font-size: 0.85rem; color: #FFFFFF;">
+                    {{ admin_user.full_name|default:request.session.admin_full_name|default:"Administrator" }}
+                </div>
+                <div class="text-muted" style="font-size: 0.725rem; color: #D1C4C4;">
+                    {{ admin_user.get_role_display|default:request.session.admin_role|default:"Fleet Dispatcher" }}
+                </div>
+            </div>
+        </div>
+
+        <a href="{% url 'admin_logout' %}" class="sidebar-logout-btn">
+            Sign Out Admin
+        </a>
+    </div>
+</aside>
+
+<!-- Animated Mobile & Tablet Offcanvas Drawer Sidebar (Visible on screens < 992px) -->
+<div class="offcanvas offcanvas-start admin-offcanvas-drawer d-lg-none" tabindex="-1" id="adminSidebarOffcanvas" aria-labelledby="adminSidebarOffcanvasLabel">
+    <div class="offcanvas-header border-bottom border-secondary">
+        <div>
+            <div class="sidebar-brand-subtitle">Urban Fleet</div>
+            <h5 class="sidebar-brand-title m-0" id="adminSidebarOffcanvasLabel">Admin Control</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body p-0 d-flex flex-column justify-content-between">
+        <nav class="sidebar-nav">
+            <a href="{% url 'admin_dashboard' %}" class="sidebar-link active">
+                <span>Dashboard</span>
+            </a>
+            <a href="#drivers" class="sidebar-link" data-bs-dismiss="offcanvas">
+                <span>Fleet Drivers</span>
+            </a>
+            <a href="#bookings" class="sidebar-link" data-bs-dismiss="offcanvas">
+                <span>Rides & Dispatch</span>
+            </a>
+            <a href="#passengers" class="sidebar-link" data-bs-dismiss="offcanvas">
+                <span>Passengers</span>
+            </a>
+            <a href="#analytics" class="sidebar-link" data-bs-dismiss="offcanvas">
+                <span>Analytics</span>
+            </a>
+            <a href="#settings" class="sidebar-link" data-bs-dismiss="offcanvas">
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-profile">
+                <div class="avatar-circle">
+                    {{ admin_user.full_name|default:request.session.admin_full_name|slice:":1"|default:"A" }}
+                </div>
+                <div>
+                    <div class="fw-bold" style="font-size: 0.85rem; color: #FFFFFF;">
+                        {{ admin_user.full_name|default:request.session.admin_full_name|default:"Administrator" }}
+                    </div>
+                    <div class="text-muted" style="font-size: 0.725rem; color: #D1C4C4;">
+                        {{ admin_user.get_role_display|default:request.session.admin_role|default:"Fleet Dispatcher" }}
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'admin_logout' %}" class="sidebar-logout-btn">
+                Sign Out Admin
+            </a>
+        </div>
+    </div>
+</div>

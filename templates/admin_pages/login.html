@@ -1,13 +1,13 @@
 {% extends 'components/base.html' %}
 
-{% block title %}Taxi Booking System | Admin Portal{% endblock %}
+{% block title %}Admin login{% endblock %}
 
 {% block body_class %}login-page-body{% endblock %}
 
 {% block content %}
 <div class="login-wrapper">
     <div class="brand-header">
-        <h1 class="brand-title">Cabzy Taxi Booking</h1>
+        <h1 class="brand-title">CabZy Taxi Booking</h1>
     </div>
 
     <div class="login-card">
@@ -16,6 +16,7 @@
             <div class="text-center">
                 <span class="badge-access">Admin Login</span>
             </div>
+
             {% if error_message %}
             <div class="custom-alert-error">
                 {{ error_message }}
@@ -33,7 +34,7 @@
                 
                 <div class="mb-3">
                     <label class="form-label-custom">Admin Username</label>
-                    <input type="text" name="username" value="{{ username|default:'' }}" class="form-control custom-input" placeholder="Enter admin username" required autofocus>
+                    <input type="text" name="username" class="form-control custom-input" placeholder="Enter admin username" value="{{ username|default:'' }}" required autofocus>
                 </div>
 
                 <div class="mb-4">
@@ -42,15 +43,23 @@
                 </div>
 
                 <button type="submit" class="btn btn-custom-primary">
-                    Login In to Dashboard
+                    Sign In to Dashboard
                 </button>
             </form>
 
+            <div class="text-center mt-3">
+                <span style="font-size: 0.875rem; color: var(--secondary-text-muted-brown);">
+                    Need an admin account? 
+                    <a href="{% url 'admin_register' %}" class="auth-link-text">Register New Admin</a>
+                </span>
+            </div>
+
+          
         </div>
     </div>
 
     <div class="footer-note">
-        Cabzy Taxi Booking System &copy; 2026<br>
+        CabZy Taxi Booking &copy; 2026<br>
     </div>
 </div>
 {% endblock %}

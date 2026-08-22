@@ -1,6 +1,6 @@
 {% extends 'components/base.html' %}
 
-{% block title %}Taxi Booking System | Manual Admin Registration{% endblock %}
+{% block title %}Admin Registration{% endblock %}
 
 {% block body_class %}login-page-body{% endblock %}
 
@@ -14,7 +14,7 @@
         <div class="card-top-accent"></div>
         <div class="card-body-compact">
             <div class="text-center">
-                <span class="badge-access-compact ts-3">Admin Registration</span>
+                <span class="badge-access-compact">Admin Registration</span>
             </div>
 
             {% if error_message %}
@@ -49,8 +49,8 @@
                         <input type="email" name="email" class="form-control custom-input-compact" placeholder="admin@fleet.com" value="{{ form_data.email|default:'' }}" required>
                     </div>
                     <div class="col-12 col-md-6">
-                        <label class="form-label-compact">Phone Number</label>
-                        <input type="text" name="phone" class="form-control custom-input-compact" placeholder="+91 (94089-89745)" value="{{ form_data.phone|default:'' }}">
+                        <label class="form-label-compact">Phone Number (Optional)</label>
+                        <input type="text" name="phone" class="form-control custom-input-compact" placeholder="+1 (555) 019-2834" value="{{ form_data.phone|default:'' }}">
                     </div>
                 </div>
 
@@ -74,23 +74,20 @@
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-custom-primary btn-compact">
-                    Register    
+                <button type="submit" class="btn btn-custom-primary btn-compact w-100">
+                    Register Admin Account
                 </button>
             </form>
 
             <div class="text-center mt-2">
                 <span style="font-size: 0.8rem; color: var(--secondary-text-muted-brown);">
                     Already have an account? 
-                    <a href="{% url 'admin_login' %}" class="auth-link-text">Sign In</a>
+                    <a href="{% url 'admin_login' %}" class="auth-link-text">Sign In to Dashboard</a>
                 </span>
             </div>
 
         </div>
     </div>
 
-    <div class="footer-note-compact">
-        Cabzy Taxi Booking &copy; 2026 &bull; System Administrators Portal
-    </div>
 </div>
 {% endblock %}
