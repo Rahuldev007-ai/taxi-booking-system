@@ -1,0 +1,96 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Taxi Booking System | Manual Admin Registration{% endblock %}
+
+{% block body_class %}login-page-body{% endblock %}
+
+{% block content %}
+<div class="register-wrapper">
+    <div class="brand-header-compact">
+        <h1 class="brand-title-compact">Cabzy Taxi Booking</h1>
+    </div>
+
+    <div class="login-card">
+        <div class="card-top-accent"></div>
+        <div class="card-body-compact">
+            <div class="text-center">
+                <span class="badge-access-compact ts-3">Admin Registration</span>
+            </div>
+
+            {% if error_message %}
+            <div class="custom-alert-error py-2 px-3 mb-2">
+                {{ error_message }}
+            </div>
+            {% endif %}
+
+            {% if success_message %}
+            <div class="custom-alert-success py-2 px-3 mb-2">
+                {{ success_message }}
+            </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'admin_register' %}">
+                {% csrf_token %}
+                
+                <div class="row g-2 mb-2">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label-compact">Full Name</label>
+                        <input type="text" name="full_name" class="form-control custom-input-compact" placeholder="e.g. Sarah Jenkins" value="{{ form_data.full_name|default:'' }}" required autofocus>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label-compact">Admin Username</label>
+                        <input type="text" name="username" class="form-control custom-input-compact" placeholder="Enter unique username" value="{{ form_data.username|default:'' }}" required>
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-2">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label-compact">Email Address</label>
+                        <input type="email" name="email" class="form-control custom-input-compact" placeholder="admin@fleet.com" value="{{ form_data.email|default:'' }}" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label-compact">Phone Number</label>
+                        <input type="text" name="phone" class="form-control custom-input-compact" placeholder="+91 (94089-89745)" value="{{ form_data.phone|default:'' }}">
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-2">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label-compact">Password</label>
+                        <input type="password" name="password" class="form-control custom-input-compact" placeholder="Min 6 chars" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label-compact">Confirm Password</label>
+                        <input type="password" name="confirm_password" class="form-control custom-input-compact" placeholder="Re-enter password" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-compact">Admin Role</label>
+                    <select name="role" class="form-select custom-input-compact" required>
+                        <option value="SUPER_ADMIN" {% if form_data.role == 'SUPER_ADMIN' or not form_data.role %}selected{% endif %}>Super Admin</option>
+                        <option value="DISPATCHER" {% if form_data.role == 'DISPATCHER' %}selected{% endif %}>Fleet Dispatcher</option>
+                        <option value="MANAGER" {% if form_data.role == 'MANAGER' %}selected{% endif %}>System Manager</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-custom-primary btn-compact">
+                    Register    
+                </button>
+            </form>
+
+            <div class="text-center mt-2">
+                <span style="font-size: 0.8rem; color: var(--secondary-text-muted-brown);">
+                    Already have an account? 
+                    <a href="{% url 'admin_login' %}" class="auth-link-text">Sign In</a>
+                </span>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="footer-note-compact">
+        Cabzy Taxi Booking &copy; 2026 &bull; System Administrators Portal
+    </div>
+</div>
+{% endblock %}

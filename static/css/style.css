@@ -1,25 +1,33 @@
+/* ==========================================================================
+   Urban Fleet Services - Taxi Booking System Theme & Stylesheet
+   ========================================================================== */
+
 :root {
     --bg-warm-cream: #FFF9F0;
     --primary-dark-red: #7F1D1D;
     --secondary-burgundy: #991B1B;
-    --accent-golden-yellow: #e6b41e;
-    --btn-hover-dark-gold: #e1a308;
+    --accent-golden-yellow: #F4C430;
+    --btn-hover-dark-gold: #D4A017;
     --main-text-dark-brown: #2B1717;
     --secondary-text-muted-brown: #6B4F4F;
     --card-bg-white: #FFFFFF;
     --border-light-beige: #E8D8C3;
     --success-dark-green: #15803D;
     --error-red: #B91C1C;
+    --focus-ring-glow: rgba(127, 29, 29, 0.18);
+    --card-shadow: 0 16px 36px rgba(43, 23, 23, 0.08);
 }
 
+/* Base Reset & Page Layout */
 body {
     background-color: var(--bg-warm-cream);
     color: var(--main-text-dark-brown);
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     margin: 0;
+    -webkit-font-smoothing: antialiased;
 }
 
 .login-page-body {
@@ -28,15 +36,28 @@ body {
     padding: 1.5rem 0;
 }
 
+/* Containers & Wrappers */
 .login-wrapper {
     width: 100%;
     max-width: 440px;
     padding: 0 1rem;
 }
 
+.register-wrapper {
+    width: 100%;
+    max-width: 660px;
+    padding: 0 1rem;
+}
+
+/* Brand Headers */
 .brand-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.75rem;
+}
+
+.brand-header-compact {
+    text-align: center;
+    margin-bottom: 0.85rem;
 }
 
 .brand-subtitle {
@@ -45,7 +66,7 @@ body {
     letter-spacing: 2.5px;
     text-transform: uppercase;
     color: var(--primary-dark-red);
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.35rem;
 }
 
 .brand-title {
@@ -54,21 +75,32 @@ body {
     color: var(--main-text-dark-brown);
     letter-spacing: -0.5px;
     line-height: 1.2;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
+}
+
+.brand-title-compact {
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: var(--main-text-dark-brown);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 0.2rem;
 }
 
 .brand-desc {
-    font-size: 0.95rem;
+    font-size: 0.925rem;
     color: var(--secondary-text-muted-brown);
 }
 
+/* Card Styling */
 .login-card {
     background-color: var(--card-bg-white);
     border: 1px solid var(--border-light-beige);
     border-radius: 16px;
-    box-shadow: 0 16px 36px rgba(43, 23, 23, 0.07);
+    box-shadow: var(--card-shadow);
     overflow: hidden;
     position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card-top-accent {
@@ -77,9 +109,14 @@ body {
 }
 
 .card-body-custom {
-    padding: 2.5rem 2.25rem 2.25rem 2.25rem;
+    padding: 2.25rem 2rem 2rem 2rem;
 }
 
+.card-body-compact {
+    padding: 1.35rem 1.65rem 1.25rem 1.65rem;
+}
+
+/* Access & Security Badges */
 .badge-access {
     display: inline-block;
     background-color: var(--accent-golden-yellow);
@@ -90,9 +127,53 @@ body {
     text-transform: uppercase;
     padding: 0.35rem 0.85rem;
     border-radius: 50px;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
 }
 
+.badge-access-compact {
+    display: inline-block;
+    background-color: var(--accent-golden-yellow);
+    color: var(--main-text-dark-brown);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    margin-bottom: 0.85rem;
+}
+
+.security-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    padding-top: 1.15rem;
+    border-top: 1px solid var(--border-light-beige);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--secondary-text-muted-brown);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.security-badge-compact {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.85rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-light-beige);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--secondary-text-muted-brown);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Form Controls */
 .form-label-custom {
     font-size: 0.85rem;
     font-weight: 700;
@@ -103,30 +184,54 @@ body {
     display: block;
 }
 
+.form-label-compact {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--main-text-dark-brown);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
 .custom-input {
     background-color: var(--bg-warm-cream);
     border: 1px solid var(--border-light-beige);
     color: var(--main-text-dark-brown);
-    font-size: 0.975rem;
-    padding: 0.85rem 1rem;
+    font-size: 0.95rem;
+    padding: 0.75rem 0.95rem;
     border-radius: 10px;
     transition: all 0.2s ease-in-out;
     width: 100%;
 }
 
-.custom-input::placeholder {
-    color: var(--secondary-text-muted-brown);
-    opacity: 0.7;
+.custom-input-compact {
+    background-color: var(--bg-warm-cream);
+    border: 1px solid var(--border-light-beige);
+    color: var(--main-text-dark-brown);
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    width: 100%;
 }
 
-.custom-input:focus {
+.custom-input::placeholder,
+.custom-input-compact::placeholder {
+    color: var(--secondary-text-muted-brown);
+    opacity: 0.65;
+}
+
+.custom-input:focus,
+.custom-input-compact:focus {
     background-color: var(--card-bg-white);
     border-color: var(--primary-dark-red);
-    box-shadow: 0 0 0 3px rgba(127, 29, 29, 0.15);
+    box-shadow: 0 0 0 3px var(--focus-ring-glow);
     outline: none;
     color: var(--main-text-dark-brown);
 }
 
+/* Buttons */
 .btn-custom-primary {
     background-color: var(--primary-dark-red);
     border: none;
@@ -134,14 +239,16 @@ body {
     font-weight: 700;
     font-size: 1rem;
     letter-spacing: 0.5px;
-    padding: 0.9rem 1.5rem;
+    padding: 0.85rem 1.5rem;
     border-radius: 10px;
     width: 100%;
     transition: all 0.2s ease-in-out;
     cursor: pointer;
+    box-shadow: 0 4px 12px rgba(127, 29, 29, 0.2);
 }
 
-.btn-custom-primary:hover, .btn-custom-primary:focus {
+.btn-custom-primary:hover,
+.btn-custom-primary:focus {
     background-color: var(--btn-hover-dark-gold);
     color: var(--main-text-dark-brown);
     box-shadow: 0 6px 16px rgba(212, 160, 23, 0.35);
@@ -150,38 +257,90 @@ body {
 .btn-custom-primary:active {
     background-color: var(--secondary-burgundy);
     color: #FFFFFF;
+    transform: translateY(1px);
 }
 
+.btn-compact {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.925rem;
+    border-radius: 8px;
+}
+
+/* Alert Boxes */
 .custom-alert-error {
     background-color: #FEF2F2;
     border: 1px solid var(--error-red);
     color: var(--error-red);
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     border-radius: 10px;
-    padding: 0.85rem 1rem;
-    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
     font-weight: 500;
+}
+
+.custom-alert-success {
+    background-color: #F0FDF4;
+    border: 1px solid var(--success-dark-green);
+    color: var(--success-dark-green);
+    font-size: 0.875rem;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.25rem;
+    font-weight: 500;
+}
+
+/* Auth Links & Typography */
+.auth-link-text {
+    color: var(--primary-dark-red);
+    font-weight: 700;
+    text-decoration: none;
+    transition: color 0.15s ease-in-out;
+}
+
+.auth-link-text:hover {
+    color: var(--btn-hover-dark-gold);
+    text-decoration: underline;
 }
 
 .footer-note {
     text-align: center;
     font-size: 0.825rem;
     color: var(--secondary-text-muted-brown);
-    margin-top: 1.75rem;
-    line-height: 1.5;
+    margin-top: 1.5rem;
+    line-height: 1.4;
 }
 
-.security-badge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1.25rem;
-    padding-top: 1.25rem;
-    border-top: 1px solid var(--border-light-beige);
-    font-size: 0.75rem;
-    font-weight: 600;
+.footer-note-compact {
+    text-align: center;
+    font-size: 0.78rem;
     color: var(--secondary-text-muted-brown);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    margin-top: 0.85rem;
+    line-height: 1.4;
+}
+
+/* Responsive Media Queries */
+@media (max-width: 576px) {
+    .login-page-body {
+        padding: 0.75rem 0;
+    }
+    .register-wrapper,
+    .login-wrapper {
+        padding: 0 0.75rem;
+    }
+    .card-body-custom {
+        padding: 1.5rem 1.25rem 1.25rem 1.25rem;
+    }
+    .card-body-compact {
+        padding: 1.1rem 1.1rem 1rem 1.1rem;
+    }
+    .brand-title {
+        font-size: 1.75rem;
+    }
+    .brand-title-compact {
+        font-size: 1.4rem;
+    }
+    .custom-input-compact {
+        font-size: 0.85rem;
+        padding: 0.45rem 0.65rem;
+    }
 }

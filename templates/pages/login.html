@@ -16,10 +16,15 @@
             <div class="text-center">
                 <span class="badge-access">Admin Login</span>
             </div>
-
-            {% if form.errors %}
+            {% if error_message %}
             <div class="custom-alert-error">
-                Invalid administrator credentials. Please check your username and password.
+                {{ error_message }}
+            </div>
+            {% endif %}
+
+            {% if success_message %}
+            <div class="custom-alert-success">
+                {{ success_message }}
             </div>
             {% endif %}
 
@@ -28,7 +33,7 @@
                 
                 <div class="mb-3">
                     <label class="form-label-custom">Admin Username</label>
-                    <input type="text" name="username" class="form-control custom-input" placeholder="Enter admin username" required autofocus>
+                    <input type="text" name="username" value="{{ username|default:'' }}" class="form-control custom-input" placeholder="Enter admin username" required autofocus>
                 </div>
 
                 <div class="mb-4">
