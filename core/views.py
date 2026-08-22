@@ -125,6 +125,8 @@ def admin_forgot_password(request):
     
             if admin_user:
                 otp_code = generate_otp()
+                print("Generated OTP:", otp_code)
+                request.session['reset_otp'] = random.randint(100000, 999999)
                 return render(request, 'admin_pages/forgot_password.html', {
                     'success_message': f'Password reset instructions have been sent to "{email}". Please check your inbox.',
                     'email': email
