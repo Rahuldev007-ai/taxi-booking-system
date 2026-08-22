@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import AdminUser
-
+import random
 def admin_register(request):
     if request.method == 'POST':
         full_name = request.POST.get('full_name', '').strip()
@@ -105,7 +105,35 @@ def admin_logout(request):
     return render(request, 'admin_pages/login.html', {
         'success_message': 'You have been logged out successfully.'
     })
+    
+
+def generate_otp():
+    """Generate a 6-digit numeric OTP using the random library."""
+    return f"{random.randint(0, 999999):06d}"
 
 def admin_forgot_password(request):
-    return render(request, 'admin_pages/forgot_password.html')
+    if request.method == 'POST':
+            email = request.POST.get('email', '').strip().lower()
     
+            if not email:
+                return render(request, 'admin_pages/forgot_password.html', {
+                    'error_message': 'Please enter a valid email address.',
+                    'email': email
+                })
+    
+            admin_user = AdminUser.objects.filter(email__iexact=email, is_active=True).first()
+    
+            if admin_user:
+                otp_code = generate_otp()
+                return render(request, 'admin_pages/forgot_password.html', {
+                    'success_message': f'Password reset instructions have been sent to "{email}". Please check your inbox.',
+                    'email': email
+                })
+            else:
+                return render(request, 'admin_pages/forgot_password.html', {
+                    'error_message': f'No registered admin account found with email address "{email}".',
+                    'email': email
+                })
+    
+    return render(request, 'admin_pages/forgot_password.html')
+
