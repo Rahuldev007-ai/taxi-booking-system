@@ -38,10 +38,13 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label-custom">Password</label>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label-custom mb-0">Password</label>
+                        <a href="{% url 'admin_forgot_password' %}" class="auth-link-text" style="font-size: 0.8rem;">Forgot Password?</a>
+                    </div>
                     <input type="password" name="password" class="form-control custom-input" placeholder="Enter admin password" required>
                 </div>
-
+                
                 <button type="submit" class="btn btn-custom-primary">
                     Sign In to Dashboard
                 </button>

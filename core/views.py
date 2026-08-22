@@ -106,4 +106,6 @@ def admin_logout(request):
         'success_message': 'You have been logged out successfully.'
     })
 
-
+def admin_forgot_password(request):
+    return render(request, 'admin_pages/forgot_password.html')
+    
