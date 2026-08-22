@@ -222,3 +222,11 @@ def admin_reset_password(request):
     })
 
 
+def admin_drivers(request):
+     return render(request, 'admin_pages/drivers.html')
+ 
+def admin_users(request):
+    return render(request, 'admin_pages/users.html')
+
+def admin_bookings(request):
+    return render(request, 'admin_pages/bookings.html')

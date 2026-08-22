@@ -7,28 +7,29 @@
 
     {% include 'components/sidebar.html' %}
 
-<div class="admin-layout-wrapper">
-
     <main class="admin-main-content">
 
         <header class="dashboard-header-bar mb-4">
             <div class="container-fluid d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center gap-3">
-                    <span class="dashboard-brand-title">Control Panel Overview</span>
-                    <span class="badge badge-status-available d-none d-sm-inline-block">Dispatch System Live</span>
+                    <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+                        Menu
+                    </button>
+                    <span class="dashboard-brand-title">Dashboard</span>
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-                    <div class="text-end d-none d-md-block">
-                        <div class="fw-bold" style="font-size: 0.9rem; color: var(--main-text-dark-brown);">
-                            System Administrator
-                        </div>
-                        <div class="text-muted" style="font-size: 0.75rem;">
-                            Fleet Dispatcher
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="https://ui-avatars.com/api/?name={{ admin_user.full_name|urlencode|default:'Administrator' }}&background=E8D8C3&color=231212&bold=true" alt="Admin Profile Image" class="rounded-circle border border-2 border-warning" style="width: 38px; height: 38px; object-fit: cover;">
+                        <div class="text-end d-none d-md-block">
+                            <div class="fw-bold" style="font-size: 0.9rem; color: var(--main-text-dark-brown);">
+                                {{ admin_user.full_name|default:request.session.admin_full_name|default:"System Administrator" }}
+                            </div>
+                            
                         </div>
                     </div>
-                    <a href="#" class="btn btn-outline-danger btn-sm rounded-3 px-3 fw-bold d-lg-none">
-                        Sign Out
+                    <a href="{% url 'admin_logout' %}" class="btn btn-outline-danger btn-sm rounded-3 px-3 fw-bold d-lg-none">
+                        Logout
                     </a>
                 </div>
             </div>
@@ -36,13 +37,27 @@
 
         <div class="container-fluid px-3 px-lg-4 pb-5">
 
+            <!-- Admin Welcome Banner -->
+            <div class="dashboard-card bg-white mb-4 p-4 rounded-4 shadow-sm border border-0">
+                <div class="d-flex align-items-center gap-3">
+                    <img src="https://ui-avatars.com/api/?name={{ admin_user.full_name|urlencode|default:'Administrator' }}&background=7F1D1D&color=FFFFFF&bold=true&size=128" alt="Profile Large" class="rounded-circle shadow-sm" style="width: 64px; height: 64px; object-fit: cover;">
+                    <div>
+                        <h2 class="h4 fw-bold mb-1" style="color: var(--main-text-dark-brown);">
+                            Welcome back, {{ admin_user.full_name|default:request.session.admin_full_name|default:"Administrator" }}!
+                        </h2>
+                        <p class="text-muted mb-0" style="font-size: 0.875rem;">
+                            Role: <strong>{{ admin_user.get_role_display|default:request.session.admin_role|default:"Fleet Dispatcher" }}</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <div class="row g-3 mb-4">
                 <div class="col-12 col-sm-6 col-xl-3">
                     <div class="kpi-card">
                         <div>
-                            <div class="kpi-label">Active Fleet</div>
+                            <div class="kpi-label">Active Drivers</div>
                             <div class="kpi-value">12</div>
-                            <div class="kpi-subtext">8 Available, 4 On Trip</div>
                         </div>
                     </div>
                 </div>
@@ -50,9 +65,8 @@
                 <div class="col-12 col-sm-6 col-xl-3">
                     <div class="kpi-card">
                         <div>
-                            <div class="kpi-label">Today's Rides</div>
-                            <div class="kpi-value">48</div>
-                            <div class="kpi-subtext">96% Completion Rate</div>
+                            <div class="kpi-label">Total Users</div>
+                            <div class="kpi-value">148</div>
                         </div>
                     </div>
                 </div>
@@ -60,9 +74,8 @@
                 <div class="col-12 col-sm-6 col-xl-3">
                     <div class="kpi-card">
                         <div>
-                            <div class="kpi-label">Pending Dispatch</div>
-                            <div class="kpi-value text-primary">3</div>
-                            <div class="kpi-subtext">Awaiting Driver Assignment</div>
+                            <div class="kpi-label">Total Bookings</div>
+                            <div class="kpi-value text-primary">48</div>
                         </div>
                     </div>
                 </div>
@@ -71,213 +84,32 @@
                     <div class="kpi-card">
                         <div>
                             <div class="kpi-label">Est. Today's Revenue</div>
-                            <div class="kpi-value text-success">$1,340.50</div>
-                            <div class="kpi-subtext">+14% vs yesterday</div>
+                            <div class="kpi-value text-success"> 1,340.50</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="row g-4 mb-4">
-
-                <div class="col-12 col-lg-5 col-xl-4">
-                    <div class="dashboard-card h-100 mb-0">
-                        <div class="dashboard-card-header">
-                            <h2 class="dashboard-card-title">Quick Taxi Dispatch</h2>
-                            <span class="badge-access-compact mb-0">Manual Ride Entry</span>
-                        </div>
-                        <div class="dashboard-card-body">
-
-                            <form method="post" action="#">
-                                <input type="hidden" name="action" value="create_booking">
-
-                                <div class="mb-3">
-                                    <label class="form-label-compact">Passenger Full Name</label>
-                                    <input type="text" name="customer_name" class="form-control custom-input-compact" placeholder="e.g. David Miller" required>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label-compact">Contact Phone</label>
-                                    <input type="text" name="customer_phone" class="form-control custom-input-compact" placeholder="+1 (555) 234-5678" required>
-                                </div>
-
-                                <div class="row g-2 mb-3">
-                                    <div class="col-12 col-sm-6">
-                                        <label class="form-label-compact">Pickup Location</label>
-                                        <input type="text" name="pickup_location" class="form-control custom-input-compact" placeholder="e.g. Grand Central Stn" required>
-                                    </div>
-                                    <div class="col-12 col-sm-6">
-                                        <label class="form-label-compact">Dropoff Location</label>
-                                        <input type="text" name="dropoff_location" class="form-control custom-input-compact" placeholder="e.g. Airport Terminal 1" required>
-                                    </div>
-                                </div>
-
-                                <div class="row g-2 mb-3">
-                                    <div class="col-12 col-sm-7">
-                                        <label class="form-label-compact">Assign Available Driver</label>
-                                        <select name="driver_id" class="form-select custom-input-compact">
-                                            <option value="">Auto-Assign Next Available</option>
-                                            <option value="">Marcus Vance (TX-9012) - Available</option>
-                                            <option value="">Elena Rostova (TX-4402) - Available</option>
-                                            <option value="">John Kowalski (TX-8821) - Available</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-12 col-sm-5">
-                                        <label class="form-label-compact">Est. Fare ($)</label>
-                                        <input type="number" step="0.50" name="fare" class="form-control custom-input-compact" value="28.50" required>
-                                    </div>
-                                </div>
-
-                                <button type="submit" class="btn btn-custom-primary btn-compact w-100">
-                                    Dispatch Taxi Ride Now
-                                </button>
-                            </form>
-                        </div>
+                <div class="col-12 col-md-4">
+                    <div class="dashboard-card h-100 p-4">
+                        <h3 class="h5 fw-bold mb-2">Drivers Module</h3>
+                        <p class="text-muted" style="font-size: 0.85rem;">View driver rosters, active statuses, and vehicle assignments.</p>
+                        <a href="{% url 'admin_drivers' %}" class="btn btn-custom-primary btn-sm w-100 mt-2">Open Drivers Module &rarr;</a>
                     </div>
                 </div>
-
-                <div class="col-12 col-lg-7 col-xl-8">
-                    <div class="dashboard-card h-100 mb-0">
-                        <div class="dashboard-card-header">
-                            <h2 class="dashboard-card-title">Fleet Drivers Status</h2>
-                            <span class="text-muted" style="font-size: 0.75rem;">Live Fleet Feed</span>
-                        </div>
-                        <div class="dashboard-card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-custom-dashboard align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Driver Name</th>
-                                            <th>Vehicle & Plate</th>
-                                            <th>Rating</th>
-                                            <th>Current Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td class="fw-bold">Marcus Vance</td>
-                                            <td>
-                                                <div class="fw-semibold">Toyota Camry Hybrid</div>
-                                                <div class="text-muted" style="font-size: 0.75rem;">Plate: TX-9012</div>
-                                            </td>
-                                            <td>4.92</td>
-                                            <td><span class="badge-status badge-status-available">Available</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">Elena Rostova</td>
-                                            <td>
-                                                <div class="fw-semibold">Hyundai Sonata</div>
-                                                <div class="text-muted" style="font-size: 0.75rem;">Plate: TX-4402</div>
-                                            </td>
-                                            <td>4.88</td>
-                                            <td><span class="badge-status badge-status-available">Available</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">John Kowalski</td>
-                                            <td>
-                                                <div class="fw-semibold">Ford Fusion Taxi</div>
-                                                <div class="text-muted" style="font-size: 0.75rem;">Plate: TX-8821</div>
-                                            </td>
-                                            <td>4.79</td>
-                                            <td><span class="badge-status badge-status-ontrip">On Trip</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="fw-bold">Sarah Connor</td>
-                                            <td>
-                                                <div class="fw-semibold">Chevrolet Malibu</div>
-                                                <div class="text-muted" style="font-size: 0.75rem;">Plate: TX-3310</div>
-                                            </td>
-                                            <td>4.95</td>
-                                            <td><span class="badge-status badge-status-offline">Offline</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                <div class="col-12 col-md-4">
+                    <div class="dashboard-card h-100 p-4">
+                        <h3 class="h5 fw-bold mb-2">Users Module</h3>
+                        <p class="text-muted" style="font-size: 0.85rem;">Manage registered user accounts, passenger profiles, and roles.</p>
+                        <a href="{% url 'admin_users' %}" class="btn btn-custom-primary btn-sm w-100 mt-2">Open Users Module &rarr;</a>
                     </div>
                 </div>
-
-            </div>
-
-            <div class="dashboard-card mb-0">
-                <div class="dashboard-card-header">
-                    <h2 class="dashboard-card-title">Recent Bookings & Dispatch Control</h2>
-                    <span class="text-muted" style="font-size: 0.75rem;">Total Bookings: 3</span>
-                </div>
-                <div class="dashboard-card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-custom-dashboard align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Ref #</th>
-                                    <th>Customer Info</th>
-                                    <th>Pickup & Dropoff</th>
-                                    <th>Assigned Driver</th>
-                                    <th>Fare</th>
-                                    <th>Status</th>
-                                    <th class="text-end">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="fw-bold text-primary">#UB-8041</td>
-                                    <td>
-                                        <div class="fw-bold">Robert Chen</div>
-                                        <div class="text-muted" style="font-size: 0.75rem;">+1 (555) 987-6543</div>
-                                    </td>
-                                    <td>
-                                        <div><span class="text-muted">From:</span> <strong>5th Avenue Hotel</strong></div>
-                                        <div><span class="text-muted">To:</span> <strong>JFK Airport Terminal 4</strong></div>
-                                    </td>
-                                    <td>
-                                        <div class="fw-semibold">Marcus Vance</div>
-                                        <div class="text-muted" style="font-size: 0.75rem;">TX-9012</div>
-                                    </td>
-                                    <td class="fw-bold text-success">$45.00</td>
-                                    <td><span class="badge-status badge-status-ontrip">In Progress</span></td>
-                                    <td class="text-end">
-                                        <span class="badge-status badge-status-available">Active</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold text-primary">#UB-8040</td>
-                                    <td>
-                                        <div class="fw-bold">Sophia Martinez</div>
-                                        <div class="text-muted" style="font-size: 0.75rem;">+1 (555) 345-6789</div>
-                                    </td>
-                                    <td>
-                                        <div><span class="text-muted">From:</span> <strong>Central Park West</strong></div>
-                                        <div><span class="text-muted">To:</span> <strong>Wall Street Financial Center</strong></div>
-                                    </td>
-                                    <td>
-                                        <div class="fw-semibold">Elena Rostova</div>
-                                        <div class="text-muted" style="font-size: 0.75rem;">TX-4402</div>
-                                    </td>
-                                    <td class="fw-bold text-success">$28.50</td>
-                                    <td><span class="badge-status badge-status-completed">Completed</span></td>
-                                    <td class="text-end">
-                                        <span class="text-muted" style="font-size: 0.75rem;">No Actions</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="fw-bold text-primary">#UB-8039</td>
-                                    <td>
-                                        <div class="fw-bold">David Miller</div>
-                                        <div class="text-muted" style="font-size: 0.75rem;">+1 (555) 234-5678</div>
-                                    </td>
-                                    <td>
-                                        <div><span class="text-muted">From:</span> <strong>Penn Station</strong></div>
-                                        <div><span class="text-muted">To:</span> <strong>Brooklyn Heights</strong></div>
-                                    </td>
-                                    <td><span class="text-muted italic">Unassigned</span></td>
-                                    <td class="fw-bold text-success">$22.00</td>
-                                    <td><span class="badge-status badge-status-pending">Pending</span></td>
-                                    <td class="text-end">
-                                        <button class="btn btn-sm btn-success py-1 px-2 fw-bold" style="font-size: 0.75rem;">Accept</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="col-12 col-md-4">
+                    <div class="dashboard-card h-100 p-4">
+                        <h3 class="h5 fw-bold mb-2">Bookings Module</h3>
+                        <p class="text-muted" style="font-size: 0.85rem;">Monitor taxi booking logs, ride statuses, and dispatch activity.</p>
+                        <a href="{% url 'admin_bookings' %}" class="btn btn-custom-primary btn-sm w-100 mt-2">Open Bookings Module &rarr;</a>
                     </div>
                 </div>
             </div>
@@ -286,5 +118,4 @@
     </main>
 
 </div>
-
 {% endblock %}

@@ -6,7 +6,11 @@ from .views import (
     admin_dashboard,
     admin_forgot_password,
     admin_verify_otp,
-    admin_reset_password)
+    admin_reset_password,
+    admin_drivers,
+    admin_users,
+    admin_bookings,
+    )
 
 urlpatterns = [
     path('', admin_login, name='admin_login_root'),
@@ -20,6 +24,9 @@ urlpatterns = [
     path('verify-otp/', admin_verify_otp, name='admin_verify_otp'),
     path('reset-password/', admin_reset_password, name='admin_reset_password'),
     path('forgot-password/', admin_forgot_password, name='admin_forgot_password'),
+    path('drivers/', admin_drivers, name='admin_drivers'),
+    path('users/', admin_users, name='admin_users'),
+    path('bookings/', admin_bookings, name='admin_bookings'),
 ]
 
 
