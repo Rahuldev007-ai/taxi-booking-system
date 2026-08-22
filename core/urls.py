@@ -1,5 +1,12 @@
 from django.urls import path
-from .views import admin_login, admin_register, admin_logout,admin_dashboard,admin_forgot_password
+from .views import (
+    admin_login, 
+    admin_register, 
+    admin_logout,
+    admin_dashboard,
+    admin_forgot_password,
+    admin_verify_otp,
+    admin_reset_password)
 
 urlpatterns = [
     path('', admin_login, name='admin_login_root'),
@@ -9,6 +16,9 @@ urlpatterns = [
     path('AdminRegister/', admin_register, name='admin_register_alt'),
     path('logout/', admin_logout, name='admin_logout'),
     path('dashboard/', admin_dashboard, name='admin_dashboard'),
+    path('AdminForgotPassword/', admin_forgot_password, name='admin_forgot_password_alt'),
+    path('verify-otp/', admin_verify_otp, name='admin_verify_otp'),
+    path('reset-password/', admin_reset_password, name='admin_reset_password'),
     path('forgot-password/', admin_forgot_password, name='admin_forgot_password'),
 ]
 

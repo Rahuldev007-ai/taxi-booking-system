@@ -125,9 +125,10 @@ def admin_forgot_password(request):
     
             if admin_user:
                 otp_code = generate_otp()
+                request.session['reset_otp'] = otp_code
+                request.session['reset_email'] = email
                 print("Generated OTP:", otp_code)
-                request.session['reset_otp'] = random.randint(100000, 999999)
-                return render(request, 'admin_pages/forgot_password.html', {
+                return render(request, 'admin_pages/verify_otp.html', {
                     'success_message': f'Password reset instructions have been sent to "{email}". Please check your inbox.',
                     'email': email
                 })
@@ -138,4 +139,86 @@ def admin_forgot_password(request):
                 })
     
     return render(request, 'admin_pages/forgot_password.html')
+
+
+def admin_verify_otp(request):
+    reset_email = request.session.get('reset_email')
+    expected_otp = request.session.get('reset_otp')
+
+    if request.method == 'POST':
+        otp_entered = request.POST.get('otp', '').strip()
+
+        if not reset_email or not expected_otp:
+            return render(request, 'admin_pages/forgot_password.html', {
+                'error_message': 'Session expired. Please request a new password reset OTP.'
+            })
+
+        if otp_entered != expected_otp:
+            return render(request, 'admin_pages/verify_otp.html', {
+                'error_message': 'Invalid 6-digit OTP code.',
+                'email': reset_email
+            })
+
+       
+        request.session['otp_verified'] = True
+
+        return render(request, 'admin_pages/reset_password.html', {
+            'success_message': 'OTP Verified successfully! Please enter your new password below.',
+            'email': reset_email
+        })
+
+    return render(request, 'admin_pages/verify_otp.html', {
+        'email': reset_email
+    })
+
+
+def admin_reset_password(request):
+    reset_email = request.session.get('reset_email')
+    otp_verified = request.session.get('otp_verified')
+
+    if not reset_email or not otp_verified:
+        return render(request, 'admin_pages/forgot_password.html', {
+            'error_message': 'Unauthorized reset request or session expired. Please request an OTP first.'
+        })
+
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password', '')
+        confirm_password = request.POST.get('confirm_password', '')
+
+        if new_password != confirm_password:
+            return render(request, 'admin_pages/reset_password.html', {
+                'error_message': 'New passwords do not match. Please try again.',
+                'email': reset_email
+            })
+
+        if len(new_password) < 6:
+            return render(request, 'admin_pages/reset_password.html', {
+                'error_message': 'Password must be at least 6 characters long.',
+                'email': reset_email
+            })
+
+        admin_user = AdminUser.objects.filter(email__iexact=reset_email, is_active=True).first()
+
+        if admin_user:
+            admin_user.set_password(new_password)
+            admin_user.save()
+
+            # Clear reset session tokens
+            request.session.pop('reset_email', None)
+            request.session.pop('reset_otp', None)
+            request.session.pop('otp_verified', None)
+
+            return render(request, 'admin_pages/login.html', {
+                'success_message': f'Password for "{admin_user.full_name}" reset successfully! Please sign in with your new password.',
+                'username': admin_user.username
+            })
+        else:
+            return render(request, 'admin_pages/forgot_password.html', {
+                'error_message': 'Admin account not found. Please try again.'
+            })
+
+    return render(request, 'admin_pages/reset_password.html', {
+        'email': reset_email
+    })
+
 

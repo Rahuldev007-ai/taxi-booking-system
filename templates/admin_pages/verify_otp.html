@@ -1,0 +1,70 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Taxi Booking System | Verify OTP{% endblock %}
+
+{% block body_class %}login-page-body{% endblock %}
+
+{% block content %}
+<div class="login-wrapper">
+    <div class="brand-header">
+        <h1 class="brand-title">Cabzy Taxi Booking</h1>
+    </div>
+
+    <div class="login-card">
+        <div class="card-top-accent"></div>
+        <div class="card-body-custom">
+            <div class="text-center">
+                <span class="badge-access">OTP Verification</span>
+            </div>
+
+            {% if error_message %}
+            <div class="custom-alert-error">
+                {{ error_message }}
+            </div>
+            {% endif %}
+
+            {% if success_message %}
+            <div class="custom-alert-success">
+                {{ success_message }}
+            </div>
+            {% endif %}
+
+            <div class="text-center mb-3">
+                <span style="font-size: 0.875rem; color: var(--secondary-text-muted-brown);">
+                    OTP sent to: <strong>{{ email|default:request.session.reset_email }}</strong>
+                </span>
+            </div>
+
+            <form method="post" action="{% url 'admin_verify_otp' %}">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label class="form-label-custom">Enter 6-Digit OTP</label>
+                    <input type="text" name="otp" class="form-control custom-input text-center fw-bold fs-4" placeholder="123456" maxlength="6" 
+       inputmode="numeric" pattern="[0-8]*" oninput="this.value = this.value.replace(/[^0-8]/g, '')" required autofocus style="letter-spacing: 4px;">
+
+                    {% comment %} <input type="tel"   name="otp" class="form-control custom-input text-center fw-bold fs-4" placeholder="123456" maxlength="6" required autofocus style="letter-spacing: 4px;"> {% endcomment %}
+                </div>
+
+                <button type="submit" class="btn btn-custom-primary">
+                    Verify OTP Code
+                </button>
+            </form>
+
+            <div class="text-center mt-3">
+                <span style="font-size: 0.875rem; color: var(--secondary-text-muted-brown);">
+                    Didn't receive code? 
+                    <a href="{% url 'admin_forgot_password' %}" class="auth-link-text">Resend OTP</a>
+                </span>
+            </div>
+
+          
+
+        </div>
+    </div>
+
+    <div class="footer-note">
+       Cabzy Taxi Booking &copy; 2026<br>
+    </div>
+</div>
+{% endblock %}
