@@ -1,0 +1,97 @@
+{% extends 'components/base.html' %}
+
+{% block title %}User Profile - {{ user_obj.name }} | Admin Portal{% endblock %}
+
+{% block content %}
+<div class="admin-layout-wrapper">
+
+    {% include 'components/sidebar.html' %}
+
+     <main class="admin-main-content">
+
+        <header class="dashboard-header-bar mb-4">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+                        Menu
+                    </button>
+                    <span class="dashboard-brand-title">User Profile Details</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <a href="/users/" class="btn btn-outline-secondary btn-sm rounded-3 px-3 fw-bold">
+                        ← Back to Users
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-lg-4 pb-5">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-8">
+
+                    <div class="dashboard-card p-4 mb-4">
+                        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-bottom pb-3 mb-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://ui-avatars.com/api/?name=John+Doe&background=231212&color=E8D8C3&bold=true&size=128" alt="John Doe" class="rounded-circle border border-3 border-warning" style="width: 72px; height: 72px; object-fit: cover;">
+                                <div>
+                                    <h3 class="dashboard-card-title m-0">John Doe</h3>
+                                    <span class="text-muted" style="font-size: 0.9rem;">System User #101</span>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="badge-status badge-status-available fs-6 px-3 py-2">Active Account</span>
+                            </div>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-12 col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <div class="text-muted small fw-bold mb-1">FULL NAME</div>
+                                    <div class="fw-bold fs-5 text-dark">rahul</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <div class="text-muted small fw-bold mb-1">EMAIL ADDRESS</div>
+                                    <div class="fw-bold fs-5 text-dark">rahul@example.com</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <div class="text-muted small fw-bold mb-1">MOBILE NUMBER</div>
+                                    <div class="fw-bold fs-5 text-dark">+91 98765 43210</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <div class="text-muted small fw-bold mb-1">REGISTERED DATE</div>
+                                    <div class="fw-bold fs-5 text-dark">August 23, 2026 - 10:30 AM</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <div class="text-muted small fw-bold mb-1">LAST UPDATED</div>
+                                    <div class="fw-bold fs-6 text-dark">August 23, 2026 - 10:30 AM</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2 border-top pt-3">
+                           
+                            <a href="/users/101/delete/" class="btn btn-outline-danger rounded-3 px-4 fw-bold">
+                                Delete User Account
+                            </a>
+                            <a href="/users" class="btn btn-outline-secondary rounded-3 px-4 ms-auto">
+                                Back to User List
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+</div>
+{% endblock %}
