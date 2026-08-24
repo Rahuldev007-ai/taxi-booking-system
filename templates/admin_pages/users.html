@@ -12,7 +12,11 @@
       <header class="dashboard-header-bar mb-4">
         <div class="container-fluid d-flex align-items-center justify-content-between">
           <div class="d-flex align-items-center gap-3">
-            <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">Menu</button>
+            <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+              </svg>
+            </button>
             <span class="dashboard-brand-title">Registered Users Directory</span>
           </div>
 
@@ -34,11 +38,14 @@
                 
                 
                 
+                
                 bg-danger
 
 
 
+
               {% else %}
+                
                 
                 
                 
@@ -59,7 +66,7 @@
       <div class="container-fluid px-3 px-lg-4 pb-5">
         <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
           <form method="get" action="{% url 'admin_users' %}" class="d-flex gap-2 flex-grow-1 max-w-md">
-            <input type="text" name="q" value="{{ search_query|default:'' }}" class="form-control custom-input" placeholder="Search by name, email or mobile..." />
+            <input type="text" name="q" value="{{ search_query|default:'' }}" class="form-control custom-input" placeholder="Search by name, email or mobile..." required />
             <button type="submit" class="btn btn-dark px-3 fw-bold">Search</button>
             {% if search_query %}
               <a href="{% url 'admin_users' %}" class="btn btn-outline-secondary p-3">Clear</a>
@@ -124,7 +131,7 @@
                                 </p>
 
                                 <div class="d-grid gap-2 col-10 mx-auto mt-3">
-                                  <a href="{% url 'admin_user_detail' user.id %}" class="btn  btn-outline-info fw-bold py-2 rounded-3">View Full Profile</a>
+                                  <a href="{% url 'admin_user_detail' user.id %}" class="btn btn-outline-info fw-bold py-2 rounded-3">View Full Profile</a>
                                   <a href="{% url 'admin_edit_user' user.id %}" class="btn btn-outline-primary fw-bold py-2 rounded-3">Edit Account Details</a>
                                   <a href="{% url 'admin_delete_user' user.id %}" class="btn btn-outline-danger fw-bold py-2 rounded-3">Delete This Account</a>
                                 </div>

@@ -1,121 +1,113 @@
 {% extends 'components/base.html' %}
 
-{% block title %}Taxi Booking System | Fleet Control Panel{% endblock %}
+{% block title %}
+  Taxi Booking System | Fleet Control Panel
+{% endblock %}
 
 {% block content %}
-<div class="admin-layout-wrapper">
-
+  <div class="admin-layout-wrapper">
     {% include 'components/sidebar.html' %}
 
     <main class="admin-main-content">
+      <header class="dashboard-header-bar mb-4">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+              </svg>
+            </button>
+            <span class="dashboard-brand-title">Dashboard</span>
+          </div>
 
-        <header class="dashboard-header-bar mb-4">
-            <div class="container-fluid d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
-                        Menu
-                    </button>
-                    <span class="dashboard-brand-title">Dashboard</span>
-                </div>
-
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center gap-2">
-                        <img src="https://ui-avatars.com/api/?name={{ admin_user.full_name|urlencode|default:'Administrator' }}&background=E8D8C3&color=231212&bold=true" alt="Admin Profile Image" class="rounded-circle border border-2 border-warning" style="width: 38px; height: 38px; object-fit: cover;">
-                        <div class="text-end d-none d-md-block">
-                            <div class="fw-bold" style="font-size: 0.9rem; color: var(--main-text-dark-brown);">
-                                {{ admin_user.full_name|default:request.session.admin_full_name|default:"System Administrator" }}
-                            </div>
-                            
-                        </div>
-                    </div>
-                    <a href="{% url 'admin_logout' %}" class="btn btn-outline-danger btn-sm rounded-3 px-3 fw-bold d-lg-none">
-                        Logout
-                    </a>
-                </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <img src="https://ui-avatars.com/api/?name={{ admin_user.full_name|urlencode|default:'Administrator' }}&background=E8D8C3&color=231212&bold=true" alt="Admin Profile Image" class="rounded-circle border border-2 border-warning" style="width: 38px; height: 38px; object-fit: cover;" />
+              <div class="text-end d-none d-md-block">
+                <div class="fw-bold" style="font-size: 0.9rem; color: var(--main-text-dark-brown);">{{ admin_user.full_name|default:request.session.admin_full_name|default:'System Administrator' }}</div>
+              </div>
             </div>
-        </header>
-
-        <div class="container-fluid px-3 px-lg-4 pb-5">
-
-            <!-- Admin Welcome Banner -->
-            <div class="dashboard-card bg-white mb-4 p-4 rounded-4 shadow-sm border border-0">
-                <div class="d-flex align-items-center gap-3">
-                    <img src="https://ui-avatars.com/api/?name={{ admin_user.full_name|urlencode|default:'Administrator' }}&background=7F1D1D&color=FFFFFF&bold=true&size=128" alt="Profile Large" class="rounded-circle shadow-sm" style="width: 64px; height: 64px; object-fit: cover;">
-                    <div>
-                        <h2 class="h4 fw-bold mb-1" style="color: var(--main-text-dark-brown);">
-                            Welcome back, {{ admin_user.full_name|default:request.session.admin_full_name|default:"Administrator" }}!
-                        </h2>
-                        <p class="text-muted mb-0" style="font-size: 0.875rem;">
-                            Role: <strong>{{ admin_user.get_role_display|default:request.session.admin_role|default:"Fleet Dispatcher" }}</strong>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-3 mb-4">
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="kpi-card">
-                        <div>
-                            <div class="kpi-label">Active Drivers</div>
-                            <div class="kpi-value">12</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="kpi-card">
-                        <div>
-                            <div class="kpi-label">Total Users</div>
-                            <div class="kpi-value">148</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="kpi-card">
-                        <div>
-                            <div class="kpi-label">Total Bookings</div>
-                            <div class="kpi-value text-primary">48</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="kpi-card">
-                        <div>
-                            <div class="kpi-label">Est. Today's Revenue</div>
-                            <div class="kpi-value text-success"> 1,340.50</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-4 mb-4">
-                <div class="col-12 col-md-4">
-                    <div class="dashboard-card h-100 p-4">
-                        <h3 class="h5 fw-bold mb-2">Drivers Module</h3>
-                        <p class="text-muted" style="font-size: 0.85rem;">View driver rosters, active statuses, and vehicle assignments.</p>
-                        <a href="{% url 'admin_drivers' %}" class="btn btn-custom-primary btn-sm w-100 mt-2">Open Drivers Module &rarr;</a>
-                    </div>
-                </div>
-                <div class="col-12 col-md-4">
-                    <div class="dashboard-card h-100 p-4">
-                        <h3 class="h5 fw-bold mb-2">Users Module</h3>
-                        <p class="text-muted" style="font-size: 0.85rem;">Manage registered user accounts, passenger profiles, and roles.</p>
-                        <a href="{% url 'admin_users' %}" class="btn btn-custom-primary btn-sm w-100 mt-2">Open Users Module &rarr;</a>
-                    </div>
-                </div>
-                <div class="col-12 col-md-4">
-                    <div class="dashboard-card h-100 p-4">
-                        <h3 class="h5 fw-bold mb-2">Bookings Module</h3>
-                        <p class="text-muted" style="font-size: 0.85rem;">Monitor taxi booking logs, ride statuses, and dispatch activity.</p>
-                        <a href="{% url 'admin_bookings' %}" class="btn btn-custom-primary btn-sm w-100 mt-2">Open Bookings Module &rarr;</a>
-                    </div>
-                </div>
-            </div>
-
+            <a href="{% url 'admin_logout' %}" class="btn btn-outline-danger btn-sm rounded-3 px-3 fw-bold d-lg-none">Logout</a>
+          </div>
         </div>
-    </main>
+      </header>
 
-</div>
+      <div class="container-fluid px-3 px-lg-4 pb-5">
+        <!-- Admin Welcome Banner -->
+        <div class="dashboard-card bg-white mb-4 p-4 rounded-4 shadow-sm border border-0">
+          <div class="d-flex align-items-center gap-3">
+            <img src="https://ui-avatars.com/api/?name={{ admin_user.full_name|urlencode|default:'Administrator' }}&background=7F1D1D&color=FFFFFF&bold=true&size=128" alt="Profile Large" class="rounded-circle shadow-sm" style="width: 64px; height: 64px; object-fit: cover;" />
+            <div>
+              <h2 class="h4 fw-bold mb-1" style="color: var(--main-text-dark-brown);">Welcome back, {{ admin_user.full_name|default:request.session.admin_full_name|default:'Administrator' }}!</h2>
+              <p class="text-muted mb-0" style="font-size: 0.875rem;">
+                Role: <strong>{{ admin_user.get_role_display|default:request.session.admin_role|default:'Fleet Dispatcher' }}</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Active Drivers</div>
+                <div class="kpi-value">12</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Total Users</div>
+                <div class="kpi-value">148</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Total Bookings</div>
+                <div class="kpi-value text-primary">48</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12 col-sm-6 col-xl-3">
+            <div class="kpi-card">
+              <div>
+                <div class="kpi-label">Est. Today's Revenue</div>
+                <div class="kpi-value text-success">1,340.50</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+          <div class="col-12 col-md-4">
+            <div class="dashboard-card h-100 p-4">
+              <h3 class="h5 fw-bold mb-2">Drivers Module</h3>
+              <p class="text-muted" style="font-size: 0.85rem;">View driver rosters, active statuses, and vehicle assignments.</p>
+              <a href="{% url 'admin_drivers' %}" class="btn btn-custom-primary btn-sm w-100 mt-2">Open Drivers Module &rarr;</a>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="dashboard-card h-100 p-4">
+              <h3 class="h5 fw-bold mb-2">Users Module</h3>
+              <p class="text-muted" style="font-size: 0.85rem;">Manage registered user accounts, passenger profiles, and roles.</p>
+              <a href="{% url 'admin_users' %}" class="btn btn-custom-primary btn-sm w-100 mt-2">Open Users Module &rarr;</a>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="dashboard-card h-100 p-4">
+              <h3 class="h5 fw-bold mb-2">Bookings Module</h3>
+              <p class="text-muted" style="font-size: 0.85rem;">Monitor taxi booking logs, ride statuses, and dispatch activity.</p>
+              <a href="{% url 'admin_bookings' %}" class="btn btn-custom-primary btn-sm w-100 mt-2">Open Bookings Module &rarr;</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 {% endblock %}

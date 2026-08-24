@@ -1,100 +1,93 @@
 {% extends 'components/base.html' %}
 
-{% block title %}User Profile - {{ user_obj.name }} {% endblock %}
+{% block title %}
+  User Profile - {{ user_obj.name }}
+{% endblock %}
 
 {% block content %}
-<div class="admin-layout-wrapper">
-
+  <div class="admin-layout-wrapper">
     {% include 'components/sidebar.html' %}
 
-     <main class="admin-main-content">
+    <main class="admin-main-content">
+      <header class="dashboard-header-bar mb-4">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+              </svg>
+            </button>
+            <span class="dashboard-brand-title">User Profile Details</span>
+          </div>
 
-        <header class="dashboard-header-bar mb-4">
-            <div class="container-fluid d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
-                        Menu
-                    </button>
-                    <span class="dashboard-brand-title">User Profile Details</span>
-                </div>
-
-                <div class="d-flex align-items-center gap-3">
-                    <a href="{% url 'admin_users' %}" class="btn btn-outline-secondary btn-sm rounded-3 px-3 fw-bold">
-                        ← Back to Users
-                    </a>
-                </div>
-            </div>
-        </header>
-
-        <div class="container-fluid px-3 px-lg-4 pb-5">
-            <div class="row justify-content-center">
-                <div class="col-12 col-md-10 col-lg-8">
-
-                    <div class="dashboard-card p-4 mb-4">
-                        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-bottom pb-3 mb-4">
-                            <div class="d-flex align-items-center gap-3">
-                                <img src="https://ui-avatars.com/api/?name={{ user_obj.name|urlencode }}&background=231212&color=E8D8C3&bold=true&size=128" alt="{{ user_obj.name }}" class="rounded-circle border border-3 border-warning" style="width: 72px; height: 72px; object-fit: cover;">
-                                <div>
-                                    <h3 class="dashboard-card-title m-0">{{ user_obj.name }}</h3>
-                                    <span class="text-muted" style="font-size: 0.9rem;">System User #{{ user_obj.id }}</span>
-                                </div>
-                            </div>
-                            <div>
-                                {% if user_obj.is_active %}
-                                    <span class="badge-status badge-status-available fs-6 px-3 py-2">Active Account</span>
-                                {% else %}
-                                    <span class="badge bg-secondary fs-6 px-3 py-2">Inactive Account</span>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="row g-4 mb-4">
-                            <div class="col-12 col-sm-6">
-                                <div class="p-3 bg-light rounded-3 border">
-                                    <div class="text-muted small fw-bold mb-1">FULL NAME</div>
-                                    <div class="fw-bold fs-5 text-dark">{{ user_obj.name }}</div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="p-3 bg-light rounded-3 border">
-                                    <div class="text-muted small fw-bold mb-1">EMAIL ADDRESS</div>
-                                    <div class="fw-bold fs-5 text-dark">{{ user_obj.email }}</div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="p-3 bg-light rounded-3 border">
-                                    <div class="text-muted small fw-bold mb-1">MOBILE NUMBER</div>
-                                    <div class="fw-bold fs-5 text-dark">{{ user_obj.mobile }}</div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="p-3 bg-light rounded-3 border">
-                                    <div class="text-muted small fw-bold mb-1">REGISTERED DATE</div>
-                                    <div class="fw-bold fs-5 text-dark">{{ user_obj.created_at|date:"F d, Y - g:i A"|default:"N/A" }}</div>
-                                </div>
-                            </div>
-                            <div class="col-12 col-sm-6">
-                                <div class="p-3 bg-light rounded-3 border">
-                                    <div class="text-muted small fw-bold mb-1">LAST UPDATED</div>
-                                    <div class="fw-bold fs-6 text-dark">{{ user_obj.updated_at|date:"F d, Y - g:i A"|default:"N/A" }}</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="d-flex flex-wrap gap-2 border-top pt-3">
-                            <a href="/users/{{ user_obj.id }}/delete/" class="btn btn-outline-danger rounded-3 px-4 fw-bold">
-                                Delete User Account
-                            </a>
-                            <a href="{% url 'admin_users' %}" class="btn btn-outline-secondary rounded-3 px-4 ms-auto">
-                                Back to User List
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+          <div class="d-flex align-items-center gap-3">
+            <a href="{% url 'admin_users' %}" class="btn btn-outline-secondary btn-sm rounded-3 px-3 fw-bold">← Back to Users</a>
+          </div>
         </div>
-    </main>
+      </header>
 
-</div>
+      <div class="container-fluid px-3 px-lg-4 pb-5">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-10 col-lg-8">
+            <div class="dashboard-card p-4 mb-4">
+              <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-bottom pb-3 mb-4">
+                <div class="d-flex align-items-center gap-3">
+                  <img src="https://ui-avatars.com/api/?name={{ user_obj.name|urlencode }}&background=231212&color=E8D8C3&bold=true&size=128" alt="{{ user_obj.name }}" class="rounded-circle border border-3 border-warning" style="width: 72px; height: 72px; object-fit: cover;" />
+                  <div>
+                    <h3 class="dashboard-card-title m-0">{{ user_obj.name }}</h3>
+                    <span class="text-muted" style="font-size: 0.9rem;">System User #{{ user_obj.id }}</span>
+                  </div>
+                </div>
+                <div>
+                  {% if user_obj.is_active %}
+                    <span class="badge-status badge-status-available fs-6 px-3 py-2">Active Account</span>
+                  {% else %}
+                    <span class="badge bg-secondary fs-6 px-3 py-2">Inactive Account</span>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="row g-4 mb-4">
+                <div class="col-12 col-sm-6">
+                  <div class="p-3 bg-light rounded-3 border">
+                    <div class="text-muted small fw-bold mb-1">FULL NAME</div>
+                    <div class="fw-bold fs-5 text-dark">{{ user_obj.name }}</div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <div class="p-3 bg-light rounded-3 border">
+                    <div class="text-muted small fw-bold mb-1">EMAIL ADDRESS</div>
+                    <div class="fw-bold fs-5 text-dark">{{ user_obj.email }}</div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <div class="p-3 bg-light rounded-3 border">
+                    <div class="text-muted small fw-bold mb-1">MOBILE NUMBER</div>
+                    <div class="fw-bold fs-5 text-dark">{{ user_obj.mobile }}</div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <div class="p-3 bg-light rounded-3 border">
+                    <div class="text-muted small fw-bold mb-1">REGISTERED DATE</div>
+                    <div class="fw-bold fs-5 text-dark">{{ user_obj.created_at|date:'F d, Y - g:i A'|default:'N/A' }}</div>
+                  </div>
+                </div>
+                <div class="col-12 col-sm-6">
+                  <div class="p-3 bg-light rounded-3 border">
+                    <div class="text-muted small fw-bold mb-1">LAST UPDATED</div>
+                    <div class="fw-bold fs-6 text-dark">{{ user_obj.updated_at|date:'F d, Y - g:i A'|default:'N/A' }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex flex-wrap gap-2 border-top pt-3">
+                <a href="/users/{{ user_obj.id }}/delete/" class="btn btn-outline-danger rounded-3 px-4 fw-bold">Delete User Account</a>
+                <a href="{% url 'admin_users' %}" class="btn btn-outline-secondary rounded-3 px-4 ms-auto">Back to User List</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 {% endblock %}

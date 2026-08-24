@@ -18,19 +18,18 @@
             <a href="{% url 'admin_bookings' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_bookings' %}active{% endif %}">
                 <span>Bookings</span>
             </a>
-            
         </nav>
     </div>
 
     <div class="sidebar-footer">
         <div class="sidebar-profile d-flex align-items-center gap-2">
-            <img src="https://ui-avatars.com/api/?name={{ admin_user.full_name|urlencode|default:'Administrator' }}&background=E8D8C3&color=231212&bold=true" alt="Admin Profile" class="rounded-circle border border-2 border-warning" style="width: 38px; height: 38px; object-fit: cover;">
+            <img src="https://ui-avatars.com/api/?name={{ admin_full_name|urlencode|default:'Administrator' }}&background=E8D8C3&color=231212&bold=true" alt="Admin Profile" class="rounded-circle border border-2 border-warning" style="width: 38px; height: 38px; object-fit: cover;">
             <div>
                 <div class="fw-bold" style="font-size: 0.85rem; color: #FFFFFF;">
-                    {{ admin_user.full_name|default:request.session.admin_full_name|default:"Administrator" }}
+                    {{ admin_full_name|default:"Administrator" }}
                 </div>
                 <div class="text-muted" style="font-size: 0.725rem; color: #D1C4C4;">
-                    {{ admin_user.get_role_display|default:request.session.admin_role|default:"Fleet Dispatcher" }}
+                    {{ admin_role|default:"Fleet Dispatcher" }}
                 </div>
             </div>
         </div>
@@ -56,13 +55,13 @@
             <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
                 <span>Dashboard</span>
             </a>
-            <a href="{% url 'admin_drivers' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_drivers' %}active{% endif %}" data-bs-dismiss="offcanvas">
+            <a href="{% url 'admin_drivers' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_drivers' %}active{% endif %}">
                 <span>Drivers</span>
             </a>
-            <a href="{% url 'admin_users' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}" data-bs-dismiss="offcanvas">
+            <a href="{% url 'admin_users' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}">
                 <span>Users</span>
             </a>
-            <a href="{% url 'admin_bookings' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_bookings' %}active{% endif %}" data-bs-dismiss="offcanvas">
+            <a href="{% url 'admin_bookings' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_bookings' %}active{% endif %}">
                 <span>Bookings</span>
             </a>
             <a href="{% url 'admin_logout' %}" class="sidebar-link">
@@ -72,13 +71,13 @@
 
         <div class="sidebar-footer">
             <div class="sidebar-profile d-flex align-items-center gap-2">
-                <img src="https://ui-avatars.com/api/?name={{ admin_user.full_name|urlencode|default:'Administrator' }}&background=E8D8C3&color=231212&bold=true" alt="Admin Profile" class="rounded-circle border border-2 border-warning" style="width: 38px; height: 38px; object-fit: cover;">
+                <img src="https://ui-avatars.com/api/?name={{ admin_full_name|urlencode|default:'Administrator' }}&background=E8D8C3&color=231212&bold=true" alt="Admin Profile" class="rounded-circle border border-2 border-warning" style="width: 38px; height: 38px; object-fit: cover;">
                 <div>
                     <div class="fw-bold" style="font-size: 0.85rem; color: #FFFFFF;">
-                        {{ admin_user.full_name|default:request.session.admin_full_name|default:"Administrator" }}
+                        {{ admin_full_name|default:"Administrator" }}
                     </div>
                     <div class="text-muted" style="font-size: 0.725rem; color: #D1C4C4;">
-                        {{ admin_user.get_role_display|default:request.session.admin_role|default:"Fleet Dispatcher" }}
+                        {{ admin_role|default:"Fleet Dispatcher" }}
                     </div>
                 </div>
             </div>

@@ -1,81 +1,76 @@
 {% extends 'components/base.html' %}
 
-{% block title %}Fleet Drivers Module{% endblock %}
+{% block title %}
+  Fleet Drivers Module
+{% endblock %}
 
 {% block content %}
-<div class="admin-layout-wrapper">
-
+  <div class="admin-layout-wrapper">
     {% include 'components/sidebar.html' %}
 
     <main class="admin-main-content">
+      <header class="dashboard-header-bar mb-4">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+              </svg>
+            </button>
+            <span class="dashboard-brand-title">Fleet Drivers</span>
+          </div>
 
-        <header class="dashboard-header-bar mb-4">
-            <div class="container-fluid d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
-                        Menu
-                    </button>
-                    <span class="dashboard-brand-title">Fleet Drivers</span>
-                </div>
-
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center gap-2">
-                        <img src="https://ui-avatars.com/api/?name={{ admin_user.full_name|urlencode|default:'Administrator' }}&background=E8D8C3&color=231212&bold=true" alt="Admin Profile" class="rounded-circle border border-2 border-warning" style="width: 38px; height: 38px; object-fit: cover;">
-                        <div class="text-end d-none d-md-block">
-                            <div class="fw-bold" style="font-size: 0.9rem; color: var(--main-text-dark-brown);">
-                                {{ admin_user.full_name|default:request.session.admin_full_name|default:"System Administrator" }}
-                            </div>
-
-                        </div>
-                    </div>
-                    <a href="{% url 'admin_logout' %}" class="btn btn-outline-danger btn-sm rounded-3 px-3 fw-bold d-lg-none">
-                        Logout
-                    </a>
-                </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2">
+              <img src="https://ui-avatars.com/api/?name={{ admin_user.full_name|urlencode|default:'Administrator' }}&background=E8D8C3&color=231212&bold=true" alt="Admin Profile" class="rounded-circle border border-2 border-warning" style="width: 38px; height: 38px; object-fit: cover;" />
+              <div class="text-end d-none d-md-block">
+                <div class="fw-bold" style="font-size: 0.9rem; color: var(--main-text-dark-brown);">{{ admin_user.full_name|default:request.session.admin_full_name|default:'System Administrator' }}</div>
+              </div>
             </div>
-        </header>
-
-        <div class="container-fluid px-3 px-lg-4 pb-5">
-            <div class="dashboard-card mb-4">
-                <div class="dashboard-card-header d-flex align-items-center justify-content-between">
-                    <div>
-                        <h2 class="dashboard-card-title">Fleet Drivers</h2>
-                    </div>
-                    <button class="btn btn-custom-primary w-25 rounded-3 fw-bold">
-                        + Add New Driver
-                    </button>
-                </div>
-                <div class="dashboard-card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-custom-dashboard align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Driver Name</th>
-                                    <th>Vehicle & License Plate</th>
-                                    <th>Phone Number</th>
-                                    <th>Rating</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="fw-bold">Marcus Vance</td>
-                                    <td>
-                                        <div class="fw-semibold">Toyota Camry Hybrid</div>
-                                        <div class="text-muted" style="font-size: 0.75rem;">TX-9012</div>
-                                    </td>
-                                    <td>+91 98552-34567</td>
-                                    <td>4.92</td>
-                                    <td><span class="badge-status badge-status-available">Available</span></td>
-                                </tr>
-                                
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+            <a href="{% url 'admin_logout' %}" class="btn btn-outline-danger btn-sm rounded-3 px-3 fw-bold d-lg-none">Logout</a>
+          </div>
         </div>
-    </main>
+      </header>
 
-</div>
+      <div class="container-fluid px-3 px-lg-4 pb-5">
+        <div class="dashboard-card mb-4">
+          <div class="dashboard-card-header d-flex align-items-center justify-content-between">
+            <div>
+              <h2 class="dashboard-card-title">Fleet Drivers</h2>
+            </div>
+            <button class="btn btn-custom-primary w-25 rounded-3 fw-bold">+ Add New Driver</button>
+          </div>
+          <div class="dashboard-card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-custom-dashboard align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Driver Name</th>
+                    <th>Vehicle & License Plate</th>
+                    <th>Phone Number</th>
+                    <th>Rating</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="fw-bold">Marcus Vance</td>
+                    <td>
+                      <div class="fw-semibold">Toyota Camry Hybrid</div>
+                      <div class="text-muted" style="font-size: 0.75rem;">TX-9012</div>
+                    </td>
+                    <td>+91 98552-34567</td>
+                    <td>4.92</td>
+                    <td>
+                      <span class="badge-status badge-status-available">Available</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 {% endblock %}

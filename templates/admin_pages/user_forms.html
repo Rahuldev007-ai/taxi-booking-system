@@ -12,7 +12,11 @@
       <header class="dashboard-header-bar mb-4">
         <div class="container-fluid d-flex align-items-center justify-content-between">
           <div class="d-flex align-items-center gap-3">
-            <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">Menu</button>
+            <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
+              </svg>
+            </button>
 
             <span class="dashboard-brand-title">
               {% if user_create %}
@@ -39,9 +43,8 @@
                 {% else %}
                   Edit User
                 {% endif %}
-
               </h3>
-              
+
               {% if error_message %}
                 <div class="custom-alert-error">{{ error_message }}</div>
               {% endif %}
@@ -49,15 +52,15 @@
               {% if success_message %}
                 <div class="custom-alert-success">{{ success_message }}</div>
               {% endif %}
-              <form method="post" action="
-              {%if user_create%}
-              {% url 'admin_create_user' %}
-              {%else%}
-              {% url 'admin_edit_user' user_obj.id %}
-              {%endif%}
+              <form method="post"
+                action="
+              {% if user_create %}
+                  {% url 'admin_create_user' %}
+                {% else %}
+                  {% url 'admin_edit_user' user_obj.id %}
+                {% endif %}
               ">
-              
-              {% csrf_token %}
+                {% csrf_token %}
                 <div class="mb-3">
                   <label class="form-label fw-bold">Full Name</label>
                   <input type="text" name="name" maxlength="19" minlength="3" class="form-control custom-input" placeholder="Enter user's full name" value="{{ typed_name|default:'' }}" required />

@@ -31,7 +31,6 @@ def admin_users(request):
     }
     return render(request, 'admin_pages/users.html',context)
 
-
 def admin_create_user(request):
     user_create = True 
     if request.method == "POST":
@@ -166,3 +165,5 @@ def admin_user_detail(request,user_id):
     return render(request, 'admin_pages/user_detail.html', {
         'user_obj': user_obj
     })
+    
+# Driver view 
