@@ -53,7 +53,8 @@
               {%if user_create%}
               {% url 'admin_create_user' %}
               {%else%}
-              {% url 'admin_edit_user' %}
+              {% url 'admin_edit_user' user_obj.id %}
+              {%endif%}
               ">
               
               {% csrf_token %}

@@ -32,9 +32,15 @@
           {% for message in messages %}
             <div class="toast align-items-center text-white {% if message.tags == 'error' %}
                 
+                
+                
                 bg-danger
 
+
+
               {% else %}
+                
+                
                 
                 bg-{{ message.tags }}
               {% endif %} border-0 custom-django-toast"
@@ -53,10 +59,10 @@
       <div class="container-fluid px-3 px-lg-4 pb-5">
         <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
           <form method="get" action="{% url 'admin_users' %}" class="d-flex gap-2 flex-grow-1 max-w-md">
-            <input type="text" name="q" value="{{ search_query }}" class="form-control custom-input" placeholder="Search by name, email or mobile..." />
+            <input type="text" name="q" value="{{ search_query|default:'' }}" class="form-control custom-input" placeholder="Search by name, email or mobile..." />
             <button type="submit" class="btn btn-dark px-3 fw-bold">Search</button>
             {% if search_query %}
-              <a href="{% url 'admin_users' %}" class="btn btn-outline-secondary px-3">Clear</a>
+              <a href="{% url 'admin_users' %}" class="btn btn-outline-secondary p-3">Clear</a>
             {% endif %}
           </form>
 
@@ -74,7 +80,7 @@
               <table class="table table-custom-dashboard align-middle mb-0">
                 <thead>
                   <tr>
-                    <th># ID</th>
+                    <th>ID</th>
                     <th>Full Name</th>
                     <th>Email Address</th>
                     <th>Mobile Number</th>
@@ -86,9 +92,9 @@
                 <tbody>
                   {% for user in users %}
                     <tr>
-                      <td class="fw-bold">#Cab0974{{ user.id }}</td>
+                      <td class="fw-bold">CabZy-0974{{ user.id }}</td>
                       <td class="fw-bold">
-                        <a href="" class="text-dark text-decoration-none hover-primary">Rahul</a>
+                        <a href="" class="text-dark text-decoration-none hover-primary">{{ user.name }}</a>
                       </td>
                       <td>{{ user.email }}</td>
                       <td>+91 {{ user.mobile }}</td>
@@ -100,11 +106,35 @@
                         {% endif %}
                       </td>
                       <td>{{ user.created_at }}</td>
+
                       <td class="text-end">
-                        <div class="btn-group btn-group-sm">
-                          <a href="{% url 'admin_user_detail' user.id %}" class="btn btn-outline-info btn-sm rounded-2 me-1" title="View Profile">View</a>
-                          <a href="{% url 'admin_edit_user' user.id %}" class="btn btn-outline-primary btn-sm rounded-2 me-1" title="Edit User">Edit</a>
-                          <a href="{% url 'admin_delete_user' user.id %}" class="btn btn-outline-danger btn-sm rounded-2" title="Delete User">Delete</a>
+                        <button type="button" class="btn btn-outline-dark btn-sm rounded-3 fw-bold" data-bs-toggle="modal" data-bs-target="#modal-{{ user.id }}">Action</button>
+
+                        <div class="modal fade" id="modal-{{ user.id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="label-{{ user.id }}" aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content shadow-lg border-0 rounded-3 text-start">
+                              <div class="modal-header">
+                                <h5 class="modal-title fw-bold" id="label-{{ user.id }}">Choose Action for {{ user.name }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+
+                              <div class="modal-body text-center py-4">
+                                <p class="text-muted">
+                                  What action would you like to perform for account <strong>{{ user.name }}</strong>?
+                                </p>
+
+                                <div class="d-grid gap-2 col-10 mx-auto mt-3">
+                                  <a href="{% url 'admin_user_detail' user.id %}" class="btn  btn-outline-info fw-bold py-2 rounded-3">View Full Profile</a>
+                                  <a href="{% url 'admin_edit_user' user.id %}" class="btn btn-outline-primary fw-bold py-2 rounded-3">Edit Account Details</a>
+                                  <a href="{% url 'admin_delete_user' user.id %}" class="btn btn-outline-danger fw-bold py-2 rounded-3">Delete This Account</a>
+                                </div>
+                              </div>
+
+                              <div class="modal-footer border-top-0 justify-content-center">
+                                <button type="button" class="btn btn-outline-secondary btn-sm rounded-3 px-4" data-bs-dismiss="modal">Close Menu</button>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </td>
                     </tr>

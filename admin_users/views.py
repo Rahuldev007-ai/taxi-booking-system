@@ -8,10 +8,26 @@ from django.contrib import messages
 def admin_users(request):
     users = User.objects.all()
     total_users = User.objects.count()
+    search_query = request.GET.get('q')
+    
+    if search_query:
+        search_name = User.objects.filter(
+            Q(name__icontains = search_query)
+            | Q(email__icontains = search_query)
+        )
+        total_users = search_name.count()
+        context = {
+            "users":search_name,
+            "total_users":total_users,
+            "search_query":search_query
+        }
+        return render(request, 'admin_pages/users.html',context)
+        
     
     context = {
         "users":users,
-        "total_users":total_users
+        "total_users":total_users,
+        "search_query":search_query
     }
     return render(request, 'admin_pages/users.html',context)
 
