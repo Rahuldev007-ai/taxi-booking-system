@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,include
 from .views import (
     admin_login, 
     admin_register, 
@@ -8,12 +8,7 @@ from .views import (
     admin_verify_otp,
     admin_reset_password,
     admin_drivers,
-    admin_users,
-    admin_bookings,
-    admin_create_user,
-    admin_edit_user,
-    admin_delete_user,
-    admin_user_detail,
+    admin_bookings,   
     )
 
 urlpatterns = [
@@ -28,14 +23,10 @@ urlpatterns = [
     path('verify-otp/', admin_verify_otp, name='admin_verify_otp'),
     path('reset-password/', admin_reset_password, name='admin_reset_password'),
     path('forgot-password/', admin_forgot_password, name='admin_forgot_password'),
-    path('drivers/', admin_drivers, name='admin_drivers'),
-    path('users/', admin_users, name='admin_users'),
-    path('bookings/', admin_bookings, name='admin_bookings'),
     
-    path('users/create/', admin_create_user, name='admin_create_user'),
-    path('users/<int:user_id>/', admin_user_detail, name='admin_user_detail'),
-    path('users/<int:user_id>/edit/', admin_edit_user, name='admin_edit_user'),
-    path('users/<int:user_id>/delete/', admin_delete_user, name='admin_delete_user')    
-]
+    path('drivers/', admin_drivers, name='admin_drivers'),
+    path('bookings/', admin_bookings, name='admin_bookings'),
+    path("",include('admin_users.urls'))
+    ]
 
 
