@@ -1,79 +1,97 @@
 {% extends 'components/base.html' %}
 
-{% block title %}{{ action_title }} | Admin Portal{% endblock %}
+{% block title %}
+  Create user
+{% endblock %}
 
 {% block content %}
-<div class="admin-layout-wrapper">
-
+  <div class="admin-layout-wrapper">
     {% include 'components/sidebar.html' %}
 
-   <main class="admin-main-content">
+    <main class="admin-main-content">
+      <header class="dashboard-header-bar mb-4">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">Menu</button>
 
-        <header class="dashboard-header-bar mb-4">
-            <div class="container-fluid d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-3">
-                    <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
-                        Menu
-                    </button>
-                    <span class="dashboard-brand-title">Edit User</span>
-                </div>
+            <span class="dashboard-brand-title">
+              {% if user_create %}
+                Create User
+              {% else %}
+                Edit User
+              {% endif %}
+            </span>
+          </div>
 
-                <div class="d-flex align-items-center gap-3">
-                    <a href="/admin/users/" class="btn btn-outline-secondary btn-sm rounded-3 px-3 fw-bold">
-                        Back to Users
-                    </a>
-                </div>
-            </div>
-        </header>
-
-        <div class="container-fluid px-3 px-lg-4 pb-5">
-            <div class="row justify-content-center">
-                <div class="col-12 col-md-8 col-lg-6">
-                    <div class="dashboard-card p-4">
-                        <h3 class="dashboard-card-title mb-3">Edit User</h3>
-
-                        <form method="post">
-                            <input type="hidden" name="csrfmiddlewaretoken" value="">
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Full Name</label>
-                                <input type="text" name="name" class="form-control custom-input" placeholder="Enter user's full name" value="John Doe" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Email Address</label>
-                                <input type="email" name="email" class="form-control custom-input" placeholder="Enter email address" value="john.doe@example.com" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Mobile Number</label>
-                                <input type="text" name="mobile" class="form-control custom-input" placeholder="Enter mobile number" value="+91 98765 43210" required>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-bold">Password <span class="text-muted fw-normal">(Leave blank to keep current password)</span></label>
-                                <input type="password" name="password" class="form-control custom-input" placeholder="Enter password">
-                            </div>
-
-                            <div class="mb-4 form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="is_active" id="is_active_check" checked>
-                                <label class="form-check-label fw-bold" for="is_active_check">Active Account Status</label>
-                            </div>
-
-                            <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-custom-primary rounded-3 px-4 fw-bold">
-                                    Save Changes
-                                </button>
-                                <a href="/users/" class="btn btn-outline-secondary rounded-3 px-4">
-                                    Cancel
-                                </a>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+          <div class="d-flex align-items-center gap-3">
+            <a href="{% url 'admin_users' %}" class="btn btn-outline-secondary btn-sm rounded-3 px-3 fw-bold">Back to Users</a>
+          </div>
         </div>
-    </main>
+      </header>
 
-</div>
+      <div class="container-fluid px-3 px-lg-4 pb-5">
+        <div class="row justify-content-center">
+          <div class="col-12 col-md-8 col-lg-6">
+            <div class="dashboard-card p-4">
+              <h3 class="dashboard-card-title mb-3">
+                {% if user_create %}
+                  Creat User
+                {% else %}
+                  Edit User
+                {% endif %}
+
+              </h3>
+              
+              {% if error_message %}
+                <div class="custom-alert-error">{{ error_message }}</div>
+              {% endif %}
+
+              {% if success_message %}
+                <div class="custom-alert-success">{{ success_message }}</div>
+              {% endif %}
+              <form method="post" action="
+              {%if user_create%}
+              {% url 'admin_create_user' %}
+              {%else%}
+              {% url 'admin_edit_user' %}
+              ">
+              
+              {% csrf_token %}
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Full Name</label>
+                  <input type="text" name="name" maxlength="19" minlength="3" class="form-control custom-input" placeholder="Enter user's full name" value="{{ typed_name|default:'' }}" required />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Email Address</label>
+                  <input type="email" name="email" maxlength="30" class="form-control custom-input" placeholder="Enter email address" value="{{ typed_email|default:'' }}" required />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Mobile Number</label>
+                  <input type="text" name="mobile" minlength="10" maxlength="10" class="form-control custom-input" placeholder="Enter mobile number" value="{{ typed_mobile|default:'' }}" required />
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label fw-bold">Password <span class="text-muted fw-normal">{% if user_create == False %}(Leave blank to keep current password){% endif %}</span></label>
+                  <input type="password" name="password" minlength="6" maxlength="30" class="form-control custom-input" placeholder="Enter password" />
+                </div>
+                {% if user_create == False %}
+                  <div class="mb-4 form-check form-switch">
+                    <input class="form-check-input" type="checkbox" name="is_active" id="is_active_check" checked />
+                    <label class="form-check-label fw-bold" for="is_active_check">Active Account Status</label>
+                  </div>
+                {% endif %}
+
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-custom-primary rounded-3 px-4 fw-bold">Save Changes</button>
+                  <a href="/users/" class="btn btn-outline-secondary rounded-3 px-4">Cancel</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
 {% endblock %}

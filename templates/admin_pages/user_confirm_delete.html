@@ -1,6 +1,6 @@
 {% extends 'components/base.html' %}
 
-{% block title %}Confirm Delete User | Admin Portal{% endblock %}
+{% block title %}Confirm Delete User{% endblock %}
 
 {% block content %}
 <div class="admin-layout-wrapper">
@@ -26,7 +26,7 @@
                         </div>
                         <h3 class="dashboard-card-title mb-2">Delete User Account?</h3>
                         <p class="text-muted mb-4">
-                            Are you sure you want to permanently delete user <strong>Rahul</strong> rahulchanpura007@gmail.com ? This action cannot be undone.
+                            Are you sure you want to permanently delete user <strong>{{ user_obj.name }}</strong> ({{ user_obj.email }})? This action cannot be undone.
                         </p>
 
                         <form method="post" class="d-flex justify-content-center gap-3">
