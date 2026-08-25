@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect,get_object_or_404
-from .models import User
+from .models import User,Driver
 from django.db.models import Q
 from django.contrib import messages
 
@@ -167,3 +167,39 @@ def admin_user_detail(request,user_id):
     })
     
 # Driver view 
+def admin_drivers(request):
+    Driver_details = Driver.objects.all()
+    q = request.GET.get('q')
+    total_count = Driver_details.count()
+    
+    if q:
+        Driver_details = Driver.objects.filter(name__icontains = q)
+        total_count = Driver_details.count()
+        
+    context = {
+        "driver":Driver_details,
+        "search_query":q,
+        "total":total_count,
+    }
+    return render(request, 'admin_pages/drivers.html',context)
+
+def admin_driver_detail(request,driver_id):
+    driver_obj = get_object_or_404(Driver,id = driver_id)
+    context = {
+        "driver_obj":driver_obj,
+    }
+    return render(request,"admin_pages/driver_detail.html",context)
+
+def admin_delete_driver(request,driver_id):
+    driver_obj = get_object_or_404(Driver,id = driver_id)
+    if request.method == "POST":
+        driver_obj.delete()
+        messages.success(request,"Delete driver successfully..")
+        return redirect('admin_drivers')
+            
+    context = {
+        "driver_obj":driver_obj,
+    }
+    return render(request,"admin_pages/driver_confirm_delete.html",context)
+    
+ 

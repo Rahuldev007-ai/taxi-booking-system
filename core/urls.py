@@ -7,7 +7,6 @@ from .views import (
     admin_forgot_password,
     admin_verify_otp,
     admin_reset_password,
-    admin_drivers,
     admin_bookings,   
     )
 
@@ -24,7 +23,7 @@ urlpatterns = [
     path('reset-password/', admin_reset_password, name='admin_reset_password'),
     path('forgot-password/', admin_forgot_password, name='admin_forgot_password'),
     
-    path('drivers/', admin_drivers, name='admin_drivers'),
+    
     path('bookings/', admin_bookings, name='admin_bookings'),
     path("",include('admin_users.urls'))
     ]

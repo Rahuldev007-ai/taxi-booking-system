@@ -1,0 +1,146 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Driver Profile - {{ driver_obj.name }} {% endblock %}
+
+{% block content %}
+<div class="admin-layout-wrapper">
+
+    {% include 'components/sidebar.html' %}
+
+    <main class="admin-main-content">
+
+        <header class="dashboard-header-bar mb-4 sticky-top">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+                        Menu
+                    </button>
+                    <span class="dashboard-brand-title">Driver Detailed Profile</span>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <a href="{% url 'admin_drivers' %}" class="btn btn-outline-secondary btn-sm rounded-3 px-3 fw-bold">
+                        ← Back to Drivers Directory
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-lg-4 pb-5">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-10">
+                    
+                    <div class="dashboard-card p-4 mb-4">
+                        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-bottom pb-3 mb-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="https://ui-avatars.com/api/?name={{ driver_obj.name|urlencode }}&background=7F1D1D&color=FFFFFF&bold=true&size=128" alt="{{ driver_obj.name }}" class="rounded-circle border border-3 border-warning" style="width: 76px; height: 76px; object-fit: cover;">
+                                <div>
+                                    <h3 class="dashboard-card-title m-0">{{ driver_obj.name }}</h3>
+                                    <span class="text-muted" style="font-size: 0.9rem;">Driver ID #{{ driver_obj.id }} &bull; License: <strong>{{ driver_obj.license_number }}</strong></span>
+                                </div>
+                            </div>
+                            <div>
+                                {% if driver_obj.status == 'AVAILABLE' %}
+                                <span class="badge-status badge-status-available fs-6 px-3 py-2">Status: Available</span>
+                                {% elif driver_obj.status == 'ON_TRIP' %}
+                                <span class="badge-status badge-status-ontrip fs-6 px-3 py-2">Status: On Trip</span>
+                                {% else %}
+                                <span class="badge-status badge-status-offline fs-6 px-3 py-2">Status: Offline</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-12 col-sm-6 col-md-4">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <div class="text-muted small fw-bold mb-1">FULL NAME</div>
+                                    <div class="fw-bold fs-6 text-dark">{{ driver_obj.name }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-sm-6 col-md-4">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <div class="text-muted small fw-bold mb-1">LICENSE NUMBER</div>
+                                    <div class="fw-bold fs-6 text-dark">{{ driver_obj.license_number }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-sm-6 col-md-4">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <div class="text-muted small fw-bold mb-1">MOBILE NUMBER</div>
+                                    <div class="fw-bold fs-6 text-dark">{{ driver_obj.mobile }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-sm-6 col-md-4">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <div class="text-muted small fw-bold mb-1">EMAIL ADDRESS</div>
+                                    <div class="fw-bold fs-6 text-dark">{{ driver_obj.email }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-sm-6 col-md-4">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <div class="text-muted small fw-bold mb-1">ASSIGNED VEHICLE</div>
+                                    <div class="fw-bold fs-6 text-dark">{{ driver_obj.vehicle_name|default:"Toyota Camry Hybrid" }}</div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-sm-6 col-md-4">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <div class="text-muted small fw-bold mb-1">JOINED DATE</div>
+                                    <div class="fw-bold fs-6 text-dark">{{ driver_obj.created_at|date:"F d, Y - h:i A" }}</div>
+                                </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2 border-top pt-3">
+                            
+                            <a href="{% url 'admin_delete_driver' driver_obj.id %}" class="btn btn-outline-danger rounded-3 px-4 ms-auto">
+                                Delete Driver
+                            </a>
+                        </div>
+
+                    </div>
+
+                    <div class="dashboard-card p-4">
+                        <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+                            <div>
+                                <h4 class="dashboard-card-title m-0">Driver Booking History</h4>
+                                <p class="text-muted small mb-0">Past rides and dispatch assignments for {{ driver_obj.name }}</p>
+                            </div>
+                            <span class="badge bg-secondary px-3 py-2 fw-bold">Total Rides: 0</span>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-custom-dashboard align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Booking ID</th>
+                                        <th>Passenger</th>
+                                        <th>Pickup Location</th>
+                                        <th>Dropoff Location</th>
+                                        <th>Fare Amount</th>
+                                        <th>Ride Status</th>
+                                        <th>Date & Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="7" class="text-center py-5 text-muted">
+                                            <div class="fs-4 mb-2">🚖</div>
+                                            <div class="fw-bold text-dark mb-1">No Booking History Records Found</div>
+                                            <div class="small">This driver has not been assigned any taxi bookings yet.</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+</div>
+{% endblock %}

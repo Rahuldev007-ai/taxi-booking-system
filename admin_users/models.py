@@ -27,10 +27,17 @@ class User(models.Model):
         return f"{self.name} ({self.email})"
     
 class Driver(models.Model):
+    STATUS_CHOICES = [
+            ('AVAILABLE', 'Available'),
+            ('ON_TRIP', 'On Trip'),
+            ('OFFLINE', 'Offline'),
+        ]
     name = models.CharField(max_length=150)
     email = models.EmailField(max_length=254, unique=True)
     license_number = models.CharField(max_length=50, unique=True)
     mobile = models.CharField(max_length=20, unique=True)
+    vehicle_name = models.CharField(max_length=100, blank=True, null=True, default="Toyota Camry Hybrid")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='AVAILABLE')    
     password = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

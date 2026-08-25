@@ -1,0 +1,48 @@
+{% extends 'components/base.html' %}
+
+{% block title %}Confirm Delete Driver | Admin Portal{% endblock %}
+
+{% block content %}
+<div class="admin-layout-wrapper">
+
+    {% include 'components/sidebar.html' %}
+
+    <main class="admin-main-content">
+
+        <header class="dashboard-header-bar mb-4">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <span class="dashboard-brand-title">Confirm Delete Driver</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-lg-4 pb-5">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6">
+                    <div class="dashboard-card p-4 text-center">
+                        <div class="mb-3 text-danger fs-1">
+                            ⚠️
+                        </div>
+                        <h3 class="dashboard-card-title mb-2">Delete Driver Account?</h3>
+                        <p class="text-muted mb-4">
+                            Are you sure you want to permanently delete driver <strong>{{ driver_obj.name }}</strong> (License: {{ driver_obj.license_number }}, Mobile: {{ driver_obj.mobile }})? This action cannot be undone.
+                        </p>
+
+                        <form method="post" class="d-flex justify-content-center gap-3">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger rounded-3 px-4 fw-bold">
+                                Yes, Delete Driver Account
+                            </button>
+                            <a href="{% url 'admin_drivers' %}" class="btn btn-outline-secondary rounded-3 px-4">
+                                Cancel
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</div>
+{% endblock %}
