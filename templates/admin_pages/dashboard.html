@@ -8,6 +8,25 @@
   <div class="admin-layout-wrapper">
     {% include 'components/sidebar.html' %}
 
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="toast align-items-center text-white {% if message.tags == 'error' %} bg-danger
+              {% else %}  
+              bg-{{ message.tags }}
+              {% endif %} border-0 custom-django-toast"
+              role="alert"
+              aria-live="assertive"
+              aria-atomic="true">
+              <div class="d-flex">
+                <div class="toast-body fw-bold">{{ message }}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
     <main class="admin-main-content">
       <header class="dashboard-header-bar mb-4">
         <div class="container-fluid d-flex align-items-center justify-content-between">
@@ -22,7 +41,7 @@
 
           <div class="d-flex align-items-center gap-3">
             <div class="d-flex align-items-center gap-2">
-              <img src="https://ui-avatars.com/api/?name={{ admin_user.full_name|urlencode|default:'Administrator' }}&background=E8D8C3&color=231212&bold=true" alt="Admin Profile Image" class="rounded-circle border border-2 border-warning" style="width: 38px; height: 38px; object-fit: cover;" />
+              <img src="https://ui-avatars.com/api/?name={{ request.session.admin_full_name|default:'Administrator' }}&background=E8D8C3&color=231212&bold=true" alt="Admin Profile Image" class="rounded-circle border border-2 border-warning" style="width: 38px; height: 38px; object-fit: cover;" />
               <div class="text-end d-none d-md-block">
                 <div class="fw-bold" style="font-size: 0.9rem; color: var(--main-text-dark-brown);">{{ admin_user.full_name|default:request.session.admin_full_name|default:'System Administrator' }}</div>
               </div>
@@ -33,10 +52,9 @@
       </header>
 
       <div class="container-fluid px-3 px-lg-4 pb-5">
-        <!-- Admin Welcome Banner -->
         <div class="dashboard-card bg-white mb-4 p-4 rounded-4 shadow-sm border border-0">
           <div class="d-flex align-items-center gap-3">
-            <img src="https://ui-avatars.com/api/?name={{ admin_user.full_name|urlencode|default:'Administrator' }}&background=7F1D1D&color=FFFFFF&bold=true&size=128" alt="Profile Large" class="rounded-circle shadow-sm" style="width: 64px; height: 64px; object-fit: cover;" />
+            <img src="https://ui-avatars.com/api/?name={{ request.session.admin_full_name|default:'Administrator' }}&background=7F1D1D&color=FFFFFF&bold=true&size=128" alt="Profile Large" class="rounded-circle shadow-sm" style="width: 64px; height: 64px; object-fit: cover;" />
             <div>
               <h2 class="h4 fw-bold mb-1" style="color: var(--main-text-dark-brown);">Welcome back, {{ admin_user.full_name|default:request.session.admin_full_name|default:'Administrator' }}!</h2>
               <p class="text-muted mb-0" style="font-size: 0.875rem;">
@@ -110,4 +128,16 @@
       </div>
     </main>
   </div>
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var toastElList = [].slice.call(document.querySelectorAll('.custom-django-toast'))
+    var toastList = toastElList.map(function (toastEl) {
+      var toast = new bootstrap.Toast(toastEl, {
+        delay: 3000 
+      });
+      toast.show();
+    });
+  });
+</script>
+
 {% endblock %}

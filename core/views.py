@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import AdminUser
 import random
+from django.contrib import messages
 
 def admin_register(request):
     if request.method == 'POST':
@@ -87,6 +88,7 @@ def admin_login(request):
             request.session['admin_full_name'] = admin_user.full_name
             request.session['admin_role'] = admin_user.role
 
+            messages.success(request,"login successfully..")
             return redirect('admin_dashboard')
         else:
             return render(request, 'admin_pages/login.html', {

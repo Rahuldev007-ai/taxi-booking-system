@@ -31,25 +31,13 @@
           </div>
         </div>
       </header>
+      
       <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
         {% if messages %}
           {% for message in messages %}
-            <div class="toast align-items-center text-white {% if message.tags == 'error' %}
-                
-                
-                
-                
-                bg-danger
-
-
-
-
-              {% else %}
-                
-                
-                
-                
-                bg-{{ message.tags }}
+            <div class="toast align-items-center text-white {% if message.tags == 'error' %} bg-danger
+              {% else %}  
+              bg-{{ message.tags }}
               {% endif %} border-0 custom-django-toast"
               role="alert"
               aria-live="assertive"

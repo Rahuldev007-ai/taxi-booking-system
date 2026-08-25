@@ -33,36 +33,56 @@
       </header>
 
       <div class="container-fluid px-3 px-lg-4 pb-5">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+          <form method="get" action="{% url 'admin_drivers' %}" class="d-flex gap-2 flex-grow-1 max-w-md">
+            <input type="text" name="q" value="{{ search_query }}" class="form-control custom-input" placeholder="Search driver name, license, mobile or email..." />
+            <button type="submit" class="btn btn-dark px-3 fw-bold">Search</button>
+            {% if search_query %}
+              <a href="{% url 'admin_drivers' %}" class="btn btn-outline-secondary px-3">Clear</a>
+            {% endif %}
+          </form>
+        </div>
+
         <div class="dashboard-card mb-4">
           <div class="dashboard-card-header d-flex align-items-center justify-content-between">
-            <div>
-              <h2 class="dashboard-card-title">Fleet Drivers</h2>
-            </div>
-            <button class="btn btn-custom-primary w-25 rounded-3 fw-bold">+ Add New Driver</button>
+            
+              <h2 class="dashboard-card-title">Fleet Drivers </h2>
+              <h4 class="dashboard-card-title  justify-content-end"> (Total: {{ total_drivers|default:"0" }})</h4>
           </div>
           <div class="dashboard-card-body p-0">
             <div class="table-responsive">
               <table class="table table-custom-dashboard align-middle mb-0">
                 <thead>
                   <tr>
+                    <th># ID</th>
                     <th>Driver Name</th>
-                    <th>Vehicle & License Plate</th>
+                    <th>Vehicle & License Number</th>
                     <th>Phone Number</th>
-                    <th>Rating</th>
+                    <th>Email Address</th>
                     <th>Status</th>
+                    <th class="text-end">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td class="fw-bold">Marcus Vance</td>
-                    <td>
-                      <div class="fw-semibold">Toyota Camry Hybrid</div>
-                      <div class="text-muted" style="font-size: 0.75rem;">TX-9012</div>
+                    <td class="fw-bold">1</td>
+                    <td class="fw-bold">
+                      <a href="" class="text-dark text-decoration-none hover-primary">Rahul</a>
                     </td>
-                    <td>+91 98552-34567</td>
-                    <td>4.92</td>
                     <td>
-                      <span class="badge-status badge-status-available">Available</span>
+                      <div class="fw-semibold">Volvo</div>
+                      <div class="text-muted small">License : TC-90994</div>
+                    </td>
+                    <td>+91 9856235678</td>
+                    <td>jay@gmail.com</td>
+                    <td>
+                        <span class="badge-status badge-status-available">Available</span>
+                    </td>
+                    <td class="text-end">
+                      <div class="btn-group btn-group-sm">
+                        <a href="" class="btn btn-outline-info btn-sm rounded-2 me-1" title="View Profile">View</a>
+                        <a href="" class="btn btn-outline-danger btn-sm rounded-2" title="Delete Driver">Delete</a>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
