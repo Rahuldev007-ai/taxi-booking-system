@@ -1,7 +1,7 @@
 {% extends 'components/base.html' %}
 
 {% block title %}
-  Taxi Booking System | Fleet Control Panel
+  Control Panel
 {% endblock %}
 
 {% block content %}
@@ -9,23 +9,32 @@
     {% include 'components/sidebar.html' %}
 
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
-        {% if messages %}
-          {% for message in messages %}
-            <div class="toast align-items-center text-white {% if message.tags == 'error' %} bg-danger
-              {% else %}  
+      {% if messages %}
+        {% for message in messages %}
+          <div class="toast align-items-center text-white {% if message.tags == 'error' %}
+              
+              
+               bg-danger
+
+
+
+            {% else %}
+              
+              
+                
               bg-{{ message.tags }}
-              {% endif %} border-0 custom-django-toast"
-              role="alert"
-              aria-live="assertive"
-              aria-atomic="true">
-              <div class="d-flex">
-                <div class="toast-body fw-bold">{{ message }}</div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-              </div>
+            {% endif %} border-0 custom-django-toast"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true">
+            <div class="d-flex">
+              <div class="toast-body fw-bold">{{ message }}</div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
-          {% endfor %}
-        {% endif %}
-      </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
 
     <main class="admin-main-content">
       <header class="dashboard-header-bar mb-4">
@@ -53,13 +62,32 @@
 
       <div class="container-fluid px-3 px-lg-4 pb-5">
         <div class="dashboard-card bg-white mb-4 p-4 rounded-4 shadow-sm border border-0">
-          <div class="d-flex align-items-center gap-3">
-            <img src="https://ui-avatars.com/api/?name={{ request.session.admin_full_name|default:'Administrator' }}&background=7F1D1D&color=FFFFFF&bold=true&size=128" alt="Profile Large" class="rounded-circle shadow-sm" style="width: 64px; height: 64px; object-fit: cover;" />
-            <div>
-              <h2 class="h4 fw-bold mb-1" style="color: var(--main-text-dark-brown);">Welcome back, {{ admin_user.full_name|default:request.session.admin_full_name|default:'Administrator' }}!</h2>
-              <p class="text-muted mb-0" style="font-size: 0.875rem;">
-                Role: <strong>{{ admin_user.get_role_display|default:request.session.admin_role|default:'Fleet Dispatcher' }}</strong>
-              </p>
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+              <img src="https://ui-avatars.com/api/?name={{ admin_user.full_name|default:request.session.admin_full_name|default:'Administrator' }}&background=7F1D1D&color=FFFFFF&bold=true&size=128" alt="Profile Large" class="rounded-circle shadow-sm" style="width: 64px; height: 64px; object-fit: cover;" />
+              <div>
+                <h2 class="h4 fw-bold mb-1" style="color: var(--main-text-dark-brown);"><span id="timeGreeting">Welcome back</span>, {{ admin_user.full_name|default:request.session.admin_full_name|default:'Administrator' }}!</h2>
+                <p class="text-muted mb-0" style="font-size: 0.875rem;">
+                  Role: <strong>{{ admin_user.get_role_display|default:request.session.admin_role|default:'Fleet Dispatcher' }}</strong>
+                  <span class="text-muted mx-1">&bull;</span>
+                  Last login: <strong>{{ admin_user.last_login|date:'d M, h:i A'|default:'—' }}</strong>
+                </p>
+              </div>
+            </div>
+
+            <div class="d-flex gap-4 text-center">
+              <div>
+                <div class="fw-bold" style="font-size: 1.25rem; color: var(--main-text-dark-brown);">{{ drivers_on_trip|default:'0' }}</div>
+                <div class="text-muted" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: .04em;">On Trip</div>
+              </div>
+              <div>
+                <div class="fw-bold" style="font-size: 1.25rem; color: var(--main-text-dark-brown);">{{ pending_bookings|default:'0' }}</div>
+                <div class="text-muted" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: .04em;">Pending</div>
+              </div>
+              <div>
+                <div class="fw-bold text-success" style="font-size: 1.25rem;">{{ drivers_available|default:'0' }}</div>
+                <div class="text-muted" style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: .04em;">Available</div>
+              </div>
             </div>
           </div>
         </div>
@@ -69,7 +97,7 @@
             <div class="kpi-card">
               <div>
                 <div class="kpi-label">Active Drivers</div>
-                <div class="kpi-value">12</div>
+                <div class="kpi-value">{{ total_drivers|default:'0' }}</div>
               </div>
             </div>
           </div>
@@ -78,7 +106,7 @@
             <div class="kpi-card">
               <div>
                 <div class="kpi-label">Total Users</div>
-                <div class="kpi-value">148</div>
+                <div class="kpi-value">{{ total_users|default:'0' }}</div>
               </div>
             </div>
           </div>
@@ -87,7 +115,7 @@
             <div class="kpi-card">
               <div>
                 <div class="kpi-label">Total Bookings</div>
-                <div class="kpi-value text-primary">48</div>
+                <div class="kpi-value">{{ total_booking|default:'0' }}</div>
               </div>
             </div>
           </div>
@@ -96,8 +124,79 @@
             <div class="kpi-card">
               <div>
                 <div class="kpi-label">Est. Today's Revenue</div>
-                <div class="kpi-value text-success">1,340.50</div>
+                <div class="kpi-value">₹ {{ total_revenu|default:'0' }}</div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-card mb-4">
+          <div class="dashboard-card-header d-flex align-items-center justify-content-between">
+            <div>
+              <h2 class="dashboard-card-title">Registered Fleet Drivers (Total: {{ total_drivers }})</h2>
+            </div>
+            <a href="{% url 'admin_drivers' %}" class="btn btn-outline-dark btn-sm rounded-3 fw-bold">View All Drivers Directory &rarr;</a>
+          </div>
+          <div class="dashboard-card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-custom-dashboard align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th># ID</th>
+                    <th>Driver Name</th>
+                    <th>Vehicle & License Number</th>
+                    <th>Phone Number</th>
+                    <th>Email Address</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for d in drivers %}
+                    <tr>
+                      <td class="fw-bold">#{{ d.id }}</td>
+                      <td class="fw-bold">
+                        <a href="{% url 'admin_driver_detail' d.id %}" class="text-dark text-decoration-none hover-primary">{{ d.name }}</a>
+                      </td>
+                      <td>
+                        <div class="fw-semibold">{{ d.vehicle_name|default:'Toyota Camry Hybrid' }}</div>
+                        <div class="text-muted small">License: {{ d.license_number }}</div>
+                      </td>
+                      <td>{{ d.mobile }}</td>
+                      <td>{{ d.email }}</td>
+                      <td>
+                        {% if d.status == 'AVAILABLE' %}
+                          <span class="badge-status badge-status-available">Available</span>
+                        {% elif d.status == 'ON_TRIP' %}
+                          <span class="badge-status badge-status-ontrip">On Trip</span>
+                        {% else %}
+                          <span class="badge-status badge-status-offline">Offline</span>
+                        {% endif %}
+                      </td>
+                      <td class="text-end">
+                        <div class="btn-group btn-group-sm">
+                          <a href="{% url 'admin_driver_detail' d.id %}" class="btn btn-outline-info btn-sm rounded-2 me-1" title="View Profile">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                              <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                              <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                            </svg>
+                          </a>
+                          <a href="{% url 'admin_delete_driver' d.id %}" class="btn btn-outline-danger btn-sm rounded-2" title="Delete Driver">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-x" viewBox="0 0 16 16">
+                              <path d="M6.854 7.146a.5.5 0 1 0-.708.708L7.293 9l-1.147 1.146a.5.5 0 0 0 .708.708L8 9.707l1.146 1.147a.5.5 0 0 0 .708-.708L8.707 9l1.147-1.146a.5.5 0 0 0-.708-.708L8 8.293z" />
+                              <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z" />
+                            </svg>
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="7" class="text-center py-4 text-muted">No fleet drivers registered in system.</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -128,16 +227,4 @@
       </div>
     </main>
   </div>
-  <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var toastElList = [].slice.call(document.querySelectorAll('.custom-django-toast'))
-    var toastList = toastElList.map(function (toastEl) {
-      var toast = new bootstrap.Toast(toastEl, {
-        delay: 3000 
-      });
-      toast.show();
-    });
-  });
-</script>
-
 {% endblock %}

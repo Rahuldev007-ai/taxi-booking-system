@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import AdminUser
 import random
+from admin_users.models import Driver
 from django.contrib import messages
 
 def admin_register(request):
@@ -100,7 +101,15 @@ def admin_login(request):
 
 
 def admin_dashboard(request):
-    return render(request,'admin_pages/dashboard.html')
+    drivers = Driver.objects.all()
+    total_driver = drivers.count()
+    total_users = AdminUser.objects.count()
+    context = {
+        "drivers":drivers,
+        "total_users":total_users,
+        "total_drivers":total_driver
+    }
+    return render(request,'admin_pages/dashboard.html',context)
 
 
 def admin_logout(request):

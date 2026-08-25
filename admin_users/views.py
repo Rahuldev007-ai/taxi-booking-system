@@ -166,7 +166,6 @@ def admin_user_detail(request,user_id):
         'user_obj': user_obj
     })
     
-# Driver view 
 def admin_drivers(request):
     Driver_details = Driver.objects.all()
     q = request.GET.get('q')
