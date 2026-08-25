@@ -173,7 +173,11 @@ def admin_drivers(request):
     total_count = Driver_details.count()
     
     if q:
-        Driver_details = Driver.objects.filter(name__icontains = q)
+        Driver_details = Driver.objects.filter(
+            Q(name__icontains = q) |
+            Q(email__icontains=q) |
+            Q(mobile__icontains=q) |
+            Q(license_number__icontains=q))
         total_count = Driver_details.count()
         
     context = {
