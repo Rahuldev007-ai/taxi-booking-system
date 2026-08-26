@@ -1,0 +1,80 @@
+{% extends 'components/base.html' %}
+
+{% block title %}User Registration{% endblock %}
+
+{% block body_class %}login-page-body{% endblock %}
+
+{% block content %}
+<div class="register-wrapper">
+    <div class="brand-header-compact">
+        <h1 class="brand-title-compact">CabZy Taxi Booking </h1>
+    </div>
+
+    <div class="login-card">
+        <div class="card-top-accent"></div>
+        <div class="card-body-compact">
+            <div class="text-center">
+                <span class="badge-access-compact">User Account</span>
+            </div>
+
+            {% if error_message %}
+            <div class="alert alert-danger py-2 px-3 mb-3 rounded-3" role="alert" style="font-size: 0.875rem;">
+                {{ error_message }}
+            </div>
+            {% endif %}
+
+            {% if success_message %}
+            <div class="alert alert-success py-2 px-3 mb-3 rounded-3" role="alert" style="font-size: 0.875rem;">
+                {{ success_message }}
+            </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'user-register' %}">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label class="form-label-compact">Full Name</label>
+                    <input type="text" name="name" class="form-control custom-input-compact" placeholder="Enter your full name" value="{{ form_data.name|default:'' }}" required autofocus>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label-compact">Email Address</label>
+                        <input type="email" name="email" class="form-control custom-input-compact" placeholder="user@example.com" value="{{ form_data.email|default:'' }}" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label-compact">Phone Number</label>
+                        <input type="text" name="phone" class="form-control custom-input-compact" placeholder="+91 9876543210" value="{{ form_data.phone|default:'' }}" required>
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label-compact">Password</label>
+                        <input type="password" name="password" class="form-control custom-input-compact" placeholder="Min 6 characters" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="form-label-compact">Confirm Password</label>
+                        <input type="password" name="confirm_password" class="form-control custom-input-compact" placeholder="Re-enter password" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-custom-primary btn-compact w-100 py-2 fw-bold">
+                    Create User Account
+                </button>
+            </form>
+
+            <div class="text-center mt-3">
+                <span style="font-size: 0.8rem; color: var(--secondary-text-muted-brown);">
+                    Are you a already register? 
+                    <a href="{% url 'admin_login' %}" class="auth-link-text text-decoration-none fw-bold">Sign In</a>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note-compact text-center mt-3" style="font-size: 0.75rem; color: var(--secondary-text-muted-brown);">
+        Cabzy Taxi Booking   &copy; 2026 &bull; All Rights Reserved
+    </div>
+</div>
+{% endblock %}
