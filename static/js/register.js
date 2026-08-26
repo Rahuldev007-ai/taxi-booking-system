@@ -9,8 +9,8 @@ var confirm_passwordInput = document.getElementById('confirm_password');
 var errorMsg = document.getElementById('errorMsg')
 var errorMsgEmail = document.getElementById('errorMsgEmail')
 var errorMsgPhone = document.getElementById('errorMsgPhone')
-var errorMsgCpws =  document.getElementById('errorMsgCpws')
-var errorMsgpws =  document.getElementById('errorMsgpws')
+var errorMsgCpws = document.getElementById('errorMsgCpws')
+var errorMsgpws = document.getElementById('errorMsgpws')
 
 function validateName() {
 
@@ -27,10 +27,10 @@ function validateName() {
     return true;
 }
 
-function validateEmail(){
+function validateEmail() {
     const email = emailInput.value.trim()
     const emailRegex = /^[A-Za-z][A-Za-z0-9._-]*@[A-Za-z0-9-]+(\.[A-Za-z]{2,})+$/;
-    if (!emailRegex.test(email)){
+    if (!emailRegex.test(email)) {
         emailInput.classList.add('invalid');
         errorMsgEmail.innerText = "Enter valid email address."
         return false
@@ -40,10 +40,10 @@ function validateEmail(){
     return true;
 }
 
-function validatePhone(){
+function validatePhone() {
     const phone = phoneInput.value.trim()
     const phoneRegex = /^(?:\+91[\s-]?)?[6-9]\d{9}$/;
-    if (!phoneRegex.test(phone)){
+    if (!phoneRegex.test(phone)) {
         errorMsgPhone.innerText = "Please enter valid phone number"
         phoneInput.classList.add("invalid");
         return false;
@@ -53,9 +53,9 @@ function validatePhone(){
     return true;
 }
 
-function validatePws(){
-    const password  = passwordInput.value.trim()
-    if (password.length < 6){
+function validatePws() {
+    const password = passwordInput.value.trim()
+    if (password.length < 6) {
         errorMsgpws.innerText = "Password shoud be 6 digit or more"
         passwordInput.classList.add("invalid")
         return false
@@ -65,10 +65,10 @@ function validatePws(){
     return true
 }
 
-function validateCpws(){
-    const password  = passwordInput.value.trim()
-    const cpassword  = confirm_passwordInput.value.trim()
-    if (password != cpassword){
+function validateCpws() {
+    const password = passwordInput.value.trim()
+    const cpassword = confirm_passwordInput.value.trim()
+    if (password != cpassword) {
         errorMsgCpws.innerText = "Please enter same password"
         confirm_passwordInput.classList.add("invalid")
         return false
@@ -119,11 +119,13 @@ user_register.addEventListener("submit", function (event) {
         alert("Please correct the invalid fields.");
     }
 
-    const loader = document.getElementById('loader');
-    const submitBtn = document.getElementById('submitBtn');
-    loader.classList.remove("d-none");
+        const loader = document.getElementById('loader');
+        const submitBtn = document.getElementById('submitBtn');
+        const form_body = document.getElementById('formBody');
+        loader.classList.remove("d-none");
+        form_body.classList.add('d-none');
 
-    submitBtn.disabled  = true
-    submitBtn.innerText = "Create account...";
+        submitBtn.disabled = true
+        submitBtn.innerText = "Create account...";
 
 });
