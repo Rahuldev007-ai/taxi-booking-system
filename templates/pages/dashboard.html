@@ -1,1 +1,180 @@
-<h1>Login success</h1>
+{% extends 'components/base.html' %}
+{% load static %}
+{% block title %}
+  User Dashboard | CabZy Taxi Booking
+{% endblock %}
+
+{% block body_class %}
+  dashboard-page-body
+{% endblock %}
+
+{% block content %}
+  {% include 'components/navbar.html' %}
+
+  <main class="container my-4 my-md-5">
+    <section class="dashboard-welcome-card mb-4 p-4 p-md-5 rounded-4 position-relative overflow-hidden anim-fade-up">
+      <div class="row align-items-center position-relative z-index-2">
+        <div class="col-lg-8">
+          <div class="brand-badge-pill mb-3">
+            <span class="pulse-dot me-2"></span> System Online &bull; Live Fleet Active
+          </div>
+          <h1 class="fw-bold display-6 text-white mb-2 title-glow">Where are you heading today?</h1>
+          <p class="text-white-50 lead fs-6 mb-4">Select your destination, choose your comfort level, and track verified drivers in real time.</p>
+
+          <a href="#bookingSection" class="btn btn-accent-gold-interactive px-4 py-3 rounded-pill fw-bold shadow"><i class="bi bi-geo-alt-fill me-2"></i> Book Instant Ride</a>
+        </div>
+
+        <div class="col-lg-4 text-center d-none d-lg-block">
+          <div class="road-animation-stage">
+            <div class="moving-road">
+              <div class="road-stripe"></div>
+            </div>
+            <div class="standing-car-card">
+              <i class="bi bi-taxi-front-fill text-gold fs-1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ambient-glow-circle-1"></div>
+      <div class="ambient-glow-circle-2"></div>
+    </section>
+
+    <section class="row g-3 g-md-4 mb-5">
+      <div class="col-12 col-sm-6 col-lg-4 anim-fade-up anim-delay-1">
+        <div class="stat-card p-4 bg-white rounded-4 shadow-sm border border-light-beige">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted-brown d-block small fw-bold text-uppercase">Total Completed Trips</span>
+              <h2 class="fw-bold text-dark-brown mb-0 mt-1">18</h2>
+            </div>
+            <div class="stat-icon-wrapper icon-bounce">
+              <i class="bi bi-geo-alt-fill fs-3 text-primary-red"></i>
+            </div>
+          </div>
+          <div class="stat-footer mt-3 pt-2 border-top border-light-beige d-flex align-items-center text-success small fw-semibold">
+            <i class="bi bi-arrow-up-right me-1"></i> +2 rides this week
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-4 anim-fade-up anim-delay-2">
+        <div class="stat-card p-4 bg-white rounded-4 shadow-sm border border-light-beige">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted-brown d-block small fw-bold text-uppercase">CabZy Wallet Balance</span>
+              <h2 class="fw-bold text-dark-brown mb-0 mt-1">&#8377;1,450</h2>
+            </div>
+            <div class="stat-icon-wrapper icon-pulse">
+              <i class="bi bi-wallet2 fs-3 text-primary-red"></i>
+            </div>
+          </div>
+          <div class="stat-footer mt-3 pt-2 border-top border-light-beige d-flex align-items-center justify-content-between small">
+            <span class="text-muted-brown">Auto-pay Active</span>
+            <a href="#" class="text-primary-red fw-bold text-decoration-none">Add Cash</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-4 anim-fade-up anim-delay-3">
+        <div class="stat-card p-4 bg-white rounded-4 shadow-sm border border-light-beige">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <span class="text-muted-brown d-block small fw-bold text-uppercase">Rider Rating</span>
+              <h2 class="fw-bold text-dark-brown mb-0 mt-1">4.92 <span class="fs-6 text-muted">/ 5.0</span></h2>
+            </div>
+            <div class="stat-icon-wrapper">
+              <i class="bi bi-star-fill fs-3 text-gold"></i>
+            </div>
+          </div>
+          <div class="stat-footer mt-3 pt-2 border-top border-light-beige d-flex align-items-center text-muted-brown small">
+            <i class="bi bi-patch-check-fill text-gold me-1"></i> Top Rated Passenger
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="bookingSection" class="row g-4 anim-fade-up anim-delay-4">
+      <div class="col-lg-8">
+        <div class="card-interactive-container bg-white p-4 p-md-5 rounded-4 shadow-sm border border-light-beige">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold text-dark-brown mb-0"><i class="bi bi-car-front-fill me-2 text-primary-red"></i> Book Your Cab</h4>
+            <span class="badge bg-cream-soft text-primary-red border border-light-beige px-3 py-2 rounded-pill fw-bold small"><i class="bi bi-shield-lock-fill me-1"></i> Safe & Sanitized</span>
+          </div>
+
+          <form>
+            <div class="mb-3">
+              <label class="form-label-custom">Pickup Location</label>
+              <div class="input-group-custom">
+                <span class="input-icon"><i class="bi bi-record-circle text-primary-red"></i></span>
+                <input type="text" class="form-control custom-input-modern" placeholder="Enter pickup point (e.g. Airport, Home, Office)" />
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label class="form-label-custom">Destination</label>
+              <div class="input-group-custom">
+                <span class="input-icon"><i class="bi bi-geo-alt-fill text-gold"></i></span>
+                <input type="text" class="form-control custom-input-modern" placeholder="Enter drop destination" />
+              </div>
+            </div>
+
+            <label class="form-label-custom mb-2">Select Vehicle Type</label>
+            <div class="row g-3 mb-4">
+              <div class="col-4">
+                <input type="radio" class="btn-check" name="vehicleOption" id="mini" checked />
+                <label class="vehicle-choice-card w-100 text-center p-3 rounded-3" for="mini">
+                  <i class="bi bi-car-front fs-2 d-block mb-1 text-primary-red"></i>
+                  <span class="fw-bold d-block text-dark-brown">Mini</span>
+                  <small class="text-muted-brown d-block">Quick & Pocket</small>
+                </label>
+              </div>
+              <div class="col-4">
+                <input type="radio" class="btn-check" name="vehicleOption" id="sedan" />
+                <label class="vehicle-choice-card w-100 text-center p-3 rounded-3" for="sedan">
+                  <i class="bi bi-car-front-fill fs-2 d-block mb-1 text-primary-red"></i>
+                  <span class="fw-bold d-block text-dark-brown">Sedan</span>
+                  <small class="text-muted-brown d-block">Comfort Rides</small>
+                </label>
+              </div>
+              <div class="col-4">
+                <input type="radio" class="btn-check" name="vehicleOption" id="suv" />
+                <label class="vehicle-choice-card w-100 text-center p-3 rounded-3" for="suv">
+                  <i class="bi bi-truck fs-2 d-block mb-1 text-primary-red"></i>
+                  <span class="fw-bold d-block text-dark-brown">SUV</span>
+                  <small class="text-muted-brown d-block">Spacious Group</small>
+                </label>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-primary-dark-red w-100 py-3 rounded-3 fw-bold btn-shimmer">
+              <span>Search Nearby Drivers</span>
+              <i class="bi bi-arrow-right-short fs-4 align-middle ms-1"></i>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="promo-interactive-card bg-white p-4 rounded-4 shadow-sm border border-light-beige h-100 d-flex flex-column justify-content-between">
+          <div>
+            <span class="badge-gold-pill mb-3"><i class="bi bi-ticket-perforated-fill me-1"></i> Exclusive Offer</span>
+            <h5 class="fw-bold text-dark-brown">Flat 20% Off City Rides</h5>
+            <p class="text-muted-brown small">
+              Apply voucher code <span class="text-primary-red fw-bold">CABZY2026</span> to redeem discount instantly on your next trip.
+            </p>
+          </div>
+
+          <div class="promo-banner-badge text-center p-3 rounded-3 mt-3">
+            <i class="bi bi-shield-check display-4 text-gold mb-2 d-block"></i>
+            <span class="fw-bold text-dark-brown d-block">24/7 Verified Drivers</span>
+            <small class="text-muted-brown">SOS safety monitoring enabled on all trips</small>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Include Custom Footer -->
+  {% include 'components/footer.html' %}
+{% endblock %}
