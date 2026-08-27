@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from admin_users.models import User
 from django.db.models import Q
-# Create your views here.
+
 def user_register(request):
     if request.method == "POST":
         name = request. POST.get('name').strip()
@@ -62,3 +62,6 @@ def user_register(request):
         
         
     return render(request,'pages/register.html')
+
+def user_login(request):
+    return render(request,"pages/login.html")

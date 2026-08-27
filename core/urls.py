@@ -9,9 +9,10 @@ from .views import (
     admin_reset_password,
     admin_bookings,   
     )
+from rider_user.views import user_login
 
 urlpatterns = [
-    path('', admin_login, name='admin_login_root'),
+    path('', user_login, name='admin_login_root'),
     path('login/', admin_login, name='admin_login_alt'),
     path('AdminLogin/', admin_login, name='admin_login'),
     path('register/', admin_register, name='admin_register'),
