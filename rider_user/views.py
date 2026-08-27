@@ -1,6 +1,8 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from admin_users.models import User
 from django.db.models import Q
+from django.contrib import messages
+# from django.contrib.auth.hashers import check_password
 
 def user_register(request):
     if request.method == "POST":
@@ -64,4 +66,52 @@ def user_register(request):
     return render(request,'pages/register.html')
 
 def user_login(request):
-    return render(request,"pages/login.html")
+    context = {}
+    
+    if request.method == "POST":
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        
+        context['email'] = email
+        
+        if not email or not password:
+            context['error_message'] = "Please enter both username and password."
+            return render(request,"pages/login.html",context)
+        
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            context['error_message'] = "Email not found."
+            return render(request, "pages/login.html", context)
+        
+        if user.check_password(password):
+            if email and password:
+                request.session["user_id"] = user.id
+                request.session["user_name"] = user.name
+                
+                messages.success(request,"Login successfully..")
+                return redirect('user-dashboard')
+        else:
+            context['error_message'] = "Incorrect password. Please try again."
+            return render(request, "pages/login.html", context)
+        
+    return render(request,"pages/login.html",context)
+
+def user_logout(request):
+    request.session.pop("user_id", None)
+    messages.success(request, "Logged out successfully.")
+    context={
+        "success_message":"Logout successfully.."
+    }
+    return render(request,"pages/login.html",context)
+
+from django.shortcuts import render, redirect
+
+def user_dashboard(request):
+    if not request.session.get("user_id"):
+        return render(request, "pages/login.html", {
+            "error_message": "Unauthorized access. Please sign in.",
+        })
+    
+    
+    return render(request, "pages/dashboard.html")

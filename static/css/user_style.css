@@ -227,3 +227,68 @@
         max-width: 450px;
     }
 }
+
+
+/* --- Loader --- */
+.login-loader-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(43, 23, 23, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.login-loader-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loader-content-box {
+    background: var(--card-bg-white);
+    border: 1px solid var(--border-light-beige);
+    padding: 2.5rem 3rem;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+    max-width: 320px;
+    width: 100%;
+}
+
+.cabzy-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid var(--border-light-beige);
+    border-top: 4px solid var(--primary-dark-red);
+    border-right: 4px solid var(--accent-golden-yellow);
+    border-radius: 50%;
+    animation: cabzySpin 0.8s linear infinite;
+    margin: 0 auto;
+}
+
+.loader-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--main-text-dark-brown);
+    margin-bottom: 0.25rem;
+}
+
+.loader-subtitle {
+    font-size: 0.825rem;
+    color: var(--secondary-text-muted-brown);
+    margin-bottom: 0;
+}
+
+@keyframes cabzySpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

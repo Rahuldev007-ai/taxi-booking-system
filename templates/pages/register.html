@@ -1,95 +1,152 @@
 {% extends 'components/base.html' %}
 {% load static %}
-{% block title %}User Registration{% endblock %}
+{% block title %}Create Account | CabZy Taxi Booking{% endblock %}
 
-{% block body_class %}login-page-body{% endblock %}
+{% block body_class %}login-page-body admin-login-theme{% endblock %}
 
 {% block content %}
-<div class="register-wrapper">
-    <div class="brand-header-compact">
-        <h1 class="brand-title-compact">CabZy Taxi Booking </h1>
+<div id="loader" class="login-loader-overlay d-none">
+    <div class="loader-content-box">
+        <div class="cabzy-spinner"></div>
+        <h4 class="loader-title mt-3">Creating Account...</h4>
+        <p class="loader-subtitle">Setting up your CabZy profile</p>
+    </div>
+</div>
+
+<div class="auth-split-container register-split-container">
+    <div class="auth-brand-pane">
+        <div class="brand-pane-content">
+            <div class="brand-badge-pill mb-3">
+                <i class="bi bi-person-plus-fill me-2"></i> Join CabZy Today
+            </div>
+            <h1 class="display-6 fw-bold text-white mb-3">Your Ride, Your Way, Anytime.</h1>
+            <p class="text-white-50 lead mb-4">Create an account to book rides instantly, track live drivers, view trip histories, and unlock exclusive travel perks.</p>
+            
+            <div class="feature-pills-group">
+                <div class="feature-pill"><i class="bi bi-lightning-charge"></i> Instant Booking</div>
+                <div class="feature-pill"><i class="bi bi-shield-check"></i> Safe & Secure Rides</div>
+                <div class="feature-pill"><i class="bi bi-clock-history"></i> 24/7 Support</div>
+            </div>
+        </div>
+        <div class="brand-pane-glow"></div>
     </div>
 
-
-    <div class="login-card">
-        <div class="card-top-accent"></div>
-        <div class="card-body-compact">
-            <div class="text-center">
-                <span class="badge-access-compact">User Account</span>
+    <div class="auth-form-pane">
+        <div class="login-card-modern">
+            
+            <div class="mb-3">
+                <span class="badge-access-modern">
+                    <i class="bi bi-person-badge me-1"></i> User Registration
+                </span>
+                <h2 class="auth-heading mt-2">Create an Account</h2>
+                <p class="auth-subheading">Fill in your details to get started with CabZy.</p>
             </div>
 
             {% if error_message %}
-            <div class="alert alert-danger py-2 px-3 mb-3 rounded-3" role="alert" style="font-size: 0.875rem;">
-                {{ error_message }}
+            <div class="alert-custom alert-error-custom" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <div>{{ error_message }}</div>
             </div>
             {% endif %}
 
             {% if success_message %}
-            <div class="alert alert-success py-2 px-3 mb-3 rounded-3" role="alert" style="font-size: 0.875rem;">
-                {{ success_message }}
+            <div class="alert-custom alert-success-custom" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <div>{{ success_message }}</div>
             </div>
             {% endif %}
 
-            <form method="post" id="user_register" action="{% url 'user-register' %}">
+            <form method="post" id="user_register" action="{% url 'user-register' %}" class="needs-validation" novalidate>
                 {% csrf_token %}
-                <div id="loader" class="text-center d-none mt-3">
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-2 mb-0">Creating your account...</p>
-                </div>
+                
                 <div class="formBody">
-
                     <div class="mb-3">
-                        <label class="form-label-compact">Full Name</label>
-                        <input type="text" id="name" name="name" class="form-control custom-input-compact" placeholder="Enter your full name" value="{{ form_data.name|default:'' }}" required autofocus>
-                        <span class="text-danger" id="errorMsg"></span>
+                        <label class="form-label-custom">Full Name</label>
+                        <div class="input-group-custom">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
+                                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z"/>
+                                </svg>
+                            </span>
+                            <input type="text" id="name" name="name" class="form-control custom-input-modern" placeholder="Enter your full name" value="{{ form_data.name|default:'' }}" required autofocus>
+                        </div>
+                        <span class="text-danger small mt-1 d-block" id="errorMsg"></span>
                     </div>
 
-                    <div class="row g-2 mb-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-12 col-md-6">
-                            <label class="form-label-compact">Email Address</label>
-                            <input type="email" id="email" name="email" class="form-control custom-input-compact" placeholder="user@example.com" value="{{ form_data.email|default:'' }}" required>
-                            <span id="errorMsgEmail" class='text-danger'></span>
+                            <label class="form-label-custom">Email Address</label>
+                            <div class="input-group-custom">
+                                <span class="input-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1zm13 2.383-4.708 2.825L15 11.105zm-.034 6.876-5.64-3.471L8 9.583l-1.326-.795-5.64 3.47A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.741M1 11.105l4.708-2.897L1 5.383z"/>
+                                    </svg></span>
+                                <input type="email" id="email" name="email" class="form-control custom-input-modern" placeholder="user@example.com" value="{{ form_data.email|default:'' }}" required>
+                            </div>
+                            <span id="errorMsgEmail" class="text-danger small mt-1 d-block"></span>
                         </div>
                         <div class="col-12 col-md-6">
-                            <label class="form-label-compact">Phone Number</label>
-                            <input type="text" id="phone" name="phone" class="form-control custom-input-compact" placeholder="+91 9876543210" value="{{ form_data.phone|default:'' }}" required>
-                            <span id="errorMsgPhone" class='text-danger'></span> 
+                            <label class="form-label-custom">Phone Number</label>
+                            <div class="input-group-custom">
+                                <span class="input-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone" viewBox="0 0 16 16">
+                                        <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/>
+                                    </svg>    
+                                </span>
+                                <input type="text" id="phone" name="phone" class="form-control custom-input-modern" placeholder="+91 9876543210" value="{{ form_data.phone|default:'' }}" required>
+                            </div>
+                            <span id="errorMsgPhone" class='text-danger small mt-1 d-block'></span> 
                         </div>
                     </div>
 
-                    <div class="row g-2 mb-3">
+                    <div class="row g-3 mb-4">
                         <div class="col-12 col-md-6">
-                            <label class="form-label-compact">Password</label>
-                            <input type="password" id="password" name="password" class="form-control custom-input-compact" placeholder="Min 6 characters" required>
-                            <span id="errorMsgpws" class='text-danger'></span> 
+                            <label class="form-label-custom">Password</label>
+                            <div class="input-group-custom">
+                                <span class="input-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4M4.5 7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7zM8 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/>
+                                    </svg>
+                                </span>
+                                <input type="password" id="password" name="password" class="form-control custom-input-modern" placeholder="Min 6 characters" required>
+                            </div>
+                            <span id="errorMsgpws" class='text-danger small mt-1 d-block'></span> 
                         </div>
                         <div class="col-12 col-md-6">
-                            <label class="form-label-compact">Confirm Password</label>
-                            <input type="password" id="confirm_password" name="confirm_password" class="form-control custom-input-compact" placeholder="Re-enter password" required>
-                            <span id="errorMsgCpws" class='text-danger'></span> 
+                            <label class="form-label-custom">Confirm Password</label>
+                            <div class="input-group-custom">
+                                <span class="input-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4M4.5 7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7zM8 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3"/>
+                                    </svg>
+                                </span>
+                                <input type="password" id="confirm_password" name="confirm_password" class="form-control custom-input-modern" placeholder="Re-enter password" required>
+                            </div>
+                            <span id="errorMsgCpws" class='text-danger small mt-1 d-block'></span> 
                         </div>
                     </div>
                 </div>
-                <button type="submit" id="submitBtn" class="btn btn-custom-primary btn-compact w-100 py-2 fw-bold">
-                    Create User Account
+
+                <button type="submit" id="submitBtn" class="btn btn-custom-primary-modern">
+                    <span>Create User Account</span>
+                    <i class="bi bi-arrow-right ms-2"></i>
                 </button>
             </form>
 
-            <div class="text-center mt-3">
-                <span style="font-size: 0.8rem; color: var(--secondary-text-muted-brown);">
-                    Are you a already register? 
-                    <a href="{% url 'user_login' %}" class="auth-link-text text-decoration-none fw-bold">Sign In</a>
+            <div class="text-center mt-3 pt-3 border-top" style="border-color: var(--border-light-beige) !important;">
+                <span style="font-size: 0.85rem; color: var(--secondary-text-muted-brown);">
+                    Already registered? 
+                    <a href="{% url 'user_login' %}" class="auth-link-text fw-semibold">Sign In</a>
                 </span>
             </div>
+
+        </div>
+
+        <div class="footer-note-modern text-center mt-3">
+            CabZy Taxi Booking &copy; 2026 &bull; All Rights Reserved
         </div>
     </div>
-
-    <div class="footer-note-compact text-center mt-3" style="font-size: 0.75rem; color: var(--secondary-text-muted-brown);">
-        Cabzy Taxi Booking   &copy; 2026 &bull; All Rights Reserved
-    </div>
 </div>
-<script src="{% static 'js/register.js' %}"></script>
 
+<script src="{% static 'js/register.js' %}"></script>
 {% endblock %}
