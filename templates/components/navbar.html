@@ -1,49 +1,43 @@
 <nav class="cabzy-navbar sticky-top">
     <div class="container-fluid d-flex justify-content-between align-items-center px-4 py-3">
+        <!-- Brand Logo -->
         <a href="{% if request.session.is_driver %}{% url 'driver-dashboard' %}{% else %}{% url 'user-dashboard' %}{% endif %}" class="navbar-brand-custom text-decoration-none d-flex align-items-center">
-            <div class="brand-icon-wrapper me-2">
-            </div>
             <span class="fw-extrabold fs-4 text-dark-brown">Cab<span class="text-primary-red">Zy</span></span>
         </a>
 
-        <div class="d-flex align-items-center gap-2 gap-md-4">
+        <!-- Operation Links & Username -->
+        <div class="d-flex align-items-center gap-3 gap-md-4">
+            <!-- Operations: Dashboard & Profile Only -->
             {% if request.session.is_driver %}
-            <a href="{% url 'driver-dashboard' %}" class="nav-link-animated active">
+            <a href="{% url 'driver-dashboard' %}" class="nav-link-animated {% if request.resolver_match.url_name == 'driver-dashboard' or request.resolver_match.url_name == 'driver-dashboard-alt' %}active{% endif %}">
                 Dashboard
             </a>
-            <a href="{% url 'driver-profile' %}" class="nav-link-animated">
-                Driver Profile
+            <a href="{% url 'driver-profile' %}" class="nav-link-animated {% if request.resolver_match.url_name == 'driver-profile' or request.resolver_match.url_name == 'driver-profile-alt' %}active{% endif %}">
+                Profile
             </a>
             {% else %}
-            <a href="{% url 'user-dashboard' %}" class="nav-link-animated active">
-                <i class="bi bi-speedometer2 me-1"></i> Dashboard
+            <a href="{% url 'user-dashboard' %}" class="nav-link-animated {% if request.resolver_match.url_name == 'user-dashboard' %}active{% endif %}">
+                Dashboard
             </a>
-            <a href="#" class="nav-link-animated">
-                <i class="bi bi-clock-history me-1"></i> My Rides
-            </a>
-            <a href="#" class="nav-link-animated">
-                <i class="bi bi-wallet2 me-1"></i> Wallet
+            <a href="{% url 'user-dashboard' %}" class="nav-link-animated">
+                Profile
             </a>
             {% endif %}
             
+            <!-- User Profile Dropdown Displaying Username & Logout Only -->
             <div class="dropdown ms-1 ms-md-2">
-                <button class="btn btn-user-profile dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <div class="profile-avatar me-2">
-                        {% if not request.session.is_driver %}<i class="bi bi-person-fill"></i>{% endif %}
-                        <span class="online-indicator"></span>
-                    </div>
-                    <span class="fw-semibold text-dark-brown d-none d-md-inline">{{ request.session.user_name|default:'Account' }}</span>
+                <button class="btn btn-user-profile dropdown-toggle d-flex align-items-center px-3 py-2 border rounded-3 bg-white shadow-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="fw-bold text-dark-brown">{{ request.session.user_name|default:'Account' }}</span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow border-light-beige animate-slide-down">
-                    {% if request.session.is_driver %}
-                    <li><a class="dropdown-item fw-semibold" href="{% url 'driver-profile' %}">Driver Profile Info</a></li>
-                    <li><a class="dropdown-item fw-semibold" href="{% url 'driver-dashboard' %}">Driver Dashboard</a></li>
-                    {% else %}
-                    <li><a class="dropdown-item" href="{% url 'user-dashboard' %}"><i class="bi bi-person-gear me-2"></i> Account Profile</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="bi bi-headset me-2"></i> Support & Help</a></li>
-                    {% endif %}
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger fw-semibold" href="{% url 'user_logout' %}">Sign Out</a></li>
+                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-light-beige animate-slide-down p-2 mt-2" style="min-width: 200px;">
+                    <li class="px-3 py-2 text-muted small border-bottom mb-1">
+                        Signed in as <strong class="text-dark d-block text-truncate">{{ request.session.user_name|default:'Account' }}</strong>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-danger fw-bold rounded-2 py-2 text-center" href="{% if request.session.is_driver %}{% url 'driver-logout' %}{% else %}{% url 'user_logout' %}{% endif %}">
+                            Sign Out / Logout
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

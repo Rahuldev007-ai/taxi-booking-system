@@ -481,22 +481,28 @@ body {
     .login-page-body {
         padding: 0.75rem 0;
     }
+
     .register-wrapper,
     .login-wrapper {
         padding: 0 0.75rem;
     }
+
     .card-body-custom {
         padding: 1.5rem 1.25rem 1.25rem 1.25rem;
     }
+
     .card-body-compact {
         padding: 1.1rem 1.1rem 1rem 1.1rem;
     }
+
     .brand-title {
         font-size: 1.75rem;
     }
+
     .brand-title-compact {
         font-size: 1.4rem;
     }
+
     .custom-input-compact {
         font-size: 0.85rem;
         padding: 0.45rem 0.65rem;
@@ -754,24 +760,189 @@ body {
         opacity: 0;
         transform: translateY(12px) scale(0.99);
     }
+
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
     }
 }
 
-/* Clean Footer Prompt */
-.auth-footer-prompt {
-    text-align: center;
-    margin-top: 1.25rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border-light-beige);
-    font-size: 0.85rem;
-    color: var(--secondary-text-muted-brown);
+
+/* ===== Sidebar ===== */
+.driver-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #7F1D1D;
+  color: #fff;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  z-index: 1000;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
+.driver-sidebar * {
+  box-sizing: border-box;
+}
 
+/* Brand */
+.ds-brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #F4C430;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
 
+/* User */
+.ds-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
 
+.ds-avatar {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #F4C430;
+  color: #7F1D1D;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
 
+.ds-user-info {
+  min-width: 0;
+}
 
+.ds-username {
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+/* Status badges */
+.ds-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.ds-online  { background: #22c55e; color: #fff; }
+.ds-trip    { background: #F4C430; color: #222; }
+.ds-offline { background: #ef4444; color: #fff; }
+
+/* Navigation */
+.ds-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 24px;
+  flex: 1;
+}
+
+.ds-link {
+  display: block;
+  padding: 11px 14px;
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+}
+
+.ds-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.ds-link.active {
+  background: #F4C430;
+  color: #7F1D1D;
+  font-weight: 700;
+}
+
+/* Logout */
+.ds-bottom {
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.ds-logout {
+  display: block;
+  text-align: center;
+  padding: 11px 14px;
+  border-radius: 10px;
+  background: #ef4444;
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.ds-logout:hover {
+  background: #dc2626;
+  color: #fff;
+}
+
+/* ===== Push page content to the right of the sidebar ===== */
+.driver-main-content {
+  margin-left: 240px;
+  padding: 24px;
+}
+
+/* ===== Mobile: sidebar becomes a top bar ===== */
+@media (max-width: 991px) {
+  .driver-sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .ds-brand {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
+
+  .ds-nav {
+    flex-direction: row;
+    margin-top: 12px;
+    flex: none;
+  }
+
+  .ds-link {
+    flex: 1;
+    text-align: center;
+  }
+
+  .ds-bottom {
+    padding-top: 12px;
+  }
+
+  .driver-main-content {
+    margin-left: 0;
+    padding: 16px;
+  }
+}

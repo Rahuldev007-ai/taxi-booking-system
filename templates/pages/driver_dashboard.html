@@ -60,9 +60,11 @@
 {% endblock %}
 
 {% block content %}
-  {% include 'components/navbar.html' %}
+<div class="driver-app-layout">
+  {% include 'components/driver_sidebar.html' %}
 
-  <main class="container my-4 my-md-5">
+  <div class="driver-main-container">
+    <main class="container-fluid p-3 p-md-4">
     
     <!-- Welcome Header Banner (100% Icon-Free) -->
     <section class="dashboard-welcome-card driver-hero-bg mb-4 p-4 p-md-5 rounded-4 position-relative overflow-hidden anim-fade-up">
@@ -240,8 +242,10 @@
       </div>
     </section>
 
-  </main>
+    </main>
 
-  <!-- Custom Footer -->
-  {% include 'components/footer.html' %}
+    <!-- Custom Footer -->
+    {% include 'components/footer.html' %}
+  </div>
+</div>
 {% endblock %}

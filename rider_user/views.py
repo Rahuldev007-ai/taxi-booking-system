@@ -201,6 +201,15 @@ def driver_login(request):
             
     return render(request, "pages/driver_login.html", context)
 
+def driver_logout(request):
+    request.session.pop("user_id", None)
+    request.session.pop("driver_id", None)
+    request.session.pop("user_name", None)
+    request.session.pop("user_email", None)
+    request.session.pop("is_driver", None)
+    messages.success(request, "Driver partner logged out successfully.")
+    return redirect('driver-login')
+
 def driver_register(request):
     if request.method == "POST":
         name = request.POST.get('name', '').strip()
