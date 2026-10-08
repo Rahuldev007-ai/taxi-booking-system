@@ -185,3 +185,128 @@ def driver_register(request):
 
     return render(request, 'pages/driver_register.html')
 
+import random
+
+def generate_user_otp():
+    """Generate a 6-digit numeric OTP code."""
+    return f"{random.randint(0, 999999):06d}"
+
+def user_forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email', '').strip().lower()
+
+        if not email:
+            return render(request, 'pages/forgot_password.html', {
+                'error_message': 'Please enter a valid email address.',
+                'email': email
+            })
+
+        user = User.objects.filter(email__iexact=email, is_active=True).first()
+
+        if user:
+            otp_code = generate_user_otp()
+            request.session['user_reset_otp'] = otp_code
+            request.session['user_reset_email'] = email
+            print("Generated User Reset OTP:", otp_code)
+            return render(request, 'pages/verify_otp.html', {
+                'success_message': f'Password reset OTP code generated for "{email}". Please verify below.',
+                'email': email
+            })
+        else:
+            return render(request, 'pages/forgot_password.html', {
+                'error_message': f'No registered user account found with email address "{email}".',
+                'email': email
+            })
+
+    return render(request, 'pages/forgot_password.html')
+
+def user_verify_otp(request):
+    reset_email = request.session.get('user_reset_email')
+    expected_otp = request.session.get('user_reset_otp')
+
+    if request.method == 'POST':
+        otp_entered = request.POST.get('otp', '').strip()
+
+        if not reset_email or not expected_otp:
+            return render(request, 'pages/forgot_password.html', {
+                'error_message': 'Session expired. Please request a new password reset OTP.'
+            })
+
+        if not otp_entered or len(otp_entered) != 6 or not otp_entered.isdigit():
+            return render(request, 'pages/verify_otp.html', {
+                'error_message': 'Please enter a valid 6-digit numeric OTP code.',
+                'email': reset_email
+            })
+
+        if otp_entered != expected_otp:
+            return render(request, 'pages/verify_otp.html', {
+                'error_message': 'Invalid 6-digit OTP code. Please check and try again.',
+                'email': reset_email
+            })
+
+        request.session['user_otp_verified'] = True
+
+        return render(request, 'pages/reset_password.html', {
+            'success_message': 'OTP verified successfully! Please enter your new password below.',
+            'email': reset_email
+        })
+
+    return render(request, 'pages/verify_otp.html', {
+        'email': reset_email
+    })
+
+def user_reset_password(request):
+    reset_email = request.session.get('user_reset_email')
+    otp_verified = request.session.get('user_otp_verified')
+
+    if not reset_email or not otp_verified:
+        return render(request, 'pages/forgot_password.html', {
+            'error_message': 'Unauthorized request or session expired. Please verify OTP first.'
+        })
+
+    if request.method == 'POST':
+        new_password = request.POST.get('new_password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
+
+        if not new_password or not confirm_password:
+            return render(request, 'pages/reset_password.html', {
+                'error_message': 'Please fill out both password fields.',
+                'email': reset_email
+            })
+
+        if len(new_password) < 6:
+            return render(request, 'pages/reset_password.html', {
+                'error_message': 'Password must be at least 6 characters long.',
+                'email': reset_email
+            })
+
+        if new_password != confirm_password:
+            return render(request, 'pages/reset_password.html', {
+                'error_message': 'New passwords do not match. Please try again.',
+                'email': reset_email
+            })
+
+        user = User.objects.filter(email__iexact=reset_email, is_active=True).first()
+
+        if user:
+            user.set_password(new_password)
+            user.save()
+
+            request.session.pop('user_reset_email', None)
+            request.session.pop('user_reset_otp', None)
+            request.session.pop('user_otp_verified', None)
+
+            return render(request, 'pages/login.html', {
+                'success_message': f'Password for "{user.name}" reset successfully! Please log in with your new password.',
+                'email': user.email
+            })
+        else:
+            return render(request, 'pages/forgot_password.html', {
+                'error_message': 'User account not found. Please try again.'
+            })
+
+    return render(request, 'pages/reset_password.html', {
+        'email': reset_email
+    })
+
+
