@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from admin_users.models import User, Driver
 from django.db.models import Q
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
 # from django.contrib.auth.hashers import check_password
 
 def user_register(request):
@@ -250,29 +252,126 @@ def driver_register(request):
                 'form_data': form_data
             })
 
-        new_driver = Driver.objects.create(
-            name=name,
-            email=email,
-            license_number=license_number,
-            mobile=phone,
-            vehicle_name=vehicle_name if vehicle_name else "Toyota Camry Hybrid",
-            status="AVAILABLE",
-            is_active=True
-        )
-        new_driver.set_password(pws)
-        new_driver.save()
+        # Generate OTP code & store pending registration in session
+        otp_code = generate_user_otp()
+        request.session['pending_driver_reg'] = {
+            "name": name,
+            "email": email,
+            "license_number": license_number,
+            "phone": phone,
+            "password": pws,
+            "vehicle_name": vehicle_name if vehicle_name else "Toyota Camry Hybrid",
+        }
+        request.session['driver_reg_otp'] = otp_code
+        request.session['driver_reg_email'] = email
 
-        return render(request, 'pages/driver_register.html', {
-            'success_message': f'Driver account for "{name}" registered successfully! You can now join our active fleet.'
+        # Dispatch OTP via console email backend
+        send_driver_otp_email(email, otp_code, name)
+        print(f"Driver Registration OTP [{otp_code}] generated & emailed to console for {email}")
+
+        return render(request, 'pages/driver_verify_otp.html', {
+            'success_message': f'Driver registration OTP generated and emailed to "{email}". Check your console output.',
+            'email': email
         })
 
     return render(request, 'pages/driver_register.html')
+
+def driver_verify_otp(request):
+    pending_reg = request.session.get('pending_driver_reg')
+    expected_otp = request.session.get('driver_reg_otp')
+    email = request.session.get('driver_reg_email')
+
+    if not pending_reg or not expected_otp:
+        return render(request, 'pages/driver_register.html', {
+            'error_message': 'Session expired or invalid registration request. Please register again.'
+        })
+
+    if request.method == 'POST':
+        otp_entered = request.POST.get('otp', '').strip()
+
+        if not otp_entered or len(otp_entered) != 6 or not otp_entered.isdigit():
+            return render(request, 'pages/driver_verify_otp.html', {
+                'error_message': 'Please enter a valid 6-digit numeric OTP code.',
+                'email': email
+            })
+
+        if otp_entered != expected_otp:
+            return render(request, 'pages/driver_verify_otp.html', {
+                'error_message': 'Invalid 6-digit OTP code. Please check your console terminal and try again.',
+                'email': email
+            })
+
+        # OTP verified successfully -> Create & Save Driver in Database
+        new_driver = Driver.objects.create(
+            name=pending_reg['name'],
+            email=pending_reg['email'],
+            license_number=pending_reg['license_number'],
+            mobile=pending_reg['phone'],
+            vehicle_name=pending_reg.get('vehicle_name', 'Toyota Camry Hybrid'),
+            status="AVAILABLE",
+            is_active=True
+        )
+        new_driver.set_password(pending_reg['password'])
+        new_driver.save()
+
+        # Clear pending registration session keys
+        request.session.pop('pending_driver_reg', None)
+        request.session.pop('driver_reg_otp', None)
+        request.session.pop('driver_reg_email', None)
+
+        return render(request, 'pages/driver_login.html', {
+            'success_message': f'Driver account for "{new_driver.name}" verified and registered successfully! You can now sign in.',
+            'email': new_driver.email
+        })
+
+    return render(request, 'pages/driver_verify_otp.html', {
+        'email': email
+    })
+
+def driver_resend_otp(request):
+    pending_reg = request.session.get('pending_driver_reg')
+    if not pending_reg:
+        return render(request, 'pages/driver_register.html', {
+            'error_message': 'Registration session expired. Please register again.'
+        })
+
+    new_otp = generate_user_otp()
+    request.session['driver_reg_otp'] = new_otp
+    email = pending_reg['email']
+
+    send_driver_otp_email(email, new_otp, pending_reg['name'])
+    print(f"Resent Driver Registration OTP [{new_otp}] to console for {email}")
+
+    return render(request, 'pages/driver_verify_otp.html', {
+        'success_message': f'A new OTP code has been dispatched to your console email backend for "{email}".',
+        'email': email
+    })
+
 
 import random
 
 def generate_user_otp():
     """Generate a 6-digit numeric OTP code."""
     return f"{random.randint(0, 999999):06d}"
+
+def send_driver_otp_email(recipient_email, otp_code, recipient_name="Partner"):
+    """Send generated OTP to driver/user using Django email backend (Console backend)."""
+    subject = "CabZy Account - Password Reset OTP Code"
+    message = (
+        f"Hello {recipient_name},\n\n"
+        f"Your One-Time Password (OTP) for resetting your account password is: {otp_code}\n\n"
+        f"This OTP code is required to verify your identity. Please do not disclose it to anyone.\n\n"
+        f"Best regards,\n"
+        f"CabZy Security Team"
+    )
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@cabzy.com')
+    send_mail(
+        subject=subject,
+        message=message,
+        from_email=from_email,
+        recipient_list=[recipient_email],
+        fail_silently=False
+    )
 
 def user_forgot_password(request):
     if request.method == 'POST':
@@ -285,16 +384,23 @@ def user_forgot_password(request):
             })
 
         user = User.objects.filter(email__iexact=email, is_active=True).first()
+        driver = None
         if not user:
-            user = Driver.objects.filter(email__iexact=email, is_active=True).first()
+            driver = Driver.objects.filter(email__iexact=email, is_active=True).first()
 
-        if user:
+        account = user or driver
+
+        if account:
             otp_code = generate_user_otp()
             request.session['user_reset_otp'] = otp_code
             request.session['user_reset_email'] = email
-            print("Generated User Reset OTP:", otp_code)
+            
+            # Send OTP email via console backend
+            send_driver_otp_email(account.email, otp_code, account.name)
+            
+            print(f"Generated & Emailed OTP [{otp_code}] to {account.email}")
             return render(request, 'pages/verify_otp.html', {
-                'success_message': f'Password reset OTP code generated for "{email}". Please verify below.',
+                'success_message': f'Password reset OTP code generated and emailed to "{email}". Check your console terminal.',
                 'email': email
             })
         else:

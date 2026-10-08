@@ -8,6 +8,8 @@ from .views import (
     driver_profile,
     user_logout, 
     driver_register,
+    driver_verify_otp,
+    driver_resend_otp,
     user_forgot_password,
     user_verify_otp,
     user_reset_password
@@ -17,6 +19,9 @@ urlpatterns = [
     path('user/register/', user_register, name="user-register"),
     path('driver/register/', driver_register, name="driver-register"),
     path('driver-register/', driver_register, name="driver_register"),
+    path('driver/verify-otp/', driver_verify_otp, name="driver-verify-otp"),
+    path('driver-verify-otp/', driver_verify_otp, name="driver_verify_otp"),
+    path('driver/resend-otp/', driver_resend_otp, name="driver-resend-otp"),
     path('driver/login/', driver_login, name="driver-login"),
     path('driver-login/', driver_login, name="driver_login"),
     path("user/dashboard", user_dashboard, name="user-dashboard"),
@@ -30,3 +35,4 @@ urlpatterns = [
     path('user/verify-otp/', user_verify_otp, name="user_verify_otp"),
     path('user/reset-password/', user_reset_password, name="user_reset_password"),
 ]
+
