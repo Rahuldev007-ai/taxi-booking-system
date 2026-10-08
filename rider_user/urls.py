@@ -2,6 +2,7 @@ from django.urls import path
 from .views import (
     user_register, 
     user_login, 
+    driver_login,
     user_dashboard, 
     driver_dashboard,
     driver_profile,
@@ -16,6 +17,8 @@ urlpatterns = [
     path('user/register/', user_register, name="user-register"),
     path('driver/register/', driver_register, name="driver-register"),
     path('driver-register/', driver_register, name="driver_register"),
+    path('driver/login/', driver_login, name="driver-login"),
+    path('driver-login/', driver_login, name="driver_login"),
     path("user/dashboard", user_dashboard, name="user-dashboard"),
     path("driver/dashboard/", driver_dashboard, name="driver-dashboard"),
     path("driver/dashboard", driver_dashboard, name="driver-dashboard-alt"),

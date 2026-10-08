@@ -158,6 +158,47 @@ def driver_profile(request):
         "driver_obj": driver_obj
     })
 
+def driver_login(request):
+    if request.session.get("user_id") and request.session.get("is_driver"):
+        return redirect('driver-dashboard')
+        
+    context = {}
+    
+    if request.method == "POST":
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '').strip()
+        
+        context['email'] = email
+        
+        if not email or not password:
+            context['error_message'] = "Please enter both email and password."
+            return render(request, "pages/driver_login.html", context)
+        
+        driver_obj = Driver.objects.filter(email__iexact=email).first()
+        
+        if not driver_obj:
+            context['error_message'] = "No driver account found with this email."
+            return render(request, "pages/driver_login.html", context)
+            
+        if not driver_obj.is_active:
+            context['error_message'] = "Your driver account is inactive. Please contact system administrator."
+            return render(request, "pages/driver_login.html", context)
+        
+        if driver_obj.check_password(password):
+            request.session["user_id"] = driver_obj.id
+            request.session["driver_id"] = driver_obj.id
+            request.session["user_name"] = driver_obj.name
+            request.session["user_email"] = driver_obj.email
+            request.session["is_driver"] = True
+            
+            messages.success(request, f"Welcome back, {driver_obj.name}! Driver login successful.")
+            return redirect('driver-dashboard')
+        else:
+            context['error_message'] = "Incorrect password. Please try again."
+            return render(request, "pages/driver_login.html", context)
+            
+    return render(request, "pages/driver_login.html", context)
+
 def driver_register(request):
     if request.method == "POST":
         name = request.POST.get('name', '').strip()
