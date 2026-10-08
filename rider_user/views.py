@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from admin_users.models import User
+from admin_users.models import User, Driver
 from django.db.models import Q
 from django.contrib import messages
 # from django.contrib.auth.hashers import check_password
@@ -115,3 +115,73 @@ def user_dashboard(request):
     
     
     return render(request, "pages/dashboard.html")
+
+def driver_register(request):
+    if request.method == "POST":
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip().lower()
+        license_number = request.POST.get('license_number', '').strip().upper()
+        phone = request.POST.get('phone', '').strip()
+        pws = request.POST.get("password", "").strip()
+        cpws = request.POST.get('confirm_password', "").strip()
+        vehicle_name = request.POST.get('vehicle_name', '').strip()
+
+        form_data = {
+            "name": name,
+            "email": email,
+            "license_number": license_number,
+            "phone": phone,
+            "vehicle_name": vehicle_name,
+        }
+
+        if not name or not email or not license_number or not phone or not pws or not cpws:
+            return render(request, "pages/driver_register.html", {
+                'error_message': "All required fields must be filled out.",
+                "form_data": form_data
+            })
+
+        if pws != cpws:
+            return render(request, 'pages/driver_register.html', {
+                'error_message': 'Passwords do not match. Please try again.',
+                'form_data': form_data
+            })
+
+        if len(pws) < 6:
+            return render(request, 'pages/driver_register.html', {
+                'error_message': 'Password must be at least 6 characters long.',
+                'form_data': form_data
+            })
+
+        if Driver.objects.filter(email__iexact=email).exists():
+            error_message = f'Email "{email}" is already registered with a driver account.'
+        elif Driver.objects.filter(license_number__iexact=license_number).exists():
+            error_message = f'License number "{license_number}" is already registered.'
+        elif Driver.objects.filter(mobile=phone).exists():
+            error_message = f'Phone number "{phone}" is already registered.'
+        else:
+            error_message = None
+
+        if error_message:
+            return render(request, 'pages/driver_register.html', {
+                'error_message': error_message,
+                'form_data': form_data
+            })
+
+        new_driver = Driver.objects.create(
+            name=name,
+            email=email,
+            license_number=license_number,
+            mobile=phone,
+            vehicle_name=vehicle_name if vehicle_name else "Toyota Camry Hybrid",
+            status="AVAILABLE",
+            is_active=True
+        )
+        new_driver.set_password(pws)
+        new_driver.save()
+
+        return render(request, 'pages/driver_register.html', {
+            'success_message': f'Driver account for "{name}" registered successfully! You can now join our active fleet.'
+        })
+
+    return render(request, 'pages/driver_register.html')
+

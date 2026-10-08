@@ -133,10 +133,14 @@
                 </button>
             </form>
 
-            <div class="text-center mt-3 pt-3 border-top" style="border-color: var(--border-light-beige) !important;">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 pt-3 border-top gap-2" style="border-color: var(--border-light-beige) !important;">
                 <span style="font-size: 0.85rem; color: var(--secondary-text-muted-brown);">
                     Already registered? 
                     <a href="{% url 'user_login' %}" class="auth-link-text fw-semibold">Sign In</a>
+                </span>
+                <span style="font-size: 0.85rem; color: var(--secondary-text-muted-brown);">
+                    Want to drive? 
+                    <a href="{% url 'driver-register' %}" class="auth-link-text fw-bold">Driver Sign Up &rarr;</a>
                 </span>
             </div>
 

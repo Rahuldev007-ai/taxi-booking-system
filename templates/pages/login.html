@@ -102,10 +102,14 @@
         </form>
 
         <div class="text-center mt-4 pt-3 border-top border-light">
-          <span class="register-prompt">
+          <div class="register-prompt mb-2">
             Need a new user profile?
-            <a href="{% url 'user-register' %}" class="auth-link-text fw-semibold">Register</a>
-          </span>
+            <a href="{% url 'user-register' %}" class="auth-link-text fw-semibold">Register as Rider</a>
+          </div>
+          <div class="register-prompt">
+            Want to drive with CabZy?
+            <a href="{% url 'driver-register' %}" class="auth-link-text fw-bold text-decoration-underline">Register as Driver &rarr;</a>
+          </div>
         </div>
       </div>
 

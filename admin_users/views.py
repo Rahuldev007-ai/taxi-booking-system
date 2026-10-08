@@ -204,5 +204,144 @@ def admin_delete_driver(request,driver_id):
         "driver_obj":driver_obj,
     }
     return render(request,"admin_pages/driver_confirm_delete.html",context)
+
+def admin_create_driver(request):
+    driver_create = True
+    if request.method == "POST":
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip().lower()
+        license_number = request.POST.get('license_number', '').strip().upper()
+        mobile = request.POST.get('mobile', '').strip()
+        vehicle_name = request.POST.get('vehicle_name', '').strip()
+        status = request.POST.get('status', 'AVAILABLE').strip()
+        password = request.POST.get('password', '').strip()
+
+        form_context = {
+            "driver_create": True,
+            "admin_full_name": request.session.get('admin_full_name', 'Administrator'),
+            "typed_name": name,
+            "typed_email": email,
+            "typed_license": license_number,
+            "typed_mobile": mobile,
+            "typed_vehicle": vehicle_name,
+            "typed_status": status,
+        }
+
+        if not name or not email or not license_number or not mobile or not password:
+            form_context["error_message"] = "All required fields must be filled out."
+            return render(request, "admin_pages/driver_forms.html", form_context)
+
+        if len(password) < 6:
+            form_context["error_message"] = "Password must be at least 6 characters long."
+            return render(request, "admin_pages/driver_forms.html", form_context)
+
+        existing_driver = Driver.objects.filter(
+            Q(email__iexact=email) | Q(license_number__iexact=license_number) | Q(mobile=mobile)
+        ).first()
+
+        if existing_driver:
+            if existing_driver.email.lower() == email.lower():
+                msg = f"Email '{email}' is already registered."
+            elif existing_driver.license_number.upper() == license_number.upper():
+                msg = f"License number '{license_number}' already exists."
+            else:
+                msg = f"Mobile number '{mobile}' already exists."
+
+            form_context["error_message"] = msg
+            return render(request, "admin_pages/driver_forms.html", form_context)
+
+        new_driver = Driver.objects.create(
+            name=name,
+            email=email,
+            license_number=license_number,
+            mobile=mobile,
+            vehicle_name=vehicle_name if vehicle_name else "Toyota Camry Hybrid",
+            status=status,
+            is_active=True
+        )
+        new_driver.set_password(password)
+        new_driver.save()
+
+        messages.success(request, f"Driver '{name}' registered successfully.")
+        return redirect('admin_drivers')
+
+    return render(request, "admin_pages/driver_forms.html", {
+        "driver_create": True,
+        "admin_full_name": request.session.get('admin_full_name', 'Administrator'),
+    })
+
+def admin_edit_driver(request, driver_id):
+    driver_obj = get_object_or_404(Driver, id=driver_id)
+    if request.method == "POST":
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip().lower()
+        license_number = request.POST.get('license_number', '').strip().upper()
+        mobile = request.POST.get('mobile', '').strip()
+        vehicle_name = request.POST.get('vehicle_name', '').strip()
+        status = request.POST.get('status', 'AVAILABLE').strip()
+        password = request.POST.get('password', '').strip()
+        is_active = request.POST.get('is_active') == 'on'
+
+        form_context = {
+            "driver_create": False,
+            "admin_full_name": request.session.get('admin_full_name', 'Administrator'),
+            "driver_obj": driver_obj,
+            "typed_name": name,
+            "typed_email": email,
+            "typed_license": license_number,
+            "typed_mobile": mobile,
+            "typed_vehicle": vehicle_name,
+            "typed_status": status,
+        }
+
+        if not name or not email or not license_number or not mobile:
+            form_context["error_message"] = "Name, email, license number, and mobile are required."
+            return render(request, "admin_pages/driver_forms.html", form_context)
+
+        existing_driver = Driver.objects.filter(
+            (Q(email__iexact=email) | Q(license_number__iexact=license_number) | Q(mobile=mobile)) & ~Q(id=driver_id)
+        ).first()
+
+        if existing_driver:
+            if existing_driver.email.lower() == email.lower():
+                msg = "Email already exists."
+            elif existing_driver.license_number.upper() == license_number.upper():
+                msg = "License number already exists."
+            else:
+                msg = "Mobile number already exists."
+
+            form_context["error_message"] = msg
+            return render(request, "admin_pages/driver_forms.html", form_context)
+
+        driver_obj.name = name
+        driver_obj.email = email
+        driver_obj.license_number = license_number
+        driver_obj.mobile = mobile
+        if vehicle_name:
+            driver_obj.vehicle_name = vehicle_name
+        driver_obj.status = status
+        driver_obj.is_active = is_active
+        if password:
+            if len(password) < 6:
+                form_context["error_message"] = "Password must be at least 6 characters long."
+                return render(request, "admin_pages/driver_forms.html", form_context)
+            driver_obj.set_password(password)
+        driver_obj.save()
+
+        messages.success(request, f"Driver '{name}' updated successfully.")
+        return redirect('admin_drivers')
+
+    return render(request, "admin_pages/driver_forms.html", {
+        "driver_create": False,
+        "admin_full_name": request.session.get('admin_full_name', 'Administrator'),
+        "driver_obj": driver_obj,
+        "typed_name": driver_obj.name,
+        "typed_email": driver_obj.email,
+        "typed_license": driver_obj.license_number,
+        "typed_mobile": driver_obj.mobile,
+        "typed_vehicle": driver_obj.vehicle_name,
+        "typed_status": driver_obj.status,
+    })
+
     
  

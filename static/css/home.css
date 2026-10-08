@@ -346,7 +346,7 @@
     color: white;
     transform: translateY(-3px);
 }
-/* --- Standing Card & Moving Road Effect --- */
+
 .road-animation-stage {
     position: relative;
     width: 100%;
@@ -391,23 +391,31 @@
     }
 }
 
-.standing-car-card {
-    position: relative;
-    z-index: 2;
-    background: rgba(43, 23, 23, 0.85);
-    backdrop-filter: blur(6px);
-    border: 1px solid var(--border-light-beige);
-    padding: 1rem 1.5rem;
-    border-radius: 14px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
-    animation: engineIdleHover 2s ease-in-out infinite;
+
+
+.standing-car-img {
+    width: 350px;
+    height: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    display: block;
+    transform: scaleX(-1);
 }
 
 @keyframes engineIdleHover {
     0%, 100% {
-        transform: translateY(0px);
+        transform: translateY(0px) rotate(0deg);
     }
-    50% {
-        transform: translateY(-4px); 
+    20% {
+        transform: translateY(-2px) rotate(-1deg);
+    }
+    40% {
+        transform: translateY(1px) rotate(1deg);
+    }
+    60% {
+        transform: translateY(-2px) rotate(0deg);
+    }
+    80% {
+        transform: translateY(1px) rotate(-0.5deg);
     }
 }

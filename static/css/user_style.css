@@ -140,6 +140,17 @@
     outline: none;
 }
 
+.custom-input-modern.is-invalid,
+.custom-input-modern.invalid {
+    border-color: var(--error-red) !important;
+    background-color: #FFF5F5 !important;
+}
+
+.custom-input-modern.is-valid {
+    border-color: var(--success-dark-green) !important;
+    background-color: #F0FDF4 !important;
+}
+
 .form-label-custom {
     font-size: 0.85rem;
     font-weight: 600;
