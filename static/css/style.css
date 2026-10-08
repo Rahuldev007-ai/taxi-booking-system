@@ -668,9 +668,109 @@ body {
     gap: 0.35rem;
 }
 
-.admin-offcanvas-drawer .sidebar-link {
-    width: 100%;
+
+/* Unified Auth Navigation Switcher & Smooth Micro-Animations */
+.auth-nav-switcher {
+    background: #FAF3E8;
+    border: 1px solid var(--border-light-beige);
+    border-radius: 14px;
+    padding: 0.35rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(43, 23, 23, 0.04);
 }
+
+.auth-role-tabs {
+    display: flex;
+    gap: 0.35rem;
+    position: relative;
+}
+
+.auth-role-tab {
+    flex: 1;
+    text-align: center;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--secondary-text-muted-brown);
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-role-tab:hover {
+    color: var(--primary-dark-red);
+    background-color: rgba(127, 29, 29, 0.06);
+}
+
+.auth-role-tab.active,
+.auth-role-tab.rider-tab.active {
+    background: linear-gradient(135deg, #7F1D1D 0%, #991B1B 100%);
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(127, 29, 29, 0.3);
+    transform: scale(1.02);
+}
+
+.auth-role-tab.driver-role-tab.active {
+    background: linear-gradient(135deg, #7F1D1D 0%, #991B1B 100%);
+    color: #F4C430 !important;
+    box-shadow: 0 4px 14px rgba(127, 29, 29, 0.35);
+    transform: scale(1.02);
+}
+
+.auth-sub-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0.5rem;
+    padding-bottom: 0.15rem;
+}
+
+.auth-sub-link {
+    color: var(--primary-dark-red);
+    text-decoration: none;
+    font-size: 0.825rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.auth-sub-link:hover {
+    color: var(--btn-hover-dark-gold);
+    text-decoration: underline;
+}
+
+/* Card Entrance Micro-Animation */
+.login-card-modern {
+    animation: cardEntranceSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardEntranceSlide {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.99);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Clean Footer Prompt */
+.auth-footer-prompt {
+    text-align: center;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-light-beige);
+    font-size: 0.85rem;
+    color: var(--secondary-text-muted-brown);
+}
+
+
 
 
 

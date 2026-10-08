@@ -102,6 +102,17 @@
     <!-- Right Form Pane -->
     <div class="auth-form-pane">
         <div class="login-card-modern">
+            <!-- Unified Role Switcher -->
+            <div class="auth-nav-switcher">
+                <div class="auth-role-tabs">
+                    <a href="{% url 'user_login' %}" class="auth-role-tab">Rider Portal</a>
+                    <a href="{% url 'driver-login' %}" class="auth-role-tab driver-role-tab active">Driver Partner</a>
+                </div>
+                <div class="auth-sub-nav">
+                    <a href="{% url 'driver-login' %}" class="auth-sub-link">&larr; Driver Sign In</a>
+                </div>
+            </div>
+
             <div class="mb-3">
                 <span class="badge-access-modern">
                     Driver Partner Onboarding
@@ -121,7 +132,7 @@
                 <div>
                     <div>{{ success_message }}</div>
                     <div class="mt-2">
-                        <a href="{% url 'user_login' %}" class="btn btn-sm btn-dark px-3 fw-bold">Proceed to Sign In</a>
+                        <a href="{% url 'driver-login' %}" class="btn btn-sm btn-dark px-3 fw-bold">Proceed to Driver Sign In</a>
                     </div>
                 </div>
             </div>
@@ -212,16 +223,12 @@
                 </button>
             </form>
 
-            <!-- Navigation Links -->
-            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 pt-3 border-top gap-2" style="border-color: var(--border-light-beige) !important;">
-                <span style="font-size: 0.85rem; color: var(--secondary-text-muted-brown);">
-                    Already registered? 
-                    <a href="{% url 'user_login' %}" class="auth-link-text fw-semibold">Sign In</a>
-                </span>
-                <span style="font-size: 0.85rem; color: var(--secondary-text-muted-brown);">
-                    Looking to book rides? 
-                    <a href="{% url 'user-register' %}" class="auth-link-text fw-semibold">Rider Sign Up</a>
-                </span>
+            <!-- Clean Footer Prompt -->
+            <div class="auth-footer-prompt">
+                <div>
+                    Already registered as a driver? 
+                    <a href="{% url 'driver-login' %}" class="auth-link-text fw-bold text-decoration-underline">Driver Sign In &rarr;</a>
+                </div>
             </div>
         </div>
 

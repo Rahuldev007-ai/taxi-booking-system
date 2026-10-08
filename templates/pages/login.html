@@ -43,22 +43,31 @@
 
     <div class="auth-form-pane">
       <div class="login-card-modern">
+        <!-- Unified Role Switcher -->
+        <div class="auth-nav-switcher">
+          <div class="auth-role-tabs">
+            <a href="{% url 'user_login' %}" class="auth-role-tab active">Rider Portal</a>
+            <a href="{% url 'driver-login' %}" class="auth-role-tab driver-role-tab">Driver Partner</a>
+          </div>
+          <div class="auth-sub-nav">
+            <a href="{% url 'user-register' %}" class="auth-sub-link">New Rider Sign Up &rarr;</a>
+          </div>
+        </div>
+
         <div class="mb-4">
-          <span class="badge-access-modern"><i class="bi bi-person-badge me-1"></i> User Access</span>
+          <span class="badge-access-modern">Rider Access</span>
           <h2 class="auth-heading mt-2">Welcome Back</h2>
-          <p class="auth-subheading">Please enter your credentials to access your dashboard.</p>
+          <p class="auth-subheading">Please enter your credentials to access your rider dashboard.</p>
         </div>
 
         {% if error_message %}
           <div class="alert-custom alert-error-custom animate-shake" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i>
             <div>{{ error_message }}</div>
           </div>
         {% endif %}
 
         {% if success_message %}
           <div class="alert-custom alert-success-custom" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>
             <div>{{ success_message }}</div>
           </div>
         {% endif %}
@@ -67,15 +76,8 @@
           {% csrf_token %}
 
           <div class="form-floating-custom mb-3">
-            <label class="form-label-custom">Email</label>
-            <div class="input-group-custom">
-              <span class="input-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16">
-                  <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6m2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0m4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4m-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10s-3.516.68-4.168 1.332c-.678.678-.83 1.418-.832 1.664z" />
-                </svg>
-              </span>
-              <input type="text" id="email" name="email" class="form-control custom-input-modern" placeholder="Enter your email address." value="{{ email|default:'' }}" required autofocus />
-            </div>
+            <label class="form-label-custom">Email Address</label>
+            <input type="email" id="email" name="email" class="form-control custom-input-modern" placeholder="user@example.com" value="{{ email|default:'' }}" required autofocus />
             <span class="text-danger" id="email_error"></span>
           </div>
 
@@ -84,31 +86,20 @@
               <label class="form-label-custom mb-0">Password</label>
               <a href="{% url 'user_forgot_password' %}" class="auth-link-text">Forgot Password?</a>
             </div>
-            <div class="input-group-custom">
-              <span class="input-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock" viewBox="0 0 16 16">
-                  <path fill-rule="evenodd" d="M8 0a4 4 0 0 1 4 4v2.05a2.5 2.5 0 0 1 2 2.45v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4M4.5 7A1.5 1.5 0 0 0 3 8.5v5A1.5 1.5 0 0 0 4.5 15h7a1.5 1.5 0 0 0 1.5-1.5v-5A1.5 1.5 0 0 0 11.5 7zM8 1a3 3 0 0 0-3 3v2h6V4a3 3 0 0 0-3-3" />
-                </svg>
-              </span>
-              <input type="password" id="password" name="password" id="passwordField" class="form-control custom-input-modern" placeholder="Enter your password" required />
-            </div>
+            <input type="password" id="password" name="password" class="form-control custom-input-modern" placeholder="Enter your password" required />
             <span class="text-danger" id="pws_error"></span>
           </div>
 
           <button type="submit" class="btn btn-custom-primary-modern">
-            <span>Sign In to Dashboard</span>
-            <i class="bi bi-arrow-right ms-2"></i>
+            <span>Sign In to Rider Dashboard</span>
           </button>
         </form>
 
-        <div class="text-center mt-4 pt-3 border-top border-light">
-          <div class="register-prompt mb-2">
-            Need a new user profile?
-            <a href="{% url 'user-register' %}" class="auth-link-text fw-semibold">Register as Rider</a>
-          </div>
-          <div class="register-prompt">
-            Want to drive with CabZy?
-            <a href="{% url 'driver-register' %}" class="auth-link-text fw-bold text-decoration-underline">Register as Driver &rarr;</a>
+        <!-- Clean Footer Prompt -->
+        <div class="auth-footer-prompt">
+          <div>
+            Need a rider profile? 
+            <a href="{% url 'user-register' %}" class="auth-link-text fw-bold text-decoration-underline">Sign Up as Rider &rarr;</a>
           </div>
         </div>
       </div>
