@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from admin_users.models import User, Driver
 from django.db.models import Q
 from django.contrib import messages
@@ -69,28 +69,35 @@ def user_login(request):
     context = {}
     
     if request.method == "POST":
-        email = request.POST.get('email')
-        password = request.POST.get('password')
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '').strip()
         
         context['email'] = email
         
         if not email or not password:
-            context['error_message'] = "Please enter both username and password."
+            context['error_message'] = "Please enter both email and password."
             return render(request,"pages/login.html",context)
         
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
+        user_obj = User.objects.filter(email__iexact=email).first()
+        driver_obj = None
+        if not user_obj:
+            driver_obj = Driver.objects.filter(email__iexact=email).first()
+        
+        account = user_obj or driver_obj
+        if not account:
             context['error_message'] = "Email not found."
             return render(request, "pages/login.html", context)
         
-        if user.check_password(password):
-            if email and password:
-                request.session["user_id"] = user.id
-                request.session["user_name"] = user.name
-                
-                messages.success(request,"Login successfully..")
-                return redirect('user-dashboard')
+        if account.check_password(password):
+            request.session["user_id"] = account.id
+            request.session["user_name"] = account.name
+            request.session["user_email"] = account.email
+            request.session["is_driver"] = bool(driver_obj)
+            
+            messages.success(request, f"Welcome back, {account.name}! Login successful.")
+            if driver_obj:
+                return redirect('driver-dashboard')
+            return redirect('user-dashboard')
         else:
             context['error_message'] = "Incorrect password. Please try again."
             return render(request, "pages/login.html", context)
@@ -99,13 +106,14 @@ def user_login(request):
 
 def user_logout(request):
     request.session.pop("user_id", None)
+    request.session.pop("user_name", None)
+    request.session.pop("user_email", None)
+    request.session.pop("is_driver", None)
     messages.success(request, "Logged out successfully.")
     context={
         "success_message":"Logout successfully.."
     }
     return render(request,"pages/login.html",context)
-
-from django.shortcuts import render, redirect
 
 def user_dashboard(request):
     if not request.session.get("user_id"):
@@ -113,8 +121,42 @@ def user_dashboard(request):
             "error_message": "Unauthorized access. Please sign in.",
         })
     
+    if request.session.get("is_driver"):
+        return redirect('driver-dashboard')
     
     return render(request, "pages/dashboard.html")
+
+def driver_dashboard(request):
+    if not request.session.get("user_id") or not request.session.get("is_driver"):
+        return render(request, "pages/login.html", {
+            "error_message": "Unauthorized access. Driver sign in required.",
+        })
+    
+    driver_obj = get_object_or_404(Driver, id=request.session["user_id"])
+    
+    if request.method == "POST":
+        new_status = request.POST.get("status", "").strip()
+        if new_status in ['AVAILABLE', 'ON_TRIP', 'OFFLINE']:
+            driver_obj.status = new_status
+            driver_obj.save()
+            messages.success(request, f"Duty status updated to {driver_obj.get_status_display()}.")
+            return redirect('driver-dashboard')
+            
+    return render(request, "pages/driver_dashboard.html", {
+        "driver_obj": driver_obj
+    })
+
+def driver_profile(request):
+    if not request.session.get("user_id") or not request.session.get("is_driver"):
+        return render(request, "pages/login.html", {
+            "error_message": "Unauthorized access. Driver sign in required.",
+        })
+    
+    driver_obj = get_object_or_404(Driver, id=request.session["user_id"])
+    
+    return render(request, "pages/driver_profile.html", {
+        "driver_obj": driver_obj
+    })
 
 def driver_register(request):
     if request.method == "POST":
@@ -202,6 +244,8 @@ def user_forgot_password(request):
             })
 
         user = User.objects.filter(email__iexact=email, is_active=True).first()
+        if not user:
+            user = Driver.objects.filter(email__iexact=email, is_active=True).first()
 
         if user:
             otp_code = generate_user_otp()
@@ -214,7 +258,7 @@ def user_forgot_password(request):
             })
         else:
             return render(request, 'pages/forgot_password.html', {
-                'error_message': f'No registered user account found with email address "{email}".',
+                'error_message': f'No registered account found with email address "{email}".',
                 'email': email
             })
 
@@ -287,6 +331,8 @@ def user_reset_password(request):
             })
 
         user = User.objects.filter(email__iexact=reset_email, is_active=True).first()
+        if not user:
+            user = Driver.objects.filter(email__iexact=reset_email, is_active=True).first()
 
         if user:
             user.set_password(new_password)
@@ -302,7 +348,7 @@ def user_reset_password(request):
             })
         else:
             return render(request, 'pages/forgot_password.html', {
-                'error_message': 'User account not found. Please try again.'
+                'error_message': 'Account not found. Please try again.'
             })
 
     return render(request, 'pages/reset_password.html', {

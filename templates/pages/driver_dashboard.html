@@ -1,0 +1,247 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}
+  Driver Dashboard | CabZy Taxi Booking
+{% endblock %}
+
+{% block body_class %}
+  dashboard-page-body
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .driver-hero-bg {
+        background: linear-gradient(135deg, #4A0E0E 0%, #7F1D1D 50%, #991B1B 100%) !important;
+    }
+    .status-badge-available {
+        background-color: #DCFCE7;
+        color: #15803D;
+        border: 1px solid #BBF7D0;
+    }
+    .status-badge-ontrip {
+        background-color: #FEF9C3;
+        color: #854D0E;
+        border: 1px solid #FEF08A;
+    }
+    .status-badge-offline {
+        background-color: #FEE2E2;
+        color: #991B1B;
+        border: 1px solid #FCA5A5;
+    }
+    .dashboard-card-custom {
+        background: #FFFFFF;
+        border: 1px solid var(--border-light-beige);
+        border-radius: 20px;
+        box-shadow: 0 4px 16px rgba(43, 23, 23, 0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .dashboard-card-custom:hover {
+        box-shadow: 0 8px 24px rgba(43, 23, 23, 0.08);
+    }
+    .stat-val-large {
+        font-size: 2.1rem;
+        font-weight: 800;
+        color: var(--main-text-dark-brown);
+    }
+    .stat-label-sub {
+        font-size: 0.775rem;
+        font-weight: 700;
+        color: var(--secondary-text-muted-brown);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .duty-btn-group .btn {
+        padding: 0.5rem 1.25rem;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+  {% include 'components/navbar.html' %}
+
+  <main class="container my-4 my-md-5">
+    
+    <!-- Welcome Header Banner (100% Icon-Free) -->
+    <section class="dashboard-welcome-card driver-hero-bg mb-4 p-4 p-md-5 rounded-4 position-relative overflow-hidden anim-fade-up">
+      <div class="row align-items-center position-relative z-index-2">
+        <div class="col-lg-8">
+          <div class="brand-badge-pill mb-3" style="background: rgba(244, 196, 48, 0.18); border: 1px solid rgba(244, 196, 48, 0.45); color: #F4C430;">
+            CabZy Driver Partner Network
+          </div>
+          <h1 class="fw-bold display-6 text-white mb-2 title-glow">Welcome Back, {{ driver_obj.name }}!</h1>
+          <p class="text-white-50 lead fs-6 mb-3">
+            Assigned Vehicle: <strong class="text-white">{{ driver_obj.vehicle_name|default:"Toyota Camry Hybrid" }}</strong> &bull; License: <strong class="text-white">{{ driver_obj.license_number }}</strong>
+          </p>
+
+          <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="fw-semibold text-white small me-2">Current Duty Status:</span>
+            {% if driver_obj.status == 'AVAILABLE' %}
+              <span class="badge status-badge-available px-3 py-2 rounded-pill fw-bold fs-6">Available for Rides</span>
+            {% elif driver_obj.status == 'ON_TRIP' %}
+              <span class="badge status-badge-ontrip px-3 py-2 rounded-pill fw-bold fs-6">On Trip</span>
+            {% else %}
+              <span class="badge status-badge-offline px-3 py-2 rounded-pill fw-bold fs-6">Offline / Off Duty</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Interactive Duty Status Toggle Control -->
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+          <div class="bg-white bg-opacity-10 p-3 rounded-4 backdrop-blur border border-white-50 text-start">
+            <label class="form-label text-white small fw-bold d-block mb-2">Toggle Duty Status:</label>
+            <form method="post" action="{% url 'driver-dashboard' %}" class="duty-btn-group">
+              {% csrf_token %}
+              <div class="btn-group w-100" role="group">
+                <button type="submit" name="status" value="AVAILABLE" class="btn btn-sm {% if driver_obj.status == 'AVAILABLE' %}btn-success active{% else %}btn-outline-light{% endif %} fw-bold">
+                  Available
+                </button>
+                <button type="submit" name="status" value="ON_TRIP" class="btn btn-sm {% if driver_obj.status == 'ON_TRIP' %}btn-warning active{% else %}btn-outline-light{% endif %} fw-bold">
+                  On Trip
+                </button>
+                <button type="submit" name="status" value="OFFLINE" class="btn btn-sm {% if driver_obj.status == 'OFFLINE' %}btn-danger active{% else %}btn-outline-light{% endif %} fw-bold">
+                  Offline
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="ambient-glow-circle-1"></div>
+      <div class="ambient-glow-circle-2"></div>
+    </section>
+
+    <!-- Django Flash Messages -->
+    {% if messages %}
+      <div class="mb-4">
+        {% for message in messages %}
+          <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show rounded-3 fw-semibold shadow-sm" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Key Performance Stat Cards (100% Icon-Free) -->
+    <section class="row g-3 g-md-4 mb-4">
+      <div class="col-12 col-sm-6 col-lg-3 anim-fade-up anim-delay-1">
+        <div class="stat-card p-4 bg-white rounded-4 shadow-sm border border-light-beige">
+          <span class="stat-label-sub">Today's Earnings</span>
+          <div class="stat-val-large mt-1">&#8377;3,450</div>
+          <div class="stat-footer mt-3 pt-2 border-top border-light-beige text-success small fw-semibold">
+            +14% vs yesterday
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3 anim-fade-up anim-delay-2">
+        <div class="stat-card p-4 bg-white rounded-4 shadow-sm border border-light-beige">
+          <span class="stat-label-sub">Completed Trips</span>
+          <div class="stat-val-large mt-1">24 Rides</div>
+          <div class="stat-footer mt-3 pt-2 border-top border-light-beige text-muted-brown small">
+            100% On-time Completion
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3 anim-fade-up anim-delay-3">
+        <div class="stat-card p-4 bg-white rounded-4 shadow-sm border border-light-beige">
+          <span class="stat-label-sub">Driver Rating</span>
+          <div class="stat-val-large mt-1">4.92 <span class="fs-6 text-muted">/ 5.0</span></div>
+          <div class="stat-footer mt-3 pt-2 border-top border-light-beige text-muted-brown small">
+            Top Rated Partner
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3 anim-fade-up anim-delay-4">
+        <div class="stat-card p-4 bg-white rounded-4 shadow-sm border border-light-beige">
+          <span class="stat-label-sub">Assigned Vehicle</span>
+          <div class="fw-bold text-dark-brown mt-2 fs-5 text-truncate" title="{{ driver_obj.vehicle_name|default:'Toyota Camry Hybrid' }}">
+            {{ driver_obj.vehicle_name|default:"Toyota Camry Hybrid" }}
+          </div>
+          <div class="stat-footer mt-3 pt-2 border-top border-light-beige text-muted-brown small">
+            Verified Fleet Vehicle
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Separate Driver Profile Link Banner -->
+    <section class="mb-5 anim-fade-up">
+      <div class="dashboard-card-custom p-4 p-md-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
+        <div>
+          <h4 class="fw-bold text-dark-brown mb-1">Driver Partner Profile Page</h4>
+          <p class="text-muted small mb-0">View your personal driver details, license information, phone, email, and registration records on a dedicated profile page.</p>
+        </div>
+        <div>
+          <a href="{% url 'driver-profile' %}" class="btn btn-custom-primary-modern px-4 py-2 fw-bold text-nowrap">View Driver Profile &rarr;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Trip Dispatches Section (100% Icon-Free) -->
+    <section class="row g-4 anim-fade-up">
+      <div class="col-12">
+        <div class="dashboard-card-custom p-4 p-md-5">
+          <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+            <div>
+              <h4 class="fw-bold text-dark-brown mb-0">Recent Trip Dispatches</h4>
+              <small class="text-muted">Live dispatch requests assigned to {{ driver_obj.name }}</small>
+            </div>
+            <span class="badge bg-cream-soft text-primary-red border border-light-beige px-3 py-2 rounded-pill fw-bold">Live Feed</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-custom-dashboard align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Trip ID</th>
+                  <th>Passenger</th>
+                  <th>Pickup Location</th>
+                  <th>Drop Destination</th>
+                  <th>Fare</th>
+                  <th>Trip Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="fw-bold">#TRIP-9081</td>
+                  <td class="fw-semibold">Sarah Jenkins</td>
+                  <td>Terminal 2, Airport</td>
+                  <td>Financial District, Bldg A</td>
+                  <td class="fw-bold text-success">&#8377;650</td>
+                  <td><span class="badge bg-success px-3 py-1 rounded-pill">Completed</span></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">#TRIP-9082</td>
+                  <td class="fw-semibold">Michael Vance</td>
+                  <td>Central Metro Station</td>
+                  <td>Grand Hyatt Hotel</td>
+                  <td class="fw-bold text-success">&#8377;420</td>
+                  <td><span class="badge bg-success px-3 py-1 rounded-pill">Completed</span></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">#TRIP-9083</td>
+                  <td class="fw-semibold">David Ross</td>
+                  <td>Tech Park Gate 4</td>
+                  <td>Sunset Avenue #402</td>
+                  <td class="fw-bold text-primary">&#8377;380</td>
+                  <td><span class="badge bg-warning text-dark px-3 py-1 rounded-pill">In Transit</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Custom Footer -->
+  {% include 'components/footer.html' %}
+{% endblock %}
