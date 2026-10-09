@@ -1,23 +1,44 @@
 {% extends 'components/base.html' %}
 {% load static %}
+<<<<<<< HEAD
 {% block title %}Verify OTP — CabZy Rider{% endblock %}
 
 {% block body_class %}login-page-body{% endblock %}
+=======
+{% block title %}Verify OTP | CabZy Taxi Booking{% endblock %}
+
+{% block body_class %}login-page-body login-theme{% endblock %}
+>>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
 
 {% block content %}
 <div class="auth-split-container">
     <div class="auth-brand-pane">
         <div class="brand-pane-content">
+<<<<<<< HEAD
             <span class="nest-eyebrow text-warning mb-3">Security Check</span>
             <h1 class="display-5 fw-extrabold text-white mb-3" style="letter-spacing: -0.02em;">OTP Verification.</h1>
             <p class="text-white-50 lead fs-6 mb-4">
                 Check your console terminal output for the 6-digit OTP code.
             </p>
+=======
+            <div class="brand-badge-pill mb-3">
+                CabZy Security Portal
+            </div>
+            <h1 class="display-5 fw-bold text-white mb-3">Verify OTP Code.</h1>
+            <p class="text-white-50 lead mb-4">Please check your email for the 6-digit one-time password code to confirm your identity.</p>
+
+            <div class="feature-pills-group">
+                <div class="feature-pill">Instant OTP Verification</div>
+                <div class="feature-pill">Encrypted Password Reset</div>
+                <div class="feature-pill">24/7 Account Protection</div>
+            </div>
+>>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
         </div>
         <div class="brand-pane-glow"></div>
     </div>
 
     <div class="auth-form-pane">
+<<<<<<< HEAD
         <div class="login-card-modern text-center">
             <div class="mb-4">
                 <span class="nest-badge nest-badge-completed">Verify Code</span>
@@ -46,4 +67,101 @@
         </div>
     </div>
 </div>
+=======
+        <div class="login-card-modern">
+            <div class="mb-3">
+                <span class="badge-access-modern">OTP Verification</span>
+                <h2 class="auth-heading mt-2">Enter OTP Code</h2>
+                <p class="auth-subheading">
+                    We sent a 6-digit OTP code to: 
+                    <strong>{{ email|default:request.session.user_reset_email }}</strong>
+                </p>
+            </div>
+
+            {% if error_message %}
+            <div class="alert-custom alert-error-custom" role="alert">
+                <div>{{ error_message }}</div>
+            </div>
+            {% endif %}
+
+            {% if success_message %}
+            <div class="alert-custom alert-success-custom" role="alert">
+                <div>{{ success_message }}</div>
+            </div>
+            {% endif %}
+
+            <form method="post" id="user_otp_form" action="{% url 'user_verify_otp' %}" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                <div class="mb-4 text-center">
+                    <label class="form-label-custom text-center mb-2" for="otp">6-Digit OTP Code</label>
+                    <input type="text" id="otp" name="otp" class="form-control custom-input-modern text-center fw-bold fs-3" placeholder="123456" maxlength="6" inputmode="numeric" pattern="[0-9]*" required autofocus style="letter-spacing: 8px; padding-left: 1rem;">
+                    <span class="text-danger small mt-2 d-block text-center" id="otpErrorMsg"></span>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn btn-custom-primary-modern">
+                    <span>Verify OTP Code</span>
+                </button>
+            </form>
+
+            <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-light">
+                <span style="font-size: 0.85rem; color: var(--secondary-text-muted-brown);">
+                    Didn't receive code?
+                    <a href="{% url 'user_forgot_password' %}" class="auth-link-text fw-semibold">Resend OTP</a>
+                </span>
+                <span style="font-size: 0.85rem; color: var(--secondary-text-muted-brown);">
+                    <a href="{% url 'user_login' %}" class="auth-link-text fw-semibold">Back to Login</a>
+                </span>
+            </div>
+        </div>
+
+        <div class="footer-note-modern text-center mt-4">CabZy Taxi Booking &copy; 2026 &bull; Secure User Portal</div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('user_otp_form');
+    const otpInput = document.getElementById('otp');
+    const otpErrorMsg = document.getElementById('otpErrorMsg');
+
+    // Filter non-digit characters in real-time
+    otpInput.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (otpInput.classList.contains('is-invalid')) {
+            validateOTP();
+        }
+    });
+
+    function validateOTP() {
+        const val = otpInput.value.trim();
+        if (!val) {
+            otpInput.classList.remove('is-valid');
+            otpInput.classList.add('is-invalid');
+            otpErrorMsg.innerText = 'Please enter your 6-digit OTP code.';
+            return false;
+        }
+        if (val.length !== 6 || !/^\d{6}$/.test(val)) {
+            otpInput.classList.remove('is-valid');
+            otpInput.classList.add('is-invalid');
+            otpErrorMsg.innerText = 'OTP code must be exactly 6 numeric digits.';
+            return false;
+        }
+        otpInput.classList.remove('is-invalid');
+        otpInput.classList.add('is-valid');
+        otpErrorMsg.innerText = '';
+        return true;
+    }
+
+    otpInput.addEventListener('blur', validateOTP);
+
+    form.addEventListener('submit', function(e) {
+        if (!validateOTP()) {
+            e.preventDefault();
+            otpInput.focus();
+        }
+    });
+});
+</script>
+>>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
 {% endblock %}

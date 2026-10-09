@@ -1,5 +1,6 @@
 {% extends 'components/base.html' %}
 {% load static %}
+<<<<<<< HEAD
 {% block title %}Apply as Driver Partner — CabZy Mobility{% endblock %}
 
 {% block body_class %}login-page-body admin-login-theme{% endblock %}
@@ -17,11 +18,108 @@
             <div class="feature-pills-group">
                 <div class="feature-pill"><i class="bi bi-shield-check text-warning me-1"></i> Verified Partner</div>
                 <div class="feature-pill"><i class="bi bi-star-fill text-warning me-1"></i> Top Commissions</div>
+=======
+{% block title %}Driver Partner Registration | CabZy Taxi Booking{% endblock %}
+
+{% block body_class %}login-page-body admin-login-theme{% endblock %}
+
+{% block extra_css %}
+<style>
+    .driver-brand-pane {
+        background: linear-gradient(135deg, #4A0E0E 0%, #7F1D1D 50%, #991B1B 100%) !important;
+    }
+    .driver-badge-pill {
+        background: rgba(244, 196, 48, 0.18) !important;
+        border: 1px solid rgba(244, 196, 48, 0.45) !important;
+        color: #F4C430 !important;
+    }
+    .driver-stat-box {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 12px;
+        padding: 0.85rem 1rem;
+        backdrop-filter: blur(8px);
+        margin-top: 1.5rem;
+    }
+    .driver-stat-val {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #F4C430;
+    }
+    .driver-stat-lbl {
+        font-size: 0.75rem;
+        color: rgba(255, 249, 240, 0.8);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .custom-input-modern {
+        padding: 0.75rem 1rem !important;
+    }
+    .custom-input-modern.is-invalid {
+        border-color: var(--error-red) !important;
+        background-color: #FFF5F5 !important;
+    }
+    .custom-input-modern.is-valid {
+        border-color: var(--success-dark-green) !important;
+        background-color: #F0FDF4 !important;
+    }
+    .license-input {
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Loading Overlay -->
+<div id="loader" class="login-loader-overlay d-none">
+    <div class="loader-content-box">
+        <div class="cabzy-spinner"></div>
+        <h4 class="loader-title mt-3">Registering Driver...</h4>
+        <p class="loader-subtitle">Creating your official CabZy driver partner profile</p>
+    </div>
+</div>
+
+<div class="auth-split-container register-split-container my-4" style="max-width: 1180px;">
+    <!-- Left Hero Pane -->
+    <div class="auth-brand-pane driver-brand-pane">
+        <div class="brand-pane-content">
+            <div class="brand-badge-pill driver-badge-pill mb-3">
+                CabZy Driver Partner Portal
+            </div>
+            <h1 class="display-6 fw-bold text-white mb-3">Drive With Confidence. Earn Without Limits.</h1>
+            <p class="text-white-50 lead mb-3 fs-6">
+                Turn your driving skills into substantial daily income. Join CabZy's elite network of professional fleet drivers with instant ride requests, transparent fares, and total flexibility.
+            </p>
+            
+            <div class="feature-pills-group">
+                <div class="feature-pill">Instant Payouts</div>
+                <div class="feature-pill">Flexible Schedules</div>
+                <div class="feature-pill">Ride Protection</div>
+                <div class="feature-pill">Smart GPS Routing</div>
+            </div>
+
+            <div class="row g-2 driver-stat-box">
+                <div class="col-4 text-center border-end border-white-50">
+                    <div class="driver-stat-val">4.9</div>
+                    <div class="driver-stat-lbl">Partner Rating</div>
+                </div>
+                <div class="col-4 text-center border-end border-white-50">
+                    <div class="driver-stat-val">100%</div>
+                    <div class="driver-stat-lbl">Verified Trips</div>
+                </div>
+                <div class="col-4 text-center">
+                    <div class="driver-stat-val">24/7</div>
+                    <div class="driver-stat-lbl">Road Assistance</div>
+                </div>
+>>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
             </div>
         </div>
         <div class="brand-pane-glow"></div>
     </div>
 
+<<<<<<< HEAD
     <div class="auth-form-pane">
         <div class="login-card-modern">
             <div class="auth-nav-switcher">
@@ -91,12 +189,153 @@
             <div class="text-center pt-3 border-top border-light">
                 <span class="small text-muted">Already registered as driver?</span>
                 <a href="{% url 'driver-login' %}" class="auth-link-text fw-bold ms-1">Sign In as Driver &rarr;</a>
+=======
+    <!-- Right Form Pane -->
+    <div class="auth-form-pane">
+        <div class="login-card-modern">
+            <!-- Unified Role Switcher -->
+            <div class="auth-nav-switcher">
+                <div class="auth-role-tabs">
+                    <a href="{% url 'user_login' %}" class="auth-role-tab">Rider Portal</a>
+                    <a href="{% url 'driver-login' %}" class="auth-role-tab driver-role-tab active">Driver Partner</a>
+                </div>
+                <div class="auth-sub-nav">
+                    <a href="{% url 'driver-login' %}" class="auth-sub-link">&larr; Driver Sign In</a>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <span class="badge-access-modern">
+                    Driver Partner Onboarding
+                </span>
+                <h2 class="auth-heading mt-2">Driver Registration</h2>
+                <p class="auth-subheading">Enter your official driver details and credentials below.</p>
+            </div>
+
+            {% if error_message %}
+            <div class="alert-custom alert-error-custom" role="alert">
+                <div>{{ error_message }}</div>
+            </div>
+            {% endif %}
+
+            {% if success_message %}
+            <div class="alert-custom alert-success-custom" role="alert">
+                <div>
+                    <div>{{ success_message }}</div>
+                    <div class="mt-2">
+                        <a href="{% url 'driver-login' %}" class="btn btn-sm btn-dark px-3 fw-bold">Proceed to Driver Sign In</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <form method="post" id="driver_register_form" action="{% url 'driver-register' %}" class="needs-validation" novalidate>
+                {% csrf_token %}
+                
+                <div id="formBody">
+                    <!-- Full Name -->
+                    <div class="mb-3">
+                        <label class="form-label-custom" for="name">
+                            Full Name <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" id="name" name="name" class="form-control custom-input-modern" placeholder="Enter your full name" value="{{ form_data.name|default:'' }}" required autofocus>
+                        <span class="text-danger small mt-1 d-block" id="errorMsgName"></span>
+                    </div>
+
+                    <!-- Email & Phone (Grid Row) -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label-custom" for="email">
+                                Email Address <span class="text-danger">*</span>
+                            </label>
+                            <input type="email" id="email" name="email" class="form-control custom-input-modern" placeholder="driver@fleet.com" value="{{ form_data.email|default:'' }}" required>
+                            <span id="errorMsgEmail" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label-custom" for="phone">
+                                Phone Number <span class="text-danger">*</span>
+                            </label>
+                            <input type="tel" id="phone" name="phone" class="form-control custom-input-modern" placeholder="e.g. 9876543210" value="{{ form_data.phone|default:'' }}" required>
+                            <span id="errorMsgPhone" class="text-danger small mt-1 d-block"></span> 
+                        </div>
+                    </div>
+
+                    <!-- Driving License & Vehicle (Grid Row) -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label-custom" for="license_number">
+                                Driving License Number <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" id="license_number" name="license_number" class="form-control custom-input-modern license-input" placeholder="e.g. DL-042011009876" value="{{ form_data.license_number|default:'' }}" required>
+                            <span id="errorMsgLicense" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label-custom" for="vehicle_name">
+                                Assigned / Preferred Vehicle
+                            </label>
+                            <input type="text" id="vehicle_name" name="vehicle_name" class="form-control custom-input-modern" placeholder="Toyota Camry Hybrid" value="{{ form_data.vehicle_name|default:'Toyota Camry Hybrid' }}">
+                            <span id="errorMsgVehicle" class="text-muted small mt-1 d-block" style="font-size: 0.75rem;">Default model if unassigned</span>
+                        </div>
+                    </div>
+
+                    <!-- Password & Confirm Password (Grid Row) -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label-custom" for="password">
+                                Account Password <span class="text-danger">*</span>
+                            </label>
+                            <input type="password" id="password" name="password" class="form-control custom-input-modern" placeholder="Min 6 characters" required>
+                            <span id="errorMsgPassword" class="text-danger small mt-1 d-block"></span> 
+                        </div>
+
+                        <div class="col-12 col-md-6">
+                            <label class="form-label-custom" for="confirm_password">
+                                Confirm Password <span class="text-danger">*</span>
+                            </label>
+                            <input type="password" id="confirm_password" name="confirm_password" class="form-control custom-input-modern" placeholder="Re-enter password" required>
+                            <span id="errorMsgConfirmPassword" class="text-danger small mt-1 d-block"></span> 
+                        </div>
+                    </div>
+
+                    <!-- Terms Agreement Checkbox -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="termsCheck" required checked>
+                        <label class="form-check-label small text-muted" for="termsCheck">
+                            I verify that all driving license details provided are genuine and I agree to the <a href="#" class="auth-link-text">Driver Partner Code of Conduct</a>.
+                        </label>
+                        <span id="errorMsgTerms" class="text-danger small mt-1 d-block"></span>
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn btn-custom-primary-modern">
+                    <span>Register as Driver</span>
+                </button>
+            </form>
+
+            <!-- Clean Footer Prompt -->
+            <div class="auth-footer-prompt">
+                <div>
+                    Already registered as a driver? 
+                    <a href="{% url 'driver-login' %}" class="auth-link-text fw-bold text-decoration-underline">Driver Sign In &rarr;</a>
+                </div>
+>>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
             </div>
         </div>
 
         <div class="footer-note-modern text-center mt-3">
+<<<<<<< HEAD
             CabZy Driver Network &copy; 2026 &bull; All Rights Reserved
         </div>
     </div>
 </div>
+=======
+            CabZy Taxi Booking &copy; 2026 &bull; Driver Partner Network
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'js/driver_register.js' %}"></script>
+>>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
 {% endblock %}

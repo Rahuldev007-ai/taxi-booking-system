@@ -1,5 +1,6 @@
 {% extends 'components/base.html' %}
 {% load static %}
+<<<<<<< HEAD
 {% block title %}Driver Partner Sign In — CabZy Mobility{% endblock %}
 
 {% block body_class %}login-page-body login-theme{% endblock %}
@@ -18,11 +19,66 @@
                 <div class="feature-pill"><i class="bi bi-geo-alt text-warning me-1"></i> Smart Trip Match</div>
                 <div class="feature-pill"><i class="bi bi-wallet2 text-warning me-1"></i> Instant Payouts</div>
                 <div class="feature-pill"><i class="bi bi-shield-check text-warning me-1"></i> 24/7 Support</div>
+=======
+{% block title %}Driver Partner Sign In | CabZy Taxi Booking{% endblock %}
+
+{% block body_class %}login-page-body login-theme{% endblock %}
+
+{% block extra_css %}
+<style>
+    .driver-brand-pane {
+        background: linear-gradient(135deg, #4A0E0E 0%, #7F1D1D 50%, #991B1B 100%) !important;
+    }
+    .driver-badge-pill {
+        background: rgba(244, 196, 48, 0.18) !important;
+        border: 1px solid rgba(244, 196, 48, 0.45) !important;
+        color: #F4C430 !important;
+    }
+    .custom-input-modern {
+        padding: 0.75rem 1rem !important;
+    }
+    .custom-input-modern.is-invalid {
+        border-color: var(--error-red) !important;
+        background-color: #FFF5F5 !important;
+    }
+    .custom-input-modern.is-valid {
+        border-color: var(--success-dark-green) !important;
+        background-color: #F0FDF4 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Driver Login Loader Overlay -->
+<div id="loginLoaderOverlay" class="login-loader-overlay d-none">
+    <div class="loader-content-box">
+        <div class="cabzy-spinner"></div>
+        <h4 class="loader-title mt-3">Signing you in...</h4>
+        <p class="loader-subtitle">Accessing your Driver Partner Dashboard</p>
+    </div>
+</div>
+
+<div class="auth-split-container">
+    <!-- Left Hero Pane -->
+    <div class="auth-brand-pane driver-brand-pane">
+        <div class="brand-pane-content">
+            <div class="brand-badge-pill driver-badge-pill mb-3">
+                CabZy Driver Partner Portal
+            </div>
+            <h1 class="display-5 fw-bold text-white mb-3">Drive & Earn With CabZy.</h1>
+            <p class="text-white-50 lead mb-4">Sign in to manage active trip dispatches, toggle your duty availability, track daily revenue, and review rider feedback.</p>
+
+            <div class="feature-pills-group">
+                <div class="feature-pill">Real-Time Dispatches</div>
+                <div class="feature-pill">Instant Duty Toggle</div>
+                <div class="feature-pill">Secure Driver Session</div>
+>>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
             </div>
         </div>
         <div class="brand-pane-glow"></div>
     </div>
 
+<<<<<<< HEAD
     <div class="auth-form-pane">
         <div class="login-card-modern">
             <div class="auth-nav-switcher">
@@ -54,10 +110,52 @@
                 <div class="mb-3">
                     <label class="nest-form-label">Driver Registered Email</label>
                     <input type="email" name="email" class="nest-input" placeholder="driver@example.com" value="{{ email|default:'' }}" required autofocus />
+=======
+    <!-- Right Form Pane -->
+    <div class="auth-form-pane">
+        <div class="login-card-modern">
+            <!-- Unified Role Switcher -->
+            <div class="auth-nav-switcher">
+                <div class="auth-role-tabs">
+                    <a href="{% url 'user_login' %}" class="auth-role-tab">Rider Portal</a>
+                    <a href="{% url 'driver-login' %}" class="auth-role-tab driver-role-tab active">Driver Partner</a>
+                </div>
+                <div class="auth-sub-nav">
+                    <a href="{% url 'driver-register' %}" class="auth-sub-link">Driver Registration &rarr;</a>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <span class="badge-access-modern">Driver Access</span>
+                <h2 class="auth-heading mt-2">Driver Partner Sign In</h2>
+                <p class="auth-subheading">Enter your driver email and password to access your dashboard.</p>
+            </div>
+
+            {% if error_message %}
+            <div class="alert-custom alert-error-custom" role="alert">
+                <div>{{ error_message }}</div>
+            </div>
+            {% endif %}
+
+            {% if success_message %}
+            <div class="alert-custom alert-success-custom" role="alert">
+                <div>{{ success_message }}</div>
+            </div>
+            {% endif %}
+
+            <form method="post" id="driver_login_form" action="{% url 'driver-login' %}" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                <div class="form-floating-custom mb-3">
+                    <label class="form-label-custom" for="email">Driver Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control custom-input-modern" placeholder="driver@fleet.com" value="{{ email|default:'' }}" required autofocus />
+                    <span class="text-danger small mt-1 d-block" id="emailErrorMsg"></span>
+>>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
                 </div>
 
                 <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-1">
+<<<<<<< HEAD
                         <label class="nest-form-label mb-0">Password</label>
                         <a href="{% url 'user_forgot_password' %}" class="auth-link-text">Forgot Password?</a>
                     </div>
@@ -79,4 +177,102 @@
         <div class="footer-note-modern text-center mt-4">CabZy Driver Network &copy; 2026 &bull; Partner Portal</div>
     </div>
 </div>
+=======
+                        <label class="form-label-custom mb-0" for="password">Password</label>
+                        <a href="{% url 'user_forgot_password' %}" class="auth-link-text">Forgot Password?</a>
+                    </div>
+                    <input type="password" id="password" name="password" class="form-control custom-input-modern" placeholder="Enter your password" required />
+                    <span class="text-danger small mt-1 d-block" id="passwordErrorMsg"></span>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn btn-custom-primary-modern">
+                    <span>Sign In to Driver Dashboard</span>
+                </button>
+            </form>
+
+            <!-- Clean Footer Prompt -->
+            <div class="auth-footer-prompt">
+                <div>
+                    Need a Driver Partner Account? 
+                    <a href="{% url 'driver-register' %}" class="auth-link-text fw-bold text-decoration-underline">Register as Driver &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note-modern text-center mt-4">CabZy Taxi Booking &copy; 2026 &bull; Secure Driver Portal</div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('driver_login_form');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const emailErrorMsg = document.getElementById('emailErrorMsg');
+    const passwordErrorMsg = document.getElementById('passwordErrorMsg');
+
+    function validateEmail() {
+        const val = emailInput.value.trim();
+        const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+        if (!val || !emailRegex.test(val)) {
+            emailInput.classList.remove('is-valid');
+            emailInput.classList.add('is-invalid');
+            emailErrorMsg.innerText = 'Please enter a valid driver email address.';
+            return false;
+        }
+        emailInput.classList.remove('is-invalid');
+        emailInput.classList.add('is-valid');
+        emailErrorMsg.innerText = '';
+        return true;
+    }
+
+    function validatePassword() {
+        const val = passwordInput.value.trim();
+        if (!val) {
+            passwordInput.classList.remove('is-valid');
+            passwordInput.classList.add('is-invalid');
+            passwordErrorMsg.innerText = 'Please enter your password.';
+            return false;
+        }
+        passwordInput.classList.remove('is-invalid');
+        passwordInput.classList.add('is-valid');
+        passwordErrorMsg.innerText = '';
+        return true;
+    }
+
+    emailInput.addEventListener('blur', validateEmail);
+    emailInput.addEventListener('input', function() {
+        if (emailInput.classList.contains('is-invalid')) validateEmail();
+    });
+
+    passwordInput.addEventListener('blur', validatePassword);
+    passwordInput.addEventListener('input', function() {
+        if (passwordInput.classList.contains('is-invalid')) validatePassword();
+    });
+
+    form.addEventListener('submit', function(e) {
+        const isEmailOk = validateEmail();
+        const isPassOk = validatePassword();
+
+        if (!isEmailOk || !isPassOk) {
+            e.preventDefault();
+            if (!isEmailOk) emailInput.focus();
+            else if (!isPassOk) passwordInput.focus();
+            return false;
+        }
+
+        const loader = document.getElementById('loginLoaderOverlay');
+        const submitBtn = document.getElementById('submitBtn');
+        if (loader) {
+            loader.classList.remove('d-none');
+            loader.classList.add('active');
+        }
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Signing you in...';
+        }
+    });
+});
+</script>
+>>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
 {% endblock %}
