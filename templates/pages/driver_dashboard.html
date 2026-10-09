@@ -1,0 +1,157 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}Driver Console — CabZy Partner{% endblock %}
+
+{% block content %}
+<div class="admin-layout-wrapper">
+    {% include 'components/sidebar.html' %}
+
+    <main class="admin-main-content">
+        <header class="dashboard-header-bar mb-4">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-dark btn-sm rounded-pill fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+                        <i class="bi bi-list fs-5"></i>
+                    </button>
+                    <div>
+                        <span class="nest-eyebrow mb-0">Driver Partner</span>
+                        <h1 class="dashboard-brand-title m-0">Duty Dashboard.</h1>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF; width: 36px; height: 36px; font-size: 0.85rem;">
+                        {{ driver_obj.name|default:'D'|slice:":1" }}
+                    </div>
+                    <div class="text-end d-none d-md-block">
+                        <div class="fw-extrabold text-dark small">{{ driver_obj.name }}</div>
+                        <span class="text-muted" style="font-size: 0.7rem;">License: {{ driver_obj.license_number }}</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-lg-4 pb-5">
+            <!-- Hero Card -->
+            <div class="nest-card mb-4" style="background-color: var(--nest-teal); color: #FFF;">
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-4">
+                    <div>
+                        <span class="nest-eyebrow text-warning mb-1">Driver Partner Console</span>
+                        <h2 class="h3 fw-extrabold text-white mb-2">Welcome back, {{ driver_obj.name }}.</h2>
+                        <p class="text-white-50 mb-0 small">
+                            Assigned Vehicle: <strong class="text-white">{{ driver_obj.vehicle_name|default:'Toyota Camry Hybrid' }}</strong>
+                            <span class="mx-2">&bull;</span>
+                            License: <strong class="text-white">{{ driver_obj.license_number }}</strong>
+                        </p>
+                    </div>
+
+                    <!-- Duty Status Form -->
+                    <div class="bg-white text-dark p-3 rounded-4" style="min-width: 280px;">
+                        <span class="nest-eyebrow mb-2">Update Duty Status</span>
+                        <form method="post" action="{% url 'driver-dashboard' %}" class="d-flex gap-2">
+                            {% csrf_token %}
+                            <select name="status" class="form-select nest-select py-2 fs-7">
+                                <option value="AVAILABLE" {% if driver_obj.status == 'AVAILABLE' %}selected{% endif %}>Available for Rides</option>
+                                <option value="ON_TRIP" {% if driver_obj.status == 'ON_TRIP' %}selected{% endif %}>On Active Trip</option>
+                                <option value="OFFLINE" {% if driver_obj.status == 'OFFLINE' %}selected{% endif %}>Offline Duty</option>
+                            </select>
+                            <button type="submit" class="btn-nest-accent py-2 px-3 fs-7">Update</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Driver Metrics Grid -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="kpi-card">
+                        <div>
+                            <div class="kpi-label">Today's Earnings</div>
+                            <div class="kpi-value">&#8377; 3,250</div>
+                            <div class="small text-success mt-1"><i class="bi bi-arrow-up-right"></i> 8 rides completed</div>
+                        </div>
+                        <div class="kpi-icon-box" style="background-color: #EAF7EF; color: #1B7A43;">
+                            <i class="bi bi-wallet2"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="kpi-card">
+                        <div>
+                            <div class="kpi-label">Driver Rating</div>
+                            <div class="kpi-value">4.96 <span class="fs-6 text-muted">/ 5.0</span></div>
+                            <div class="small text-warning mt-1"><i class="bi bi-star-fill"></i> 140 ratings</div>
+                        </div>
+                        <div class="kpi-icon-box" style="background-color: var(--nest-copper-subtle); color: var(--nest-copper);">
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="kpi-card">
+                        <div>
+                            <div class="kpi-label">Acceptance Rate</div>
+                            <div class="kpi-value">98.5%</div>
+                            <div class="small text-muted mt-1"><i class="bi bi-patch-check-fill text-success"></i> Top Tier Partner</div>
+                        </div>
+                        <div class="kpi-icon-box">
+                            <i class="bi bi-speedometer2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assigned Rides Table -->
+            <div class="dashboard-card mb-4">
+                <div class="dashboard-card-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="nest-eyebrow mb-0">Dispatched Jobs</span>
+                        <h2 class="fs-5 fw-extrabold m-0">Assigned Rides Roster</h2>
+                    </div>
+                    {% if driver_obj.status == 'AVAILABLE' %}
+                        <span class="nest-badge nest-badge-completed">Duty Active</span>
+                    {% elif driver_obj.status == 'ON_TRIP' %}
+                        <span class="nest-badge nest-badge-pending">On Trip</span>
+                    {% else %}
+                        <span class="nest-badge nest-badge-offline">Offline</span>
+                    {% endif %}
+                </div>
+
+                <div class="dashboard-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="nest-table">
+                            <thead>
+                                <tr>
+                                    <th>Ride ID</th>
+                                    <th>Passenger Name</th>
+                                    <th>Pickup Address</th>
+                                    <th>Dropoff Address</th>
+                                    <th>Estimated Fare</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-extrabold" style="color: var(--nest-copper);">#CB-9104</td>
+                                    <td class="fw-bold">Downtown Customer</td>
+                                    <td>Downtown Market, Gate 4</td>
+                                    <td>City Residency 12</td>
+                                    <td class="fw-bold text-success">&#8377; 620</td>
+                                    <td><span class="nest-badge nest-badge-pending">Assigned</span></td>
+                                    <td class="text-end">
+                                        <button class="btn-nest-accent py-1 px-3 fs-7">Start Navigation</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

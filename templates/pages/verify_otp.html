@@ -1,0 +1,49 @@
+{% extends 'components/base.html' %}
+{% load static %}
+{% block title %}Verify OTP — CabZy Rider{% endblock %}
+
+{% block body_class %}login-page-body{% endblock %}
+
+{% block content %}
+<div class="auth-split-container">
+    <div class="auth-brand-pane">
+        <div class="brand-pane-content">
+            <span class="nest-eyebrow text-warning mb-3">Security Check</span>
+            <h1 class="display-5 fw-extrabold text-white mb-3" style="letter-spacing: -0.02em;">OTP Verification.</h1>
+            <p class="text-white-50 lead fs-6 mb-4">
+                Check your console terminal output for the 6-digit OTP code.
+            </p>
+        </div>
+        <div class="brand-pane-glow"></div>
+    </div>
+
+    <div class="auth-form-pane">
+        <div class="login-card-modern text-center">
+            <div class="mb-4">
+                <span class="nest-badge nest-badge-completed">Verify Code</span>
+                <h2 class="auth-heading mt-2">Enter OTP.</h2>
+                <p class="auth-subheading">Code sent to: <strong>{{ email }}</strong></p>
+            </div>
+
+            {% if error_message %}
+                <div class="alert-custom alert-error-custom mb-3 text-start">{{ error_message }}</div>
+            {% endif %}
+
+            {% if success_message %}
+                <div class="alert-custom alert-success-custom mb-3 text-start">{{ success_message }}</div>
+            {% endif %}
+
+            <form method="post" action="{% url 'user_verify_otp' %}">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <input type="text" name="otp" class="nest-input text-center fw-extrabold fs-3" placeholder="123456" maxlength="6" 
+                           inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required autofocus style="letter-spacing: 6px; color: var(--nest-copper);">
+                </div>
+                <button type="submit" class="btn-nest-accent w-100 py-3 mb-3">
+                    Verify & Continue &rarr;
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

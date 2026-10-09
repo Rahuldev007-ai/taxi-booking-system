@@ -1,0 +1,407 @@
+{% extends 'components/base.html' %}
+{% load static %}
+{% block title %}CabZy — Premium Taxi & City Mobility{% endblock %}
+
+{% block content %}
+  {% include 'components/navbar.html' %}
+
+  <!-- Main Container -->
+  <main class="py-4 py-lg-5">
+    
+    <!-- HERO SECTION (Nest Dark Teal Container) -->
+    <section class="container mb-5">
+      <div class="nest-hero-card">
+        <div class="row align-items-center g-4 position-relative" style="z-index: 2;">
+          <!-- Hero Left: Headline & Booking Form Card -->
+          <div class="col-lg-7">
+            <span class="nest-eyebrow" style="color: var(--nest-copper);">Urban Mobility Redefined</span>
+            <h1 class="nest-hero-title mb-3">Premium taxi service for seamless city travels.</h1>
+            <p class="nest-hero-subtitle">
+              Book instant rides with 24/7 verified drivers, upfront pricing, and absolute comfort. Guaranteed punctuality for every destination.
+            </p>
+            
+            <div class="d-flex flex-wrap gap-3 mt-4">
+              <a href="#booking-form-card" class="btn-nest-accent">
+                Book Instant Cab <i class="bi bi-arrow-right"></i>
+              </a>
+              <a href="#how-it-works" class="btn-nest-outline-light">
+                Explore How It Works
+              </a>
+            </div>
+          </div>
+
+          <!-- Hero Right: Booking Card Container -->
+          <div class="col-lg-5" id="booking-form-card">
+            <div class="bg-white text-dark p-4 p-md-4" style="border-radius: var(--nest-radius-lg); box-shadow: var(--nest-shadow-lg);">
+              <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <h2 class="fs-5 fw-extrabold text-dark mb-0">Reserve Your Ride</h2>
+                <span class="nest-badge nest-badge-completed">Live Fleet</span>
+              </div>
+
+              <form>
+                <div class="mb-3">
+                  <label class="nest-form-label">Pickup Location</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-geo-alt-fill text-danger"></i></span>
+                    <input type="text" class="form-control nest-input border-start-0" placeholder="e.g. Central Station, Hotel" required />
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="nest-form-label">Destination Point</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-pin-map-fill text-success"></i></span>
+                    <input type="text" class="form-control nest-input border-start-0" placeholder="e.g. International Airport" required />
+                  </div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                  <div class="col-6">
+                    <label class="nest-form-label">Date & Time</label>
+                    <input type="datetime-local" class="form-control nest-input" required />
+                  </div>
+                  <div class="col-6">
+                    <label class="nest-form-label">Vehicle Type</label>
+                    <select class="form-select nest-select">
+                      <option value="sedan">Executive Sedan</option>
+                      <option value="mini">City Mini Eco</option>
+                      <option value="suv">Premium SUV</option>
+                    </select>
+                  </div>
+                </div>
+
+                <button type="button" class="btn-nest-primary w-100 py-3 mt-2">
+                  <span>Confirm & Find Driver</span>
+                  <i class="bi bi-arrow-right"></i>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS STRIP -->
+    <section class="container mb-5">
+      <div class="nest-stats-strip">
+        <div class="row g-4 text-center">
+          <div class="col-6 col-md-3">
+            <div class="nest-stat-item">
+              <div class="nest-stat-number">500+</div>
+              <div class="nest-stat-label">Daily Rides</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="nest-stat-item">
+              <div class="nest-stat-number">8</div>
+              <div class="nest-stat-label">Major Cities</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="nest-stat-item">
+              <div class="nest-stat-number">4.92</div>
+              <div class="nest-stat-label">Average Rating</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="nest-stat-item">
+              <div class="nest-stat-number">100%</div>
+              <div class="nest-stat-label">Verified Fleet</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIDER STAT CARDS & USER DASHBOARD METRICS -->
+    <section class="container mb-5">
+      <div class="row g-3 g-md-4">
+        <div class="col-md-4">
+          <div class="kpi-card">
+            <div>
+              <div class="kpi-label">Completed Rides</div>
+              <div class="kpi-value">24</div>
+              <div class="small text-success mt-1"><i class="bi bi-arrow-up-right"></i> +3 this month</div>
+            </div>
+            <div class="kpi-icon-box">
+              <i class="bi bi-car-front-fill"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="kpi-card">
+            <div>
+              <div class="kpi-label">Wallet Balance</div>
+              <div class="kpi-value">&#8377;1,850</div>
+              <div class="small text-muted mt-1">Auto-debit active</div>
+            </div>
+            <div class="kpi-icon-box" style="background-color: var(--nest-copper-subtle); color: var(--nest-copper);">
+              <i class="bi bi-wallet2"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="kpi-card">
+            <div>
+              <div class="kpi-label">Rider Status</div>
+              <div class="kpi-value fs-3">VIP Passenger</div>
+              <div class="small text-muted mt-1"><i class="bi bi-star-fill text-warning"></i> 4.95 Rating score</div>
+            </div>
+            <div class="kpi-icon-box" style="background-color: #EAF7EF; color: #1B7A43;">
+              <i class="bi bi-patch-check-fill"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NUMBERED HOW IT WORKS SECTION (01, 02, 03, 04) -->
+    <section class="container nest-section" id="how-it-works">
+      <div class="mb-5 text-center">
+        <span class="nest-eyebrow">Seamless Process</span>
+        <h2 class="fs-1 fw-extrabold">How CabZy works.</h2>
+        <p class="text-muted mx-auto" style="max-width: 540px;">
+          Four quick steps to get from point A to point B safely and reliably.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="nest-step-card">
+            <div class="nest-step-num">01</div>
+            <h3 class="nest-step-title">Reserve Ride</h3>
+            <p class="nest-step-desc">Specify your pickup, destination, and preferred vehicle class with one click.</p>
+            <a href="#booking-form-card" class="nest-arrow-link">Choose destination <i class="bi bi-arrow-right"></i></a>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="nest-step-card">
+            <div class="nest-step-num">02</div>
+            <h3 class="nest-step-title">Get Matched</h3>
+            <p class="nest-step-desc">Our intelligent algorithm assigns the nearest top-rated driver in under 60 seconds.</p>
+            <span class="nest-arrow-link text-muted">Smart dispatch <i class="bi bi-cpu"></i></span>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="nest-step-card">
+            <div class="nest-step-num">03</div>
+            <h3 class="nest-step-title">Ride in Comfort</h3>
+            <p class="nest-step-desc">Track real-time GPS progress on your phone with live route updates.</p>
+            <span class="nest-arrow-link text-muted">Live tracking <i class="bi bi-compass"></i></span>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="nest-step-card">
+            <div class="nest-step-num">04</div>
+            <h3 class="nest-step-title">Seamless Payment</h3>
+            <p class="nest-step-desc">Pay automatically via digital wallet or cash with guaranteed transparent pricing.</p>
+            <span class="nest-arrow-link text-muted">Cashless & safe <i class="bi bi-credit-card"></i></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VEHICLES / FLEET SELECTION CARDS -->
+    <section class="container nest-section-sm" id="vehicles">
+      <div class="mb-4">
+        <span class="nest-eyebrow">Our Fleet</span>
+        <h2 class="fs-2 fw-extrabold">Choose your ride class.</h2>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="nest-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="nest-badge nest-badge-completed">Eco Mini</span>
+              <span class="fw-extrabold fs-4 text-dark">&#8377;12/km</span>
+            </div>
+            <h3 class="fs-4 fw-bold mb-2">City Mini Hatchback</h3>
+            <p class="small text-muted mb-4">Fast, nimble, and pocket-friendly for solo commuters and daily errands.</p>
+            <ul class="list-unstyled small text-muted mb-4 d-flex flex-column gap-2">
+              <li><i class="bi bi-check2 text-success me-2"></i> Seats up to 4 passengers</li>
+              <li><i class="bi bi-check2 text-success me-2"></i> Air conditioned interior</li>
+              <li><i class="bi bi-check2 text-success me-2"></i> Compact luggage trunk</li>
+            </ul>
+            <a href="#booking-form-card" class="btn-nest-outline w-100 text-center">Select Mini</a>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="nest-card h-100 border-warning style-featured" style="border-width: 2px;">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="nest-badge nest-badge-pending">Most Popular</span>
+              <span class="fw-extrabold fs-4 text-dark">&#8377;18/km</span>
+            </div>
+            <h3 class="fs-4 fw-bold mb-2">Executive Sedan</h3>
+            <p class="small text-muted mb-4">Spacious legroom, quiet cabin, and premium comfort for business and airport trips.</p>
+            <ul class="list-unstyled small text-muted mb-4 d-flex flex-column gap-2">
+              <li><i class="bi bi-check2 text-success me-2"></i> Seats 4 comfortably</li>
+              <li><i class="bi bi-check2 text-success me-2"></i> High luggage capacity</li>
+              <li><i class="bi bi-check2 text-success me-2"></i> Complimentary Wi-Fi & charger</li>
+            </ul>
+            <a href="#booking-form-card" class="btn-nest-accent w-100 text-center">Select Sedan</a>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="nest-card h-100">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <span class="nest-badge nest-badge-confirmed">Premium Class</span>
+              <span class="fw-extrabold fs-4 text-dark">&#8377;25/km</span>
+            </div>
+            <h3 class="fs-4 fw-bold mb-2">Luxury SUV / XL</h3>
+            <p class="small text-muted mb-4">Maximum space, 6+ seats, and top-tier luxury for family groups and long journeys.</p>
+            <ul class="list-unstyled small text-muted mb-4 d-flex flex-column gap-2">
+              <li><i class="bi bi-check2 text-success me-2"></i> Seats 6+ passengers</li>
+              <li><i class="bi bi-check2 text-success me-2"></i> Extra heavy luggage space</li>
+              <li><i class="bi bi-check2 text-success me-2"></i> Leather luxury seating</li>
+            </ul>
+            <a href="#booking-form-card" class="btn-nest-outline w-100 text-center">Select SUV</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECENT JOURNEYS / MY RIDES TABLE -->
+    <section class="container nest-section-sm" id="my-rides">
+      <div class="dashboard-card">
+        <div class="dashboard-card-header d-flex justify-content-between align-items-center">
+          <div>
+            <span class="nest-eyebrow mb-0">Trip Log</span>
+            <h3 class="fs-5 fw-extrabold mb-0">Your Recent Journeys</h3>
+          </div>
+          <a href="#booking-form-card" class="btn-nest-primary btn-sm py-2 px-3 fs-7">
+            <i class="bi bi-plus-circle me-1"></i> New Booking
+          </a>
+        </div>
+
+        <div class="table-responsive">
+          <table class="nest-table">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Pickup Location</th>
+                <th>Destination</th>
+                <th>Vehicle Class</th>
+                <th>Fare</th>
+                <th>Status</th>
+                <th class="text-end">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>#CB-9082</strong></td>
+                <td>Central Station, Gate 2</td>
+                <td>International Airport T3</td>
+                <td>Executive Sedan</td>
+                <td>&#8377;450</td>
+                <td><span class="nest-badge nest-badge-completed">Completed</span></td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3">Receipt</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>#CB-8941</strong></td>
+                <td>Tech Park Building 4</td>
+                <td>Greenwood Avenue 88</td>
+                <td>Eco Mini</td>
+                <td>&#8377;180</td>
+                <td><span class="nest-badge nest-badge-completed">Completed</span></td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3">Receipt</button>
+                </td>
+              </tr>
+              <tr>
+                <td><strong>#CB-9104</strong></td>
+                <td>Downtown Market</td>
+                <td>City Residency 12</td>
+                <td>Luxury SUV</td>
+                <td>&#8377;620</td>
+                <td><span class="nest-badge nest-badge-pending">Driver Assigned</span></td>
+                <td class="text-end">
+                  <button class="btn btn-sm btn-nest-accent py-1 px-3">Live Track</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ ACCORDION SECTION -->
+    <section class="container nest-section-sm" id="faq-section">
+      <div class="mb-4 text-center">
+        <span class="nest-eyebrow">Clear Answers</span>
+        <h2 class="fs-2 fw-extrabold">Frequently Asked Questions.</h2>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-lg-9">
+          <div class="nest-accordion-item">
+            <button class="nest-accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+              How is the ride fare calculated?
+              <i class="bi bi-chevron-down ms-2"></i>
+            </button>
+            <div id="faq1" class="collapse show nest-accordion-body">
+              Fares are calculated upfront based on the exact route distance, vehicle class selected, and estimated traffic duration. There are no surprise surge pricing fees after booking.
+            </div>
+          </div>
+
+          <div class="nest-accordion-item">
+            <button class="nest-accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+              Are all drivers background-checked and verified?
+              <i class="bi bi-chevron-down ms-2"></i>
+            </button>
+            <div id="faq2" class="collapse nest-accordion-body">
+              Yes, 100% of our driver partners undergo comprehensive background verification, commercial license validation, and vehicle safety audits before joining the fleet.
+            </div>
+          </div>
+
+          <div class="nest-accordion-item">
+            <button class="nest-accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+              Can I cancel or reschedule a booking?
+              <i class="bi bi-chevron-down ms-2"></i>
+            </button>
+            <div id="faq3" class="collapse nest-accordion-body">
+              You can cancel your booking free of charge up to 5 minutes before the driver arrives. Cancellations can be made directly from your dashboard journey log.
+            </div>
+          </div>
+
+          <div class="nest-accordion-item">
+            <button class="nest-accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+              What payment methods are supported?
+              <i class="bi bi-chevron-down ms-2"></i>
+            </button>
+            <div id="faq4" class="collapse nest-accordion-body">
+              We accept credit/debit cards, CabZy digital wallet, UPI/online transfers, and cash directly to the driver at the end of the trip.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT CTA BLOCK -->
+    <section class="container mt-5">
+      <div class="nest-card nest-card-teal p-4 p-md-5 d-flex flex-column flex-md-row justify-content-between align-items-center gap-4">
+        <div>
+          <span class="nest-eyebrow text-warning">Corporate & Events</span>
+          <h2 class="fs-3 fw-extrabold text-white mb-2">Need dedicated fleet services?</h2>
+          <p class="text-white-50 mb-0" style="max-width: 500px;">
+            We offer specialized executive transport, event shuttles, and monthly corporate accounts with priority dispatch.
+          </p>
+        </div>
+        <a href="mailto:support@cabzy.com" class="btn-nest-accent py-3 px-4 flex-shrink-0">
+          Contact Fleet Team <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  {% include 'components/footer.html' %}
+{% endblock %}

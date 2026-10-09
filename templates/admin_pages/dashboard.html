@@ -1,0 +1,234 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}Control Panel — CabZy Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout-wrapper">
+    {% include 'components/sidebar.html' %}
+
+    <main class="admin-main-content">
+        <!-- Top Bar -->
+        <header class="dashboard-header-bar mb-4">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-dark btn-sm rounded-pill fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+                        <i class="bi bi-list fs-5"></i>
+                    </button>
+                    <div>
+                        <span class="nest-eyebrow mb-0">System Overview</span>
+                        <h1 class="dashboard-brand-title m-0">Admin Dashboard.</h1>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF; width: 36px; height: 36px; font-size: 0.85rem;">
+                            {{ request.session.admin_full_name|default:'A'|slice:":1" }}
+                        </div>
+                        <div class="text-end d-none d-md-block">
+                            <div class="fw-extrabold text-dark small">{{ admin_user.full_name|default:request.session.admin_full_name|default:'Administrator' }}</div>
+                            <span class="text-muted" style="font-size: 0.7rem;">Dispatch Master</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-lg-4 pb-5">
+            <!-- Welcome Header Card -->
+            <div class="nest-card mb-4" style="background-color: var(--nest-teal); color: #FFF;">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF; width: 64px; height: 64px; font-size: 1.5rem;">
+                            {{ admin_user.full_name|default:request.session.admin_full_name|default:'A'|slice:":1" }}
+                        </div>
+                        <div>
+                            <span class="nest-eyebrow text-warning mb-1">Live Control Suite</span>
+                            <h2 class="h3 fw-extrabold text-white mb-1">Welcome back, {{ admin_user.full_name|default:request.session.admin_full_name|default:'Administrator' }}!</h2>
+                            <p class="text-white-50 mb-0 small">
+                                Role: <strong class="text-white">{{ admin_user.get_role_display|default:request.session.admin_role|default:'Fleet Dispatcher' }}</strong>
+                                <span class="mx-2">&bull;</span>
+                                System Time: <strong class="text-white">{% now "d M Y, H:i" %}</strong>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-4 text-center">
+                        <div class="bg-white bg-opacity-10 p-3 rounded-4" style="min-width: 100px;">
+                            <div class="fw-extrabold text-warning fs-3">{{ drivers_on_trip|default:'0' }}</div>
+                            <div class="text-white-50 small text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.08em;">On Trip</div>
+                        </div>
+                        <div class="bg-white bg-opacity-10 p-3 rounded-4" style="min-width: 100px;">
+                            <div class="fw-extrabold text-white fs-3">{{ pending_bookings|default:'0' }}</div>
+                            <div class="text-white-50 small text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.08em;">Pending</div>
+                        </div>
+                        <div class="bg-white bg-opacity-10 p-3 rounded-4" style="min-width: 100px;">
+                            <div class="fw-extrabold text-success fs-3">{{ drivers_available|default:'0' }}</div>
+                            <div class="text-white-50 small text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.08em;">Available</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alternative Sleek KPI Metric Cards (Compact Top-Right Icon Pill) -->
+            <div class="row g-3 mb-4">
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="kpi-card">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="kpi-label">Active Fleet Drivers</span>
+                            <div class="kpi-icon-box-sm">
+                                <i class="bi bi-car-front-fill"></i>
+                            </div>
+                        </div>
+                        <div class="kpi-value">{{ total_drivers|default:'0' }}</div>
+                        <div class="kpi-subtext"><i class="bi bi-patch-check-fill text-success me-1"></i> Verified & Onboarded</div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="kpi-card">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="kpi-label">Registered Customers</span>
+                            <div class="kpi-icon-box-sm" style="background-color: var(--nest-copper-subtle); color: var(--nest-copper);">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                        </div>
+                        <div class="kpi-value">{{ total_users|default:'0' }}</div>
+                        <div class="kpi-subtext"><i class="bi bi-person-check-fill text-primary me-1"></i> Active Passenger Profiles</div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="kpi-card">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="kpi-label">Total Dispatch Logs</span>
+                            <div class="kpi-icon-box-sm" style="background-color: #EDF7FA; color: #0284C7;">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
+                        </div>
+                        <div class="kpi-value">{{ total_booking|default:'0' }}</div>
+                        <div class="kpi-subtext"><i class="bi bi-journal-check text-info me-1"></i> System Completed Rides</div>
+                    </div>
+                </div>
+
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="kpi-card">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="kpi-label">Today's Revenue</span>
+                            <div class="kpi-icon-box-sm" style="background-color: #EAF7EF; color: #1B7A43;">
+                                <i class="bi bi-currency-rupee"></i>
+                            </div>
+                        </div>
+                        <div class="kpi-value">&#8377; {{ total_revenu|default:'0' }}</div>
+                        <div class="kpi-subtext"><i class="bi bi-graph-up-arrow text-success me-1"></i> Real-time Earnings</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Drivers Roster Card -->
+            <div class="dashboard-card mb-4">
+                <div class="dashboard-card-header d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="nest-eyebrow mb-0">Roster Overview</span>
+                        <h2 class="fs-5 fw-extrabold m-0">Registered Fleet Drivers ({{ total_drivers }})</h2>
+                    </div>
+                    <a href="{% url 'admin_drivers' %}" class="btn-nest-outline btn-sm py-2 px-3 fs-7">
+                        View Full Roster &rarr;
+                    </a>
+                </div>
+                <div class="dashboard-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="nest-table">
+                            <thead>
+                                <tr>
+                                    <th># ID</th>
+                                    <th>Driver Name</th>
+                                    <th>Vehicle & License</th>
+                                    <th>Phone Number</th>
+                                    <th>Email Address</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for d in drivers %}
+                                    <tr>
+                                        <td class="fw-extrabold">#{{ d.id }}</td>
+                                        <td class="fw-bold">
+                                            <a href="{% url 'admin_driver_detail' d.id %}" class="text-dark text-decoration-none hover-primary">{{ d.name }}</a>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold">{{ d.vehicle_name|default:'Sedan Executive' }}</div>
+                                            <div class="text-muted small">Lic: {{ d.license_number }}</div>
+                                        </td>
+                                        <td>{{ d.mobile }}</td>
+                                        <td>{{ d.email }}</td>
+                                        <td>
+                                            {% if d.status == 'AVAILABLE' %}
+                                                <span class="nest-badge nest-badge-completed">Available</span>
+                                            {% elif d.status == 'ON_TRIP' %}
+                                                <span class="nest-badge nest-badge-pending">On Trip</span>
+                                            {% else %}
+                                                <span class="nest-badge nest-badge-offline">Offline</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'admin_driver_detail' d.id %}" class="btn btn-outline-secondary rounded-pill me-1 py-1 px-2" title="View Profile">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="{% url 'admin_delete_driver' d.id %}" class="btn btn-outline-danger rounded-pill py-1 px-2" title="Delete Driver">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4 text-muted">No fleet drivers registered in the system.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module Navigation Cards -->
+            <div class="row g-4">
+                <div class="col-12 col-md-4">
+                    <div class="nest-card h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <span class="nest-eyebrow">Module 01</span>
+                            <h3 class="fs-4 fw-bold mb-2">Drivers Roster</h3>
+                            <p class="text-muted small mb-3">Manage driver onboarding, verify license numbers, and update availability status.</p>
+                        </div>
+                        <a href="{% url 'admin_drivers' %}" class="btn-nest-primary w-100 text-center">Open Drivers &rarr;</a>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="nest-card h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <span class="nest-eyebrow">Module 02</span>
+                            <h3 class="fs-4 fw-bold mb-2">Customers Directory</h3>
+                            <p class="text-muted small mb-3">View user profiles, phone contacts, trip history, and account settings.</p>
+                        </div>
+                        <a href="{% url 'admin_users' %}" class="btn-nest-primary w-100 text-center">Open Users &rarr;</a>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="nest-card h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <span class="nest-eyebrow">Module 03</span>
+                            <h3 class="fs-4 fw-bold mb-2">Bookings Dispatch</h3>
+                            <p class="text-muted small mb-3">Monitor live ride logs, inspect route details, and manage fare calculations.</p>
+                        </div>
+                        <a href="{% url 'admin_bookings' %}" class="btn-nest-primary w-100 text-center">Open Bookings &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

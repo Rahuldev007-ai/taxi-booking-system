@@ -1,0 +1,126 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}Fleet Drivers Directory — CabZy Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout-wrapper">
+    {% include 'components/sidebar.html' %}
+
+    <main class="admin-main-content">
+        <header class="dashboard-header-bar mb-4">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-dark btn-sm rounded-pill fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+                        <i class="bi bi-list fs-5"></i>
+                    </button>
+                    <div>
+                        <span class="nest-eyebrow mb-0">Roster Management</span>
+                        <h1 class="dashboard-brand-title m-0">Fleet Drivers Directory.</h1>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF; width: 36px; height: 36px; font-size: 0.85rem;">
+                            {{ request.session.admin_full_name|default:'A'|slice:":1" }}
+                        </div>
+                        <div class="text-end d-none d-md-block">
+                            <div class="fw-extrabold text-dark small">{{ admin_user.full_name|default:request.session.admin_full_name|default:'Administrator' }}</div>
+                            <span class="text-muted" style="font-size: 0.7rem;">Dispatch Master</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-lg-4 pb-5">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+                <form method="get" action="{% url 'admin_drivers' %}" class="d-flex gap-2 flex-grow-1 max-w-md">
+                    <input type="text" name="q" value="{{ search_query|default:'' }}" class="nest-input form-control py-2 px-3" placeholder="Search driver name, license, mobile or email..." />
+                    <button type="submit" class="btn-nest-primary py-2 px-3">Search</button>
+                    {% if search_query %}
+                        <a href="{% url 'admin_drivers' %}" class="btn-nest-outline py-2 px-3">Clear</a>
+                    {% endif %}
+                </form>
+
+                <a href="{% url 'admin_create_driver' %}" class="btn-nest-accent py-2 px-4">+ Add New Driver</a>
+            </div>
+
+            <div class="dashboard-card mb-4">
+                <div class="dashboard-card-header d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="nest-eyebrow mb-0">Roster Database</span>
+                        <h2 class="fs-5 fw-extrabold m-0">Registered Driver Partners</h2>
+                    </div>
+                    <span class="nest-badge nest-badge-completed">Total: {{ total|default:'0' }} Drivers</span>
+                </div>
+
+                <div class="dashboard-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="nest-table">
+                            <thead>
+                                <tr>
+                                    <th># ID</th>
+                                    <th>Driver Name</th>
+                                    <th>Vehicle & License Number</th>
+                                    <th>Phone Number</th>
+                                    <th>Email Address</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for driver in driver %}
+                                    <tr>
+                                        <td class="fw-extrabold" style="color: var(--nest-copper);">#DR-109{{ driver.id }}</td>
+                                        <td class="fw-bold">
+                                            <a href="{% url 'admin_driver_detail' driver.id %}" class="text-dark text-decoration-none hover-primary">{{ driver.name }}</a>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold">{{ driver.vehicle_name|default:'Toyota Camry Hybrid' }}</div>
+                                            <div class="text-muted small">License: {{ driver.license_number }}</div>
+                                        </td>
+                                        <td>+91 {{ driver.mobile }}</td>
+                                        <td>{{ driver.email }}</td>
+                                        <td>
+                                            {% if driver.status == 'AVAILABLE' %}
+                                                <span class="nest-badge nest-badge-completed">Available</span>
+                                            {% elif driver.status == 'ON_TRIP' %}
+                                                <span class="nest-badge nest-badge-pending">On Trip</span>
+                                            {% else %}
+                                                <span class="nest-badge nest-badge-offline">Offline</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'admin_driver_detail' driver.id %}" class="btn btn-outline-secondary rounded-pill me-1 py-1 px-2" title="View Profile">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="{% url 'admin_edit_driver' driver.id %}" class="btn btn-outline-warning rounded-pill me-1 py-1 px-2" title="Edit Driver">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="{% url 'admin_delete_driver' driver.id %}" class="btn btn-outline-danger rounded-pill py-1 px-2" title="Delete Driver">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-5 text-muted">
+                                            <i class="bi bi-car-front fs-2 d-block text-muted mb-2"></i>
+                                            <h4 class="fs-5 fw-bold text-dark">No drivers registered yet.</h4>
+                                            <p class="small text-muted mb-3">Click "+ Add New Driver" to add your first driver to the fleet roster.</p>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

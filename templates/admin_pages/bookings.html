@@ -1,0 +1,112 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}Bookings Module — CabZy Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout-wrapper">
+    {% include 'components/sidebar.html' %}
+
+    <main class="admin-main-content">
+        <header class="dashboard-header-bar mb-4">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-dark btn-sm rounded-pill fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+                        <i class="bi bi-list fs-5"></i>
+                    </button>
+                    <div>
+                        <span class="nest-eyebrow mb-0">Live Operations</span>
+                        <h1 class="dashboard-brand-title m-0">Taxi Bookings Log.</h1>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF; width: 36px; height: 36px; font-size: 0.85rem;">
+                            {{ request.session.admin_full_name|default:'A'|slice:":1" }}
+                        </div>
+                        <div class="text-end d-none d-md-block">
+                            <div class="fw-extrabold text-dark small">{{ admin_user.full_name|default:request.session.admin_full_name|default:'Administrator' }}</div>
+                            <span class="text-muted" style="font-size: 0.7rem;">Dispatch Master</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-lg-4 pb-5">
+            <div class="dashboard-card mb-4">
+                <div class="dashboard-card-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <span class="nest-eyebrow mb-0">Dispatch Management</span>
+                        <h2 class="fs-5 fw-extrabold m-0">Active & Historical Bookings</h2>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <input type="text" class="nest-input form-control-sm py-2 px-3" placeholder="Search reference, customer..." style="width: 240px;">
+                        <button class="btn-nest-primary py-1 px-3 fs-7">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="dashboard-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="nest-table">
+                            <thead>
+                                <tr>
+                                    <th>Ref #</th>
+                                    <th>Customer Info</th>
+                                    <th>Pickup & Dropoff</th>
+                                    <th>Assigned Driver</th>
+                                    <th>Fare Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-extrabold" style="color: var(--nest-copper);">#CB-8041</td>
+                                    <td>
+                                        <div class="fw-extrabold">Rahul Sharma</div>
+                                        <div class="text-muted small">+91 89987-65543</div>
+                                    </td>
+                                    <td>
+                                        <div><span class="text-muted me-1">From:</span> <strong>Avenue Hotel, Gate 1</strong></div>
+                                        <div><span class="text-muted me-1">To:</span> <strong>International Airport T3</strong></div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">Harsh Vardhan</div>
+                                        <div class="text-muted small">Sedan &bull; TX-9012</div>
+                                    </td>
+                                    <td class="fw-extrabold text-success">&#8377; 450.00</td>
+                                    <td>
+                                        <span class="nest-badge nest-badge-pending">In Progress</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-extrabold" style="color: var(--nest-copper);">#CB-7910</td>
+                                    <td>
+                                        <div class="fw-extrabold">Anita Roy</div>
+                                        <div class="text-muted small">+91 98223-11400</div>
+                                    </td>
+                                    <td>
+                                        <div><span class="text-muted me-1">From:</span> <strong>Greenwood Society</strong></div>
+                                        <div><span class="text-muted me-1">To:</span> <strong>Tech Park Phase 2</strong></div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">Vikram Singh</div>
+                                        <div class="text-muted small">Mini &bull; KA-04-E-1122</div>
+                                    </td>
+                                    <td class="fw-extrabold text-success">&#8377; 220.00</td>
+                                    <td>
+                                        <span class="nest-badge nest-badge-completed">Completed</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

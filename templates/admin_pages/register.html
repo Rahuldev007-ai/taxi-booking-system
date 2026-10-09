@@ -1,0 +1,103 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}Admin Registration — CabZy Console{% endblock %}
+
+{% block body_class %}login-page-body{% endblock %}
+
+{% block content %}
+<div class="auth-split-container register-split-container">
+    <div class="auth-brand-pane">
+        <div class="brand-pane-content">
+            <span class="nest-eyebrow text-warning mb-3">Admin Access</span>
+            <h1 class="display-5 fw-extrabold text-white mb-3" style="letter-spacing: -0.02em;">Register System Admin.</h1>
+            <p class="text-white-50 lead fs-6 mb-4">
+                Grant dispatch authorization, fleet analytics, and user directory management privileges.
+            </p>
+            
+            <div class="feature-pills-group">
+                <div class="feature-pill"><i class="bi bi-person-badge text-warning me-1"></i> Multi-Role Access</div>
+                <div class="feature-pill"><i class="bi bi-shield-check text-warning me-1"></i> Audit Controls</div>
+            </div>
+        </div>
+        <div class="brand-pane-glow"></div>
+    </div>
+
+    <div class="auth-form-pane">
+        <div class="login-card-modern">
+            <div class="mb-3">
+                <span class="nest-badge nest-badge-completed">New Admin Staff</span>
+                <h2 class="auth-heading mt-2">Create Admin Profile.</h2>
+                <p class="auth-subheading">Fill in administrative details.</p>
+            </div>
+
+            {% if error_message %}
+                <div class="custom-alert-error mb-3">{{ error_message }}</div>
+            {% endif %}
+
+            {% if success_message %}
+                <div class="custom-alert-success mb-3">{{ success_message }}</div>
+            {% endif %}
+
+            <form method="post" action="{% url 'admin_register' %}">
+                {% csrf_token %}
+                
+                <div class="row g-2 mb-2">
+                    <div class="col-12 col-md-6">
+                        <label class="nest-form-label">Full Name</label>
+                        <input type="text" name="full_name" class="nest-input" placeholder="e.g. Sarah Jenkins" value="{{ form_data.full_name|default:'' }}" required autofocus>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="nest-form-label">Username</label>
+                        <input type="text" name="username" class="nest-input" placeholder="Unique username" value="{{ form_data.username|default:'' }}" required>
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-2">
+                    <div class="col-12 col-md-6">
+                        <label class="nest-form-label">Email Address</label>
+                        <input type="email" name="email" class="nest-input" placeholder="admin@cabzy.com" value="{{ form_data.email|default:'' }}" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="nest-form-label">Phone Number</label>
+                        <input type="text" name="phone" class="nest-input" placeholder="+91 9876543210" value="{{ form_data.phone|default:'' }}">
+                    </div>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label class="nest-form-label">Password</label>
+                        <input type="password" name="password" class="nest-input" placeholder="Min 6 chars" required>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <label class="nest-form-label">Confirm Password</label>
+                        <input type="password" name="confirm_password" class="nest-input" placeholder="Re-enter password" required>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="nest-form-label">Admin Role</label>
+                    <select name="role" class="nest-select" required>
+                        <option value="SUPER_ADMIN" {% if form_data.role == 'SUPER_ADMIN' or not form_data.role %}selected{% endif %}>Super Admin</option>
+                        <option value="DISPATCHER" {% if form_data.role == 'DISPATCHER' %}selected{% endif %}>Fleet Dispatcher</option>
+                        <option value="MANAGER" {% if form_data.role == 'MANAGER' %}selected{% endif %}>System Manager</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-nest-accent w-100 py-3 mb-3">
+                    Register Admin Account &rarr;
+                </button>
+            </form>
+
+            <div class="text-center pt-2 border-top border-light">
+                <span class="small text-muted">Already registered?</span>
+                <a href="{% url 'admin_login' %}" class="auth-link-text fw-bold ms-1">Sign In to Console &rarr;</a>
+            </div>
+        </div>
+
+        <div class="footer-note-modern text-center mt-3">
+            CabZy Mobility Console &copy; 2026 &bull; All Rights Reserved
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}User Profile — {{ user_obj.name }}{% endblock %}
+
+{% block content %}
+<div class="admin-layout-wrapper">
+    {% include 'components/sidebar.html' %}
+
+    <main class="admin-main-content">
+        <header class="dashboard-header-bar mb-4">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <div>
+                        <span class="nest-eyebrow mb-0">Customer Account</span>
+                        <h1 class="dashboard-brand-title m-0">{{ user_obj.name }}</h1>
+                    </div>
+                </div>
+
+                <div>
+                    <a href="{% url 'admin_users' %}" class="btn-nest-outline py-2 px-3 fs-7">
+                        &larr; Back to Users
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-lg-4 pb-5">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-8">
+                    <div class="nest-card p-4 p-md-5 mb-4">
+                        <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 border-bottom pb-4 mb-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF; width: 64px; height: 64px; font-size: 1.5rem;">
+                                    {{ user_obj.name|slice:":1" }}
+                                </div>
+                                <div>
+                                    <span class="nest-eyebrow mb-0">System Rider #USR-0974{{ user_obj.id }}</span>
+                                    <h2 class="fs-3 fw-extrabold text-dark m-0">{{ user_obj.name }}</h2>
+                                    <p class="text-muted small mb-0">{{ user_obj.email }}</p>
+                                </div>
+                            </div>
+                            <div>
+                                {% if user_obj.is_active %}
+                                    <span class="nest-badge nest-badge-completed fs-6 py-2 px-3">Active Account</span>
+                                {% else %}
+                                    <span class="nest-badge nest-badge-offline fs-6 py-2 px-3">Inactive</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Fact Sheet Grid -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-12 col-sm-6">
+                                <div class="p-3 rounded-4 bg-light border">
+                                    <div class="nest-eyebrow mb-1">Full Name</div>
+                                    <div class="fw-bold text-dark fs-6">{{ user_obj.name }}</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="p-3 rounded-4 bg-light border">
+                                    <div class="nest-eyebrow mb-1">Email Address</div>
+                                    <div class="fw-bold text-dark fs-6">{{ user_obj.email }}</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="p-3 rounded-4 bg-light border">
+                                    <div class="nest-eyebrow mb-1">Mobile Phone</div>
+                                    <div class="fw-bold text-dark fs-6">+91 {{ user_obj.mobile }}</div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-6">
+                                <div class="p-3 rounded-4 bg-light border">
+                                    <div class="nest-eyebrow mb-1">Joined Date</div>
+                                    <div class="fw-bold text-dark fs-6">{{ user_obj.created_at|date:'F d, Y - g:i A'|default:'N/A' }}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-3 border-top pt-4">
+                            <a href="{% url 'admin_edit_user' user_obj.id %}" class="btn-nest-accent py-2 px-4">
+                                <i class="bi bi-pencil me-1"></i> Edit Account Details
+                            </a>
+                            <a href="{% url 'admin_delete_user' user_obj.id %}" class="btn btn-outline-danger rounded-pill py-2 px-4 ms-auto">
+                                <i class="bi bi-trash me-1"></i> Delete Account
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

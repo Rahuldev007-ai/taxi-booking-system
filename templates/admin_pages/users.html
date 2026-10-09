@@ -1,0 +1,144 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}User Management — CabZy Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout-wrapper">
+    {% include 'components/sidebar.html' %}
+
+    <main class="admin-main-content">
+        <header class="dashboard-header-bar mb-4">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-dark btn-sm rounded-pill fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+                        <i class="bi bi-list fs-5"></i>
+                    </button>
+                    <div>
+                        <span class="nest-eyebrow mb-0">Customer Accounts</span>
+                        <h1 class="dashboard-brand-title m-0">Registered Users Directory.</h1>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF; width: 36px; height: 36px; font-size: 0.85rem;">
+                            {{ request.session.admin_full_name|default:'A'|slice:":1" }}
+                        </div>
+                        <div class="text-end d-none d-md-block">
+                            <div class="fw-extrabold text-dark small">{{ admin_user.full_name|default:request.session.admin_full_name|default:'Administrator' }}</div>
+                            <span class="text-muted" style="font-size: 0.7rem;">Dispatch Master</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-lg-4 pb-5">
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+                <form method="get" action="{% url 'admin_users' %}" class="d-flex gap-2 flex-grow-1 max-w-md">
+                    <input type="text" name="q" value="{{ search_query|default:'' }}" class="nest-input form-control py-2 px-3" placeholder="Search by name, email or mobile..." />
+                    <button type="submit" class="btn-nest-primary py-2 px-3">Search</button>
+                    {% if search_query %}
+                        <a href="{% url 'admin_users' %}" class="btn-nest-outline py-2 px-3">Clear</a>
+                    {% endif %}
+                </form>
+
+                <a href="{% url 'admin_create_user' %}" class="btn-nest-accent py-2 px-4">+ Add New User</a>
+            </div>
+
+            <div class="dashboard-card mb-4">
+                <div class="dashboard-card-header d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="nest-eyebrow mb-0">Customer Database</span>
+                        <h2 class="fs-5 fw-extrabold m-0">Registered Passenger Accounts</h2>
+                    </div>
+                    <span class="nest-badge nest-badge-completed">Total: {{ total_users|default:'0' }} Accounts</span>
+                </div>
+
+                <div class="dashboard-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="nest-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Full Name</th>
+                                    <th>Email Address</th>
+                                    <th>Mobile Number</th>
+                                    <th>Account Status</th>
+                                    <th>Registered Date</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                    <tr>
+                                        <td class="fw-extrabold" style="color: var(--nest-copper);">#USR-0974{{ user.id }}</td>
+                                        <td class="fw-bold">
+                                            <a href="{% url 'admin_user_detail' user.id %}" class="text-dark text-decoration-none hover-primary">{{ user.name }}</a>
+                                        </td>
+                                        <td>{{ user.email }}</td>
+                                        <td>+91 {{ user.mobile }}</td>
+                                        <td>
+                                            {% if user.is_active %}
+                                                <span class="nest-badge nest-badge-completed">Active</span>
+                                            {% else %}
+                                                <span class="nest-badge nest-badge-offline">Inactive</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ user.created_at }}</td>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1 fw-bold" data-bs-toggle="modal" data-bs-target="#modal-{{ user.id }}">
+                                                Manage <i class="bi bi-chevron-down ms-1"></i>
+                                            </button>
+
+                                            <!-- Nest Styled Modal -->
+                                            <div class="modal fade" id="modal-{{ user.id }}" data-bs-backdrop="static" tabindex="-1" aria-labelledby="label-{{ user.id }}" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-content shadow-lg border-0 text-start" style="border-radius: var(--nest-radius-lg);">
+                                                        <div class="modal-header border-bottom p-4">
+                                                            <div>
+                                                                <span class="nest-eyebrow mb-0">Manage User</span>
+                                                                <h5 class="modal-title fw-extrabold text-dark" id="label-{{ user.id }}">{{ user.name }}</h5>
+                                                            </div>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                        </div>
+
+                                                        <div class="modal-body text-center py-4 px-4">
+                                                            <p class="text-muted small mb-4">Select an administrative operation for customer account <strong>{{ user.name }}</strong>:</p>
+
+                                                            <div class="d-grid gap-2">
+                                                                <a href="{% url 'admin_user_detail' user.id %}" class="btn-nest-outline w-100 text-center py-2">
+                                                                    <i class="bi bi-eye me-1"></i> View Full Profile
+                                                                </a>
+                                                                <a href="{% url 'admin_edit_user' user.id %}" class="btn-nest-primary w-100 text-center py-2">
+                                                                    <i class="bi bi-pencil me-1"></i> Edit Account Details
+                                                                </a>
+                                                                <a href="{% url 'admin_delete_user' user.id %}" class="btn btn-outline-danger rounded-pill w-100 py-2 fw-bold">
+                                                                    <i class="bi bi-trash me-1"></i> Delete This Account
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-5 text-muted">
+                                            <i class="bi bi-people fs-2 d-block text-muted mb-2"></i>
+                                            <h4 class="fs-5 fw-bold text-dark">No customer accounts found.</h4>
+                                            <p class="small text-muted mb-3">Click "+ Add New User" to register a passenger profile.</p>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}Sign In — CabZy Admin Console{% endblock %}
+
+{% block body_class %}login-page-body{% endblock %}
+
+{% block content %}
+<div class="auth-split-container">
+    <div class="auth-brand-pane">
+        <div class="brand-pane-content">
+            <span class="nest-eyebrow text-warning mb-3">Enterprise Dispatch</span>
+            <h1 class="display-5 fw-extrabold text-white mb-3" style="letter-spacing: -0.02em;">Fleet management & control.</h1>
+            <p class="text-white-50 lead fs-6 mb-4">
+                Monitor live taxi operations, manage driver rosters, inspect passenger accounts, and oversee revenue dispatch.
+            </p>
+
+            <div class="feature-pills-group">
+                <div class="feature-pill"><i class="bi bi-shield-lock text-warning me-1"></i> Role-Based Access</div>
+                <div class="feature-pill"><i class="bi bi-speedometer2 text-warning me-1"></i> Real-time KPIs</div>
+                <div class="feature-pill"><i class="bi bi-cpu text-warning me-1"></i> Auto-Dispatch</div>
+            </div>
+        </div>
+        <div class="brand-pane-glow"></div>
+    </div>
+
+    <div class="auth-form-pane">
+        <div class="login-card-modern">
+            <div class="mb-4">
+                <span class="nest-badge nest-badge-completed">Admin Control</span>
+                <h2 class="auth-heading mt-2">Sign In to Console.</h2>
+                <p class="auth-subheading">Enter administrative credentials to access fleet tools.</p>
+            </div>
+
+            {% if error_message %}
+                <div class="custom-alert-error mb-3">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error_message }}
+                </div>
+            {% endif %}
+
+            {% if success_message %}
+                <div class="custom-alert-success mb-3">
+                    <i class="bi bi-check-circle-fill me-2"></i> {{ success_message }}
+                </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'admin_login' %}">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    <label class="nest-form-label">Admin Username</label>
+                    <input type="text" name="username" class="nest-input" placeholder="Enter admin username" value="{{ username|default:'' }}" required autofocus>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="nest-form-label mb-0">Password</label>
+                        <a href="{% url 'admin_forgot_password' %}" class="auth-link-text">Forgot Password?</a>
+                    </div>
+                    <input type="password" name="password" class="nest-input" placeholder="Enter admin password" required>
+                </div>
+                
+                <button type="submit" class="btn-nest-primary w-100 py-3 mb-3">
+                    <span>Sign In to Admin Console</span>
+                    <i class="bi bi-arrow-right ms-1"></i>
+                </button>
+            </form>
+
+            <div class="text-center pt-3 border-top border-light">
+                <span class="small text-muted">Need admin credentials?</span>
+                <a href="{% url 'admin_register' %}" class="auth-link-text fw-bold ms-1">Register New Admin &rarr;</a>
+            </div>
+        </div>
+
+        <div class="footer-note-modern text-center mt-4">
+            CabZy Mobility Console &copy; 2026 &bull; Enterprise Operations Portal
+        </div>
+    </div>
+</div>
+{% endblock %}

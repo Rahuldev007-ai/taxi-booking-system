@@ -1,0 +1,661 @@
+/* ==========================================================================
+   NEST DESIGN SYSTEM TOKENS & UTILITIES
+   Reference: https://thenest.pl/en
+   Visual Language: Deep Teal (#003A40), Warm Copper (#D96B43), Light Neutral (#F7F8F5)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    /* Brand Palette */
+    --nest-teal: #003A40;
+    --nest-teal-dark: #00272B;
+    --nest-teal-light: #004D55;
+    --nest-teal-subtle: #E6F0F1;
+    
+    --nest-copper: #D96B43;
+    --nest-copper-hover: #C25933;
+    --nest-copper-subtle: #FDF1ED;
+
+    --nest-bg: #F7F8F5;
+    --nest-surface: #FFFFFF;
+    --nest-surface-muted: #EFEFEA;
+    --nest-border: #E0E4E1;
+
+    --nest-text: #003A40;
+    --nest-text-muted: #5A6B6C;
+    --nest-text-light: #FFFFFF;
+
+    /* Functional Status Colors */
+    --nest-success-bg: #EAF7EF;
+    --nest-success-text: #1B7A43;
+    --nest-warning-bg: #FEF6E7;
+    --nest-warning-text: #B45309;
+    --nest-danger-bg: #FDF2F2;
+    --nest-danger-text: #C02626;
+    --nest-info-bg: #EDF7FA;
+    --nest-info-text: #0284C7;
+
+    /* Typography */
+    --nest-font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --nest-font-serif: 'Playfair Display', Georgia, serif;
+
+    /* Geometry */
+    --nest-radius-sm: 8px;
+    --nest-radius-md: 14px;
+    --nest-radius-lg: 20px;
+    --nest-radius-xl: 28px;
+    --nest-radius-pill: 9999px;
+
+    /* Shadows */
+    --nest-shadow-sm: 0 4px 12px rgba(0, 58, 64, 0.04);
+    --nest-shadow-md: 0 10px 28px rgba(0, 58, 64, 0.07);
+    --nest-shadow-lg: 0 20px 48px rgba(0, 58, 64, 0.12);
+    --nest-focus-ring: 0 0 0 3px rgba(217, 107, 67, 0.25);
+}
+
+/* Base resets & global typography */
+body {
+    background-color: var(--nest-bg);
+    color: var(--nest-text);
+    font-family: var(--nest-font-sans);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, .nest-heading {
+    font-family: var(--nest-font-sans);
+    font-weight: 800;
+    color: var(--nest-teal);
+    letter-spacing: -0.02em;
+}
+
+.font-editorial {
+    font-family: var(--nest-font-serif);
+    font-weight: 700;
+}
+
+/* Eyebrow Label */
+.nest-eyebrow {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--nest-copper);
+    margin-bottom: 0.5rem;
+}
+
+/* Section Rhythm */
+.nest-section {
+    padding: 4.5rem 0;
+}
+
+.nest-section-sm {
+    padding: 2.5rem 0;
+}
+
+/* Nest Hero Container */
+.nest-hero-card {
+    background-color: var(--nest-teal);
+    color: var(--nest-text-light);
+    border-radius: var(--nest-radius-xl);
+    padding: 3.5rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--nest-shadow-lg);
+}
+
+.nest-hero-title {
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 800;
+    line-height: 1.1;
+    color: #FFFFFF;
+    margin-bottom: 1.25rem;
+    letter-spacing: -0.03em;
+}
+
+.nest-hero-subtitle {
+    font-size: 1.15rem;
+    color: rgba(255, 255, 255, 0.82);
+    max-width: 620px;
+    margin-bottom: 2rem;
+    font-weight: 400;
+}
+
+/* KPI Stat Card (Nest Compact Alternative) */
+.kpi-card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--nest-border);
+    border-radius: 18px;
+    padding: 1.25rem 1.35rem;
+    box-shadow: var(--nest-shadow-sm);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+    height: 100%;
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--nest-shadow-md);
+    border-color: var(--nest-copper);
+}
+
+.kpi-label {
+    font-size: 0.725rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--nest-text-muted);
+}
+
+.kpi-value {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: var(--nest-teal);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0.35rem 0;
+}
+
+.kpi-subtext {
+    font-size: 0.8rem;
+    color: var(--nest-text-muted);
+    font-weight: 500;
+}
+
+.kpi-icon-box-sm {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background-color: var(--nest-teal-subtle);
+    color: var(--nest-teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+/* Stats Strip */
+.nest-stats-strip {
+    background-color: var(--nest-surface);
+    border: 1px solid var(--nest-border);
+    border-radius: var(--nest-radius-lg);
+    padding: 1.5rem 2rem;
+    box-shadow: var(--nest-shadow-sm);
+}
+
+.nest-stat-item {
+    text-align: center;
+}
+
+.nest-stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--nest-teal);
+    line-height: 1.1;
+}
+
+.nest-stat-label {
+    font-size: 0.825rem;
+    color: var(--nest-text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.25rem;
+}
+
+/* Nest Cards */
+.nest-card {
+    background-color: var(--nest-surface);
+    border: 1px solid var(--nest-border);
+    border-radius: var(--nest-radius-lg);
+    padding: 2rem;
+    box-shadow: var(--nest-shadow-sm);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nest-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--nest-shadow-md);
+}
+
+.nest-card-teal {
+    background-color: var(--nest-teal);
+    color: #FFFFFF;
+    border: none;
+}
+
+.nest-card-teal h1, .nest-card-teal h2, .nest-card-teal h3, .nest-card-teal h4, .nest-card-teal p {
+    color: #FFFFFF;
+}
+
+/* Numbered Feature Cards (01, 02, 03, 04) */
+.nest-step-card {
+    background: var(--nest-surface);
+    border: 1px solid var(--nest-border);
+    border-radius: var(--nest-radius-lg);
+    padding: 2rem 1.75rem;
+    position: relative;
+    height: 100%;
+    transition: all 0.25s ease;
+}
+
+.nest-step-card:hover {
+    border-color: var(--nest-copper);
+    transform: translateY(-4px);
+    box-shadow: var(--nest-shadow-md);
+}
+
+.nest-step-num {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--nest-copper);
+    line-height: 1;
+    margin-bottom: 1rem;
+    font-family: var(--nest-font-serif);
+}
+
+.nest-step-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--nest-teal);
+    margin-bottom: 0.5rem;
+}
+
+.nest-step-desc {
+    font-size: 0.925rem;
+    color: var(--nest-text-muted);
+    margin-bottom: 1.25rem;
+}
+
+.nest-arrow-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--nest-teal);
+    text-decoration: none;
+    transition: gap 0.2s ease, color 0.2s ease;
+}
+
+.nest-arrow-link:hover {
+    gap: 0.75rem;
+    color: var(--nest-copper);
+}
+
+/* Buttons */
+.btn-nest-primary {
+    background-color: var(--nest-teal);
+    color: #FFFFFF !important;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.8rem 1.75rem;
+    border-radius: var(--nest-radius-pill);
+    border: 1px solid var(--nest-teal);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-nest-primary:hover, .btn-nest-primary:focus {
+    background-color: var(--nest-teal-dark);
+    border-color: var(--nest-teal-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 58, 64, 0.2);
+}
+
+.btn-nest-accent {
+    background-color: var(--nest-copper);
+    color: #FFFFFF !important;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.8rem 1.75rem;
+    border-radius: var(--nest-radius-pill);
+    border: 1px solid var(--nest-copper);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-nest-accent:hover, .btn-nest-accent:focus {
+    background-color: var(--nest-copper-hover);
+    border-color: var(--nest-copper-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(217, 107, 67, 0.3);
+}
+
+.btn-nest-outline {
+    background-color: transparent;
+    color: var(--nest-teal) !important;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.8rem 1.75rem;
+    border-radius: var(--nest-radius-pill);
+    border: 1.5px solid var(--nest-teal);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-nest-outline:hover {
+    background-color: var(--nest-teal);
+    color: #FFFFFF !important;
+    transform: translateY(-2px);
+}
+
+.btn-nest-outline-light {
+    background-color: transparent;
+    color: #FFFFFF !important;
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.8rem 1.75rem;
+    border-radius: var(--nest-radius-pill);
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-nest-outline-light:hover {
+    background-color: #FFFFFF;
+    color: var(--nest-teal) !important;
+    border-color: #FFFFFF;
+}
+
+/* Forms & Inputs */
+.nest-form-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--nest-teal);
+    margin-bottom: 0.45rem;
+    display: block;
+}
+
+.nest-input, .nest-select {
+    background-color: #FFFFFF;
+    border: 1.5px solid var(--nest-border);
+    border-radius: var(--nest-radius-md);
+    color: var(--nest-teal);
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.nest-input:focus, .nest-select:focus {
+    border-color: var(--nest-copper);
+    box-shadow: var(--nest-focus-ring);
+    outline: none;
+}
+
+.nest-input::placeholder {
+    color: var(--nest-text-muted);
+    opacity: 0.6;
+}
+
+/* Status Badges */
+.nest-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.725rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.85rem;
+    border-radius: var(--nest-radius-pill);
+}
+
+.nest-badge-completed, .nest-badge-available, .nest-badge-active {
+    background-color: var(--nest-success-bg);
+    color: var(--nest-success-text);
+}
+
+.nest-badge-pending, .nest-badge-ontrip {
+    background-color: var(--nest-warning-bg);
+    color: var(--nest-warning-text);
+}
+
+.nest-badge-cancelled, .nest-badge-offline {
+    background-color: var(--nest-danger-bg);
+    color: var(--nest-danger-text);
+}
+
+.nest-badge-confirmed {
+    background-color: var(--nest-info-bg);
+    color: var(--nest-info-text);
+}
+
+/* Tables */
+.nest-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.nest-table th {
+    background-color: var(--nest-bg);
+    color: var(--nest-text-muted);
+    font-size: 0.725rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 1rem 1.25rem;
+    border-bottom: 1.5px solid var(--nest-border);
+}
+
+.nest-table td {
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--nest-border);
+    font-size: 0.9rem;
+    color: var(--nest-teal);
+    vertical-align: middle;
+}
+
+.nest-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.nest-table tbody tr:hover {
+    background-color: rgba(0, 58, 64, 0.02);
+}
+
+/* Accordion FAQ */
+.nest-accordion-item {
+    border: 1px solid var(--nest-border);
+    border-radius: var(--nest-radius-md);
+    background-color: var(--nest-surface);
+    margin-bottom: 0.85rem;
+    overflow: hidden;
+}
+
+.nest-accordion-button {
+    width: 100%;
+    padding: 1.25rem 1.5rem;
+    background: none;
+    border: none;
+    text-align: left;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--nest-teal);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.nest-accordion-button:hover {
+    color: var(--nest-copper);
+}
+
+.nest-accordion-body {
+    padding: 0 1.5rem 1.25rem 1.5rem;
+    color: var(--nest-text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Layout Wrapper & Sidebar Rules */
+.admin-layout-wrapper {
+    display: flex !important;
+    flex-direction: row !important;
+    min-height: 100vh;
+    width: 100%;
+}
+
+.admin-sidebar {
+    width: 260px !important;
+    background-color: var(--nest-teal-dark) !important;
+    color: #FFFFFF !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    flex-shrink: 0 !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    position: sticky !important;
+    top: 0 !important;
+    height: 100vh !important;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.sidebar-header {
+    padding: 1.5rem 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-brand-subtitle {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--nest-copper);
+}
+
+.sidebar-brand-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #FFFFFF;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.sidebar-nav {
+    padding: 1.25rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.8rem 1rem;
+    color: rgba(255, 255, 255, 0.75) !important;
+    text-decoration: none !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #FFFFFF !important;
+}
+
+.sidebar-link.active {
+    background-color: var(--nest-teal) !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+}
+
+.sidebar-link-icon {
+    font-size: 1.15rem;
+    width: 24px;
+    text-align: center;
+}
+
+.sidebar-footer {
+    padding: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-profile {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+}
+
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--nest-copper);
+    color: #FFFFFF;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+}
+
+.sidebar-logout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.65rem 1rem;
+    background-color: rgba(217, 107, 67, 0.15) !important;
+    border: 1px solid rgba(217, 107, 67, 0.4) !important;
+    color: #FFB399 !important;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border-radius: 9999px;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+}
+
+.sidebar-logout-btn:hover {
+    background-color: var(--nest-copper) !important;
+    color: #FFFFFF !important;
+}
+
+.admin-main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--nest-bg);
+    min-width: 0;
+}
+
+@media (max-width: 991px) {
+    .admin-layout-wrapper {
+        flex-direction: column !important;
+    }
+}

@@ -1,0 +1,148 @@
+<!-- Desktop Sticky Sidebar (Visible on LG screens >= 992px) -->
+<aside class="admin-sidebar d-none d-lg-flex">
+    <div>
+        <div class="sidebar-header">
+            <a href="{% if request.session.is_driver %}{% url 'driver-dashboard' %}{% else %}{% url 'admin_dashboard' %}{% endif %}" class="text-decoration-none d-block">
+                <div class="sidebar-brand-subtitle">{% if request.session.is_driver %}Driver Partner{% else %}Admin Console{% endif %}</div>
+                <h1 class="sidebar-brand-title fs-3 fw-extrabold text-white m-0" style="letter-spacing: -0.03em;">Cab<span style="color: var(--nest-copper);">Zy</span>.</h1>
+            </a>
+        </div>
+
+        <nav class="sidebar-nav">
+            {% if request.session.is_driver %}
+                <a href="{% url 'driver-dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'driver-dashboard' or request.resolver_match.url_name == 'driver-dashboard-alt' %}active{% endif %}">
+                    <i class="bi bi-grid-1x2-fill sidebar-link-icon"></i>
+                    <span>Duty Dashboard</span>
+                </a>
+                <a href="{% url 'driver-profile' %}" class="sidebar-link {% if request.resolver_match.url_name == 'driver-profile' or request.resolver_match.url_name == 'driver-profile-alt' %}active{% endif %}">
+                    <i class="bi bi-person-vcard-fill sidebar-link-icon"></i>
+                    <span>My Profile</span>
+                </a>
+            {% else %}
+                <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <i class="bi bi-grid-1x2-fill sidebar-link-icon"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'admin_bookings' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_bookings' %}active{% endif %}">
+                    <i class="bi bi-journal-text sidebar-link-icon"></i>
+                    <span>Bookings</span>
+                </a>
+                <a href="{% url 'admin_drivers' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_drivers' %}active{% endif %}">
+                    <i class="bi bi-car-front-fill sidebar-link-icon"></i>
+                    <span>Drivers Fleet</span>
+                </a>
+                <a href="{% url 'admin_users' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}">
+                    <i class="bi bi-people-fill sidebar-link-icon"></i>
+                    <span>Customers</span>
+                </a>
+            {% endif %}
+        </nav>
+    </div>
+
+    <div class="sidebar-footer">
+        <div class="sidebar-profile d-flex align-items-center gap-3">
+            <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF;">
+                {% if request.session.is_driver %}
+                    {{ request.session.user_name|default:'D'|slice:":1" }}
+                {% else %}
+                    {{ admin_full_name|default:'A'|slice:":1" }}
+                {% endif %}
+            </div>
+            <div class="text-truncate">
+                <div class="fw-bold text-white small text-truncate">
+                    {% if request.session.is_driver %}
+                        {{ request.session.user_name|default:"Driver Partner" }}
+                    {% else %}
+                        {{ admin_full_name|default:"Administrator" }}
+                    {% endif %}
+                </div>
+                <div class="text-white-50" style="font-size: 0.725rem;">
+                    {% if request.session.is_driver %}
+                        Active Driver
+                    {% else %}
+                        {{ admin_role|default:"Fleet Dispatcher" }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <a href="{% if request.session.is_driver %}{% url 'driver-logout' %}{% else %}{% url 'admin_logout' %}{% endif %}" class="sidebar-logout-btn mt-3">
+            <i class="bi bi-box-arrow-right"></i> Sign Out
+        </a>
+    </div>
+</aside>
+
+<!-- Animated Mobile Offcanvas Drawer Sidebar (< 992px) -->
+<div class="offcanvas offcanvas-start admin-offcanvas-drawer d-lg-none" tabindex="-1" id="adminSidebarOffcanvas" aria-labelledby="adminSidebarOffcanvasLabel">
+    <div class="offcanvas-header border-bottom border-secondary border-opacity-25">
+        <div>
+            <div class="sidebar-brand-subtitle">{% if request.session.is_driver %}Driver Partner{% else %}Admin Console{% endif %}</div>
+            <h5 class="sidebar-brand-title fs-4 fw-extrabold text-white m-0" id="adminSidebarOffcanvasLabel">Cab<span style="color: var(--nest-copper);">Zy</span>.</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body p-0 d-flex flex-column justify-content-between">
+        <nav class="sidebar-nav">
+            {% if request.session.is_driver %}
+                <a href="{% url 'driver-dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'driver-dashboard' or request.resolver_match.url_name == 'driver-dashboard-alt' %}active{% endif %}">
+                    <i class="bi bi-grid-1x2-fill sidebar-link-icon"></i>
+                    <span>Duty Dashboard</span>
+                </a>
+                <a href="{% url 'driver-profile' %}" class="sidebar-link {% if request.resolver_match.url_name == 'driver-profile' or request.resolver_match.url_name == 'driver-profile-alt' %}active{% endif %}">
+                    <i class="bi bi-person-vcard-fill sidebar-link-icon"></i>
+                    <span>My Profile</span>
+                </a>
+            {% else %}
+                <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <i class="bi bi-grid-1x2-fill sidebar-link-icon"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{% url 'admin_bookings' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_bookings' %}active{% endif %}">
+                    <i class="bi bi-journal-text sidebar-link-icon"></i>
+                    <span>Bookings</span>
+                </a>
+                <a href="{% url 'admin_drivers' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_drivers' %}active{% endif %}">
+                    <i class="bi bi-car-front-fill sidebar-link-icon"></i>
+                    <span>Drivers Fleet</span>
+                </a>
+                <a href="{% url 'admin_users' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}">
+                    <i class="bi bi-people-fill sidebar-link-icon"></i>
+                    <span>Customers</span>
+                </a>
+            {% endif %}
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-profile d-flex align-items-center gap-3">
+                <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF;">
+                    {% if request.session.is_driver %}
+                        {{ request.session.user_name|default:'D'|slice:":1" }}
+                    {% else %}
+                        {{ admin_full_name|default:'A'|slice:":1" }}
+                    {% endif %}
+                </div>
+                <div class="text-truncate">
+                    <div class="fw-bold text-white small text-truncate">
+                        {% if request.session.is_driver %}
+                            {{ request.session.user_name|default:"Driver Partner" }}
+                        {% else %}
+                            {{ admin_full_name|default:"Administrator" }}
+                        {% endif %}
+                    </div>
+                    <div class="text-white-50" style="font-size: 0.725rem;">
+                        {% if request.session.is_driver %}
+                            Active Driver
+                        {% else %}
+                            {{ admin_role|default:"Fleet Dispatcher" }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% if request.session.is_driver %}{% url 'driver-logout' %}{% else %}{% url 'admin_logout' %}{% endif %}" class="sidebar-logout-btn mt-3">
+                <i class="bi bi-box-arrow-right"></i> Sign Out
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,88 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}{% if user_create %}Create User{% else %}Edit User{% endif %} — CabZy Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout-wrapper">
+    {% include 'components/sidebar.html' %}
+
+    <main class="admin-main-content">
+        <header class="dashboard-header-bar mb-4">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-dark btn-sm rounded-pill fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+                        <i class="bi bi-list fs-5"></i>
+                    </button>
+                    <div>
+                        <span class="nest-eyebrow mb-0">Account Management</span>
+                        <h1 class="dashboard-brand-title m-0">{% if user_create %}Create User Profile.{% else %}Edit User Profile.{% endif %}</h1>
+                    </div>
+                </div>
+
+                <div>
+                    <a href="{% url 'admin_users' %}" class="btn-nest-outline py-2 px-3 fs-7">&larr; Back to Users</a>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-lg-4 pb-5">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-8 col-lg-6">
+                    <div class="nest-card p-4 p-md-5">
+                        <div class="mb-4">
+                            <span class="nest-badge nest-badge-completed">{% if user_create %}New Customer Account{% else %}Edit Customer Details{% endif %}</span>
+                            <h2 class="fs-4 fw-extrabold text-dark mt-2">{% if user_create %}Create User Profile{% else %}Update User Account{% endif %}</h2>
+                            <p class="text-muted small">Enter passenger details below.</p>
+                        </div>
+
+                        {% if error_message %}
+                            <div class="custom-alert-error mb-3">{{ error_message }}</div>
+                        {% endif %}
+
+                        {% if success_message %}
+                            <div class="custom-alert-success mb-3">{{ success_message }}</div>
+                        {% endif %}
+
+                        <form method="post" action="{% if user_create %}{% url 'admin_create_user' %}{% else %}{% url 'admin_edit_user' user_obj.id %}{% endif %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label class="nest-form-label">Full Name</label>
+                                <input type="text" name="name" maxlength="30" minlength="3" class="nest-input" placeholder="Enter user's full name" value="{{ typed_name|default:'' }}" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="nest-form-label">Email Address</label>
+                                <input type="email" name="email" maxlength="50" class="nest-input" placeholder="Enter email address" value="{{ typed_email|default:'' }}" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="nest-form-label">Mobile Phone Number</label>
+                                <input type="text" name="mobile" minlength="10" maxlength="10" class="nest-input" placeholder="10-digit mobile number" value="{{ typed_mobile|default:'' }}" required />
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="nest-form-label">Password <span class="text-muted text-transform-none fw-normal">{% if user_create == False %}(Leave blank to preserve password){% endif %}</span></label>
+                                <input type="password" name="password" minlength="6" maxlength="30" class="nest-input" placeholder="Account password" {% if user_create %}required{% endif %} />
+                            </div>
+
+                            {% if user_create == False %}
+                                <div class="mb-4 form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" name="is_active" id="is_active_check" checked />
+                                    <label class="form-check-label fw-bold text-dark" for="is_active_check">Active Account Status</label>
+                                </div>
+                            {% endif %}
+
+                            <div class="d-flex gap-3">
+                                <button type="submit" class="btn-nest-accent py-2 px-4 flex-grow-1">Save Account</button>
+                                <a href="{% url 'admin_users' %}" class="btn-nest-outline py-2 px-4">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

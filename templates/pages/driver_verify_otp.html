@@ -1,0 +1,60 @@
+{% extends 'components/base.html' %}
+{% load static %}
+{% block title %}Verify Driver OTP — CabZy Mobility{% endblock %}
+
+{% block body_class %}login-page-body{% endblock %}
+
+{% block content %}
+<div class="auth-split-container">
+    <div class="auth-brand-pane">
+        <div class="brand-pane-content">
+            <span class="nest-eyebrow text-warning mb-3">Partner Verification</span>
+            <h1 class="display-5 fw-extrabold text-white mb-3" style="letter-spacing: -0.02em;">OTP Verification.</h1>
+            <p class="text-white-50 lead fs-6 mb-4">
+                Please enter the 6-digit verification code dispatched to your console.
+            </p>
+        </div>
+        <div class="brand-pane-glow"></div>
+    </div>
+
+    <div class="auth-form-pane">
+        <div class="login-card-modern text-center">
+            <div class="mb-4">
+                <span class="nest-badge nest-badge-completed">Verification Step</span>
+                <h2 class="auth-heading mt-2">Enter Driver OTP.</h2>
+                <p class="auth-subheading">Code dispatched for: <strong>{{ email }}</strong></p>
+            </div>
+
+            {% if error_message %}
+                <div class="custom-alert-error mb-3 text-start">{{ error_message }}</div>
+            {% endif %}
+
+            {% if success_message %}
+                <div class="custom-alert-success mb-3 text-start">{{ success_message }}</div>
+            {% endif %}
+
+            <form method="post" action="{% url 'driver_verify_otp' %}">
+                {% csrf_token %}
+                
+                <div class="mb-4">
+                    <label class="nest-form-label text-center">6-Digit Verification Code</label>
+                    <input type="text" name="otp" class="nest-input text-center fw-extrabold fs-3" placeholder="123456" maxlength="6" 
+                           inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required autofocus style="letter-spacing: 6px; color: var(--nest-copper);">
+                </div>
+
+                <button type="submit" class="btn-nest-accent w-100 py-3 mb-3">
+                    Verify & Complete Registration &rarr;
+                </button>
+            </form>
+
+            <div class="text-center pt-3 border-top border-light">
+                <a href="{% url 'driver-resend-otp' %}" class="auth-link-text fw-bold">Resend OTP Code &rarr;</a>
+            </div>
+        </div>
+
+        <div class="footer-note-modern text-center mt-4">
+            CabZy Driver Network &copy; 2026 &bull; Secure Portal
+        </div>
+    </div>
+</div>
+{% endblock %}

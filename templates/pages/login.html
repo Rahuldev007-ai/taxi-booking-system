@@ -1,0 +1,96 @@
+{% extends 'components/base.html' %}
+{% load static %}
+{% block title %}Sign In — CabZy Rider Portal{% endblock %}
+
+{% block body_class %}login-page-body login-theme{% endblock %}
+
+{% block content %}
+<div id="loginLoaderOverlay" class="login-loader-overlay">
+    <div class="loader-content-box">
+        <div class="cabzy-spinner"></div>
+        <h4 class="loader-title mt-3">Signing you in...</h4>
+        <p class="loader-subtitle">Preparing your CabZy rider portal</p>
+    </div>
+</div>
+
+<div class="auth-split-container">
+    <!-- Teal Brand Side Panel -->
+    <div class="auth-brand-pane">
+        <div class="brand-pane-content">
+            <span class="nest-eyebrow text-warning mb-3">Rider Portal</span>
+            <h1 class="display-5 fw-extrabold text-white mb-3" style="letter-spacing: -0.02em;">Effortless Cabzy journeys.</h1>
+            <p class="text-white-50 lead fs-6 mb-4">
+                Access your personalized booking dashboard, track live driver location, and manage digital trip receipts in seconds.
+            </p>
+
+            <div class="feature-pills-group">
+                <div class="feature-pill"><i class="bi bi-shield-check text-warning me-1"></i> Verified Drivers</div>
+                <div class="feature-pill"><i class="bi bi-clock-history text-warning me-1"></i> 24/7 Availability</div>
+                <div class="feature-pill"><i class="bi bi-wallet2 text-warning me-1"></i> Cashless Pay</div>
+            </div>
+        </div>
+        <div class="brand-pane-glow"></div>
+    </div>
+
+    <!-- Clean Form Side -->
+    <div class="auth-form-pane">
+        <div class="login-card-modern">
+            <!-- Role Switcher -->
+            <div class="auth-nav-switcher">
+                <a href="{% url 'user_login' %}" class="auth-role-tab active">Rider Portal</a>
+                <a href="{% url 'driver-login' %}" class="auth-role-tab">Driver Partner</a>
+            </div>
+
+            <div class="mb-4">
+                <span class="nest-badge nest-badge-completed">Rider Access</span>
+                <h2 class="auth-heading mt-2">Welcome Back.</h2>
+                <p class="auth-subheading">Sign in to book rides and track your ongoing journeys.</p>
+            </div>
+
+            {% if error_message %}
+                <div class="alert-custom alert-error-custom" role="alert">
+                    <div><i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error_message }}</div>
+                </div>
+            {% endif %}
+
+            {% if success_message %}
+                <div class="alert-custom alert-success-custom" role="alert">
+                    <div><i class="bi bi-check-circle-fill me-2"></i> {{ success_message }}</div>
+                </div>
+            {% endif %}
+
+            <form method="post" id="user_login" action="{% url 'user_login' %}" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="nest-form-label">Email Address</label>
+                    <input type="email" id="email" name="email" class="nest-input" placeholder="rider@example.com" value="{{ email|default:'' }}" required autofocus />
+                    <span class="text-danger small" id="email_error"></span>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="nest-form-label mb-0">Password</label>
+                        <a href="{% url 'user_forgot_password' %}" class="auth-link-text">Forgot Password?</a>
+                    </div>
+                    <input type="password" id="password" name="password" class="nest-input" placeholder="Enter your password" required />
+                    <span class="text-danger small" id="pws_error"></span>
+                </div>
+
+                <button type="submit" class="btn-nest-primary w-100 py-3 mb-3">
+                    <span>Sign In to Rider Dashboard</span>
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="text-center pt-3 border-top border-light">
+                <span class="small text-muted">Don't have an account yet?</span>
+                <a href="{% url 'user-register' %}" class="auth-link-text fw-bold ms-1">Create Rider Account &rarr;</a>
+            </div>
+        </div>
+
+        <div class="footer-note-modern text-center mt-4">CabZy Taxi Booking &copy; 2026 &bull; Secure Mobility Portal</div>
+    </div>
+</div>
+<script src="{% static 'js/login.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}Confirm Delete Driver — CabZy Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout-wrapper">
+    {% include 'components/sidebar.html' %}
+
+    <main class="admin-main-content">
+        <header class="dashboard-header-bar mb-4">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <div>
+                        <span class="nest-eyebrow mb-0 text-danger">Warning Action</span>
+                        <h1 class="dashboard-brand-title m-0">Confirm Delete Driver.</h1>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-lg-4 pb-5">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-6">
+                    <div class="nest-card p-4 p-md-5 text-center">
+                        <div class="mb-3 text-danger fs-1">
+                            <i class="bi bi-exclamation-octagon-fill"></i>
+                        </div>
+                        <span class="nest-badge nest-badge-offline mb-2">Irreversible Action</span>
+                        <h2 class="fs-4 fw-extrabold text-dark mb-2">Delete Driver Partner?</h2>
+                        <p class="text-muted small mb-4">
+                            Are you sure you want to permanently remove <strong>{{ driver_obj.name }}</strong> (License: {{ driver_obj.license_number }}, Mobile: +91 {{ driver_obj.mobile }}) from the system?
+                        </p>
+
+                        <form method="post" class="d-flex justify-content-center gap-3">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger rounded-pill px-4 py-2 fw-bold">
+                                Yes, Delete Account
+                            </button>
+                            <a href="{% url 'admin_drivers' %}" class="btn-nest-outline py-2 px-4">
+                                Cancel
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

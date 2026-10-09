@@ -1,0 +1,82 @@
+{% extends 'components/base.html' %}
+{% load static %}
+{% block title %}Driver Partner Sign In — CabZy Mobility{% endblock %}
+
+{% block body_class %}login-page-body login-theme{% endblock %}
+
+{% block content %}
+<div class="auth-split-container">
+    <div class="auth-brand-pane">
+        <div class="brand-pane-content">
+            <span class="nest-eyebrow text-warning mb-3">Driver Partner Portal</span>
+            <h1 class="display-5 fw-extrabold text-white mb-3" style="letter-spacing: -0.02em;">Drive with CabZy.</h1>
+            <p class="text-white-50 lead fs-6 mb-4">
+                Access your driver dashboard, toggle duty availability, track assigned trips, and monitor your daily earnings.
+            </p>
+
+            <div class="feature-pills-group">
+                <div class="feature-pill"><i class="bi bi-geo-alt text-warning me-1"></i> Smart Trip Match</div>
+                <div class="feature-pill"><i class="bi bi-wallet2 text-warning me-1"></i> Instant Payouts</div>
+                <div class="feature-pill"><i class="bi bi-shield-check text-warning me-1"></i> 24/7 Support</div>
+            </div>
+        </div>
+        <div class="brand-pane-glow"></div>
+    </div>
+
+    <div class="auth-form-pane">
+        <div class="login-card-modern">
+            <div class="auth-nav-switcher">
+                <a href="{% url 'user_login' %}" class="auth-role-tab">Rider Portal</a>
+                <a href="{% url 'driver-login' %}" class="auth-role-tab active">Driver Partner</a>
+            </div>
+
+            <div class="mb-4">
+                <span class="nest-badge nest-badge-pending">Driver Access</span>
+                <h2 class="auth-heading mt-2">Driver Sign In.</h2>
+                <p class="auth-subheading">Enter your partner email and password to begin your shift.</p>
+            </div>
+
+            {% if error_message %}
+                <div class="alert-custom alert-error-custom" role="alert">
+                    <div><i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error_message }}</div>
+                </div>
+            {% endif %}
+
+            {% if success_message %}
+                <div class="alert-custom alert-success-custom" role="alert">
+                    <div><i class="bi bi-check-circle-fill me-2"></i> {{ success_message }}</div>
+                </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'driver-login' %}">
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label class="nest-form-label">Driver Registered Email</label>
+                    <input type="email" name="email" class="nest-input" placeholder="driver@example.com" value="{{ email|default:'' }}" required autofocus />
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="nest-form-label mb-0">Password</label>
+                        <a href="{% url 'user_forgot_password' %}" class="auth-link-text">Forgot Password?</a>
+                    </div>
+                    <input type="password" name="password" class="nest-input" placeholder="Enter driver password" required />
+                </div>
+
+                <button type="submit" class="btn-nest-primary w-100 py-3 mb-3">
+                    <span>Sign In to Driver Console</span>
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="text-center pt-3 border-top border-light">
+                <span class="small text-muted">Want to become a driver?</span>
+                <a href="{% url 'driver-register' %}" class="auth-link-text fw-bold ms-1">Apply as Driver Partner &rarr;</a>
+            </div>
+        </div>
+
+        <div class="footer-note-modern text-center mt-4">CabZy Driver Network &copy; 2026 &bull; Partner Portal</div>
+    </div>
+</div>
+{% endblock %}
