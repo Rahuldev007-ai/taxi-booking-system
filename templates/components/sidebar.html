@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!-- Desktop Sticky Sidebar (Visible on LG screens >= 992px) -->
 <aside class="admin-sidebar d-none d-lg-flex">
     <div>
@@ -37,33 +36,10 @@
                     <span>Customers</span>
                 </a>
             {% endif %}
-=======
-<!-- Desktop & Laptop Sticky Sidebar (Visible on LG screens >= 992px) -->
-<aside class="admin-sidebar d-none d-lg-flex">
-    <div>
-        <div class="sidebar-header">
-            <h1 class="sidebar-brand-title">Admin Control</h1>
-        </div>
-
-        <nav class="sidebar-nav">
-            <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
-                <span>Dashboard</span>
-            </a>
-            <a href="{% url 'admin_drivers' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_drivers' %}active{% endif %}">
-                <span>Drivers</span>
-            </a>
-            <a href="{% url 'admin_users' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}">
-                <span>Users</span>
-            </a>
-            <a href="{% url 'admin_bookings' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_bookings' %}active{% endif %}">
-                <span>Bookings</span>
-            </a>
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
         </nav>
     </div>
 
     <div class="sidebar-footer">
-<<<<<<< HEAD
         <div class="sidebar-profile d-flex align-items-center gap-3">
             <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF;">
                 {% if request.session.is_driver %}
@@ -86,53 +62,28 @@
                     {% else %}
                         {{ admin_role|default:"Fleet Dispatcher" }}
                     {% endif %}
-=======
-        <div class="sidebar-profile d-flex align-items-center gap-2">
-            <img src="https://ui-avatars.com/api/?name={{ admin_full_name|urlencode|default:'Administrator' }}&background=E8D8C3&color=231212&bold=true" alt="Admin Profile" class="rounded-circle border border-2 border-warning" style="width: 38px; height: 38px; object-fit: cover;">
-            <div>
-                <div class="fw-bold" style="font-size: 0.85rem; color: #FFFFFF;">
-                    {{ admin_full_name|default:"Administrator" }}
-                </div>
-                <div class="text-muted" style="font-size: 0.725rem; color: #D1C4C4;">
-                    {{ admin_role|default:"Fleet Dispatcher" }}
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
                 </div>
             </div>
         </div>
 
-<<<<<<< HEAD
         <a href="{% if request.session.is_driver %}{% url 'driver-logout' %}{% else %}{% url 'admin_logout' %}{% endif %}" class="sidebar-logout-btn mt-3">
             <i class="bi bi-box-arrow-right"></i> Sign Out
-=======
-        <a href="{% url 'admin_logout' %}" class="sidebar-logout-btn mt-2">
-            Logout
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
         </a>
     </div>
 </aside>
 
-<<<<<<< HEAD
 <!-- Animated Mobile Offcanvas Drawer Sidebar (< 992px) -->
 <div class="offcanvas offcanvas-start admin-offcanvas-drawer d-lg-none" tabindex="-1" id="adminSidebarOffcanvas" aria-labelledby="adminSidebarOffcanvasLabel">
     <div class="offcanvas-header border-bottom border-secondary border-opacity-25">
         <div>
             <div class="sidebar-brand-subtitle">{% if request.session.is_driver %}Driver Partner{% else %}Admin Console{% endif %}</div>
             <h5 class="sidebar-brand-title fs-4 fw-extrabold text-white m-0" id="adminSidebarOffcanvasLabel">Cab<span style="color: var(--nest-copper);">Zy</span>.</h5>
-=======
-<!-- Animated Mobile & Tablet Offcanvas Drawer Sidebar (Visible on screens < 992px) -->
-<div class="offcanvas offcanvas-start admin-offcanvas-drawer d-lg-none" tabindex="-1" id="adminSidebarOffcanvas" aria-labelledby="adminSidebarOffcanvasLabel">
-    <div class="offcanvas-header border-bottom border-secondary">
-        <div>
-            <div class="sidebar-brand-subtitle">Urban Fleet</div>
-            <h5 class="sidebar-brand-title m-0" id="adminSidebarOffcanvasLabel">Admin Control</h5>
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
         </div>
         <button type="button" class="btn-close btn-close-white text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
 
     <div class="offcanvas-body p-0 d-flex flex-column justify-content-between">
         <nav class="sidebar-nav">
-<<<<<<< HEAD
             {% if request.session.is_driver %}
                 <a href="{% url 'driver-dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'driver-dashboard' or request.resolver_match.url_name == 'driver-dashboard-alt' %}active{% endif %}">
                     <i class="bi bi-grid-1x2-fill sidebar-link-icon"></i>
@@ -185,45 +136,12 @@
                         {% else %}
                             {{ admin_role|default:"Fleet Dispatcher" }}
                         {% endif %}
-=======
-            <a href="{% url 'admin_dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
-                <span>Dashboard</span>
-            </a>
-            <a href="{% url 'admin_drivers' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_drivers' %}active{% endif %}">
-                <span>Drivers</span>
-            </a>
-            <a href="{% url 'admin_users' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}">
-                <span>Users</span>
-            </a>
-            <a href="{% url 'admin_bookings' %}" class="sidebar-link {% if request.resolver_match.url_name == 'admin_bookings' %}active{% endif %}">
-                <span>Bookings</span>
-            </a>
-            <a href="{% url 'admin_logout' %}" class="sidebar-link">
-                <span>Logout</span>
-            </a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="sidebar-profile d-flex align-items-center gap-2">
-                <img src="https://ui-avatars.com/api/?name={{ admin_full_name|urlencode|default:'Administrator' }}&background=E8D8C3&color=231212&bold=true" alt="Admin Profile" class="rounded-circle border border-2 border-warning" style="width: 38px; height: 38px; object-fit: cover;">
-                <div>
-                    <div class="fw-bold" style="font-size: 0.85rem; color: #FFFFFF;">
-                        {{ admin_full_name|default:"Administrator" }}
-                    </div>
-                    <div class="text-muted" style="font-size: 0.725rem; color: #D1C4C4;">
-                        {{ admin_role|default:"Fleet Dispatcher" }}
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
                     </div>
                 </div>
             </div>
 
-<<<<<<< HEAD
             <a href="{% if request.session.is_driver %}{% url 'driver-logout' %}{% else %}{% url 'admin_logout' %}{% endif %}" class="sidebar-logout-btn mt-3">
                 <i class="bi bi-box-arrow-right"></i> Sign Out
-=======
-            <a href="{% url 'admin_logout' %}" class="sidebar-logout-btn mt-2">
-                Logout
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
             </a>
         </div>
     </div>

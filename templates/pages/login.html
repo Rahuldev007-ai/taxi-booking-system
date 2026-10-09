@@ -1,25 +1,14 @@
 {% extends 'components/base.html' %}
 {% load static %}
-<<<<<<< HEAD
 {% block title %}Sign In — CabZy Rider Portal{% endblock %}
 
 {% block body_class %}login-page-body login-theme{% endblock %}
-=======
-{% block title %}
- CabZy Taxi Booking
-{% endblock %}
-
-{% block body_class %}
-  login-page-body login-theme
-{% endblock %}
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
 
 {% block content %}
 <div id="loginLoaderOverlay" class="login-loader-overlay">
     <div class="loader-content-box">
         <div class="cabzy-spinner"></div>
         <h4 class="loader-title mt-3">Signing you in...</h4>
-<<<<<<< HEAD
         <p class="loader-subtitle">Preparing your CabZy rider portal</p>
     </div>
 </div>
@@ -103,101 +92,5 @@
         <div class="footer-note-modern text-center mt-4">CabZy Taxi Booking &copy; 2026 &bull; Secure Mobility Portal</div>
     </div>
 </div>
-=======
-        <p class="loader-subtitle">Preparing your CabZy dashboard</p>
-    </div>
-</div>
-
-  <div class="auth-split-container">
-    <div class="auth-brand-pane">
-      <div class="brand-pane-content">
-        <div class="brand-badge-pill mb-3">
-           User Login page 
-        </div>
-        <h1 class="display-5 fw-bold text-white mb-3">Manage CabZy Fleet with Precision.</h1>
-        <p class="text-white-50 lead mb-4">Oversee live bookings, track drivers, analyze revenue insights, and configure system operations in real time.</p>
-
-        <div class="feature-pills-group">
-          <div class="feature-pill">
-            Real-time Analytics
-          </div>
-          <div class="feature-pill">
-            Live Fleet Tracking
-          </div>
-          <div class="feature-pill">
-            Encrypted Access
-          </div>
-        </div>
-      </div>
-      <div class="brand-pane-glow"></div>
-    </div>
-
-    <div class="auth-form-pane">
-      <div class="login-card-modern">
-        <!-- Unified Role Switcher -->
-        <div class="auth-nav-switcher">
-          <div class="auth-role-tabs">
-            <a href="{% url 'user_login' %}" class="auth-role-tab active">Rider Portal</a>
-            <a href="{% url 'driver-login' %}" class="auth-role-tab driver-role-tab">Driver Partner</a>
-          </div>
-          <div class="auth-sub-nav">
-            <a href="{% url 'user-register' %}" class="auth-sub-link">New Rider Sign Up &rarr;</a>
-          </div>
-        </div>
-
-        <div class="mb-4">
-          <span class="badge-access-modern">Rider Access</span>
-          <h2 class="auth-heading mt-2">Welcome Back</h2>
-          <p class="auth-subheading">Please enter your credentials to access your rider dashboard.</p>
-        </div>
-
-        {% if error_message %}
-          <div class="alert-custom alert-error-custom animate-shake" role="alert">
-            <div>{{ error_message }}</div>
-          </div>
-        {% endif %}
-
-        {% if success_message %}
-          <div class="alert-custom alert-success-custom" role="alert">
-            <div>{{ success_message }}</div>
-          </div>
-        {% endif %}
-
-        <form method="post" id="user_login" action="{% url 'user_login' %}" class="needs-validation" novalidate>
-          {% csrf_token %}
-
-          <div class="form-floating-custom mb-3">
-            <label class="form-label-custom">Email Address</label>
-            <input type="email" id="email" name="email" class="form-control custom-input-modern" placeholder="user@example.com" value="{{ email|default:'' }}" required autofocus />
-            <span class="text-danger" id="email_error"></span>
-          </div>
-
-          <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <label class="form-label-custom mb-0">Password</label>
-              <a href="{% url 'user_forgot_password' %}" class="auth-link-text">Forgot Password?</a>
-            </div>
-            <input type="password" id="password" name="password" class="form-control custom-input-modern" placeholder="Enter your password" required />
-            <span class="text-danger" id="pws_error"></span>
-          </div>
-
-          <button type="submit" class="btn btn-custom-primary-modern">
-            <span>Sign In to Rider Dashboard</span>
-          </button>
-        </form>
-
-        <!-- Clean Footer Prompt -->
-        <div class="auth-footer-prompt">
-          <div>
-            Need a rider profile? 
-            <a href="{% url 'user-register' %}" class="auth-link-text fw-bold text-decoration-underline">Sign Up as Rider &rarr;</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="footer-note-modern text-center mt-4">CabZy Taxi Booking &copy; 2026 &bull; Secure Enterprise Portal</div>
-    </div>
-  </div>
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
 <script src="{% static 'js/login.js' %}"></script>
 {% endblock %}

@@ -1,5 +1,4 @@
 {% extends 'components/base.html' %}
-<<<<<<< HEAD
 {% load static %}
 
 {% block title %}Confirm Delete Driver — CabZy Admin{% endblock %}
@@ -16,22 +15,6 @@
                         <span class="nest-eyebrow mb-0 text-danger">Warning Action</span>
                         <h1 class="dashboard-brand-title m-0">Confirm Delete Driver.</h1>
                     </div>
-=======
-
-{% block title %}Confirm Delete Driver | Admin Portal{% endblock %}
-
-{% block content %}
-<div class="admin-layout-wrapper">
-
-    {% include 'components/sidebar.html' %}
-
-    <main class="admin-main-content">
-
-        <header class="dashboard-header-bar mb-4">
-            <div class="container-fluid d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-3">
-                    <span class="dashboard-brand-title">Confirm Delete Driver</span>
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
                 </div>
             </div>
         </header>
@@ -39,7 +22,6 @@
         <div class="container-fluid px-3 px-lg-4 pb-5">
             <div class="row justify-content-center">
                 <div class="col-12 col-md-6">
-<<<<<<< HEAD
                     <div class="nest-card p-4 p-md-5 text-center">
                         <div class="mb-3 text-danger fs-1">
                             <i class="bi bi-exclamation-octagon-fill"></i>
@@ -48,30 +30,14 @@
                         <h2 class="fs-4 fw-extrabold text-dark mb-2">Delete Driver Partner?</h2>
                         <p class="text-muted small mb-4">
                             Are you sure you want to permanently remove <strong>{{ driver_obj.name }}</strong> (License: {{ driver_obj.license_number }}, Mobile: +91 {{ driver_obj.mobile }}) from the system?
-=======
-                    <div class="dashboard-card p-4 text-center">
-                        <div class="mb-3 text-danger fs-1">
-                            ⚠️
-                        </div>
-                        <h3 class="dashboard-card-title mb-2">Delete Driver Account?</h3>
-                        <p class="text-muted mb-4">
-                            Are you sure you want to permanently delete driver <strong>{{ driver_obj.name }}</strong> (License: {{ driver_obj.license_number }}, Mobile: {{ driver_obj.mobile }})? This action cannot be undone.
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
                         </p>
 
                         <form method="post" class="d-flex justify-content-center gap-3">
                             {% csrf_token %}
-<<<<<<< HEAD
                             <button type="submit" class="btn btn-danger rounded-pill px-4 py-2 fw-bold">
                                 Yes, Delete Account
                             </button>
                             <a href="{% url 'admin_drivers' %}" class="btn-nest-outline py-2 px-4">
-=======
-                            <button type="submit" class="btn btn-danger rounded-3 px-4 fw-bold">
-                                Yes, Delete Driver Account
-                            </button>
-                            <a href="{% url 'admin_drivers' %}" class="btn btn-outline-secondary rounded-3 px-4">
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
                                 Cancel
                             </a>
                         </form>
@@ -80,9 +46,5 @@
             </div>
         </div>
     </main>
-<<<<<<< HEAD
-=======
-
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
 </div>
 {% endblock %}

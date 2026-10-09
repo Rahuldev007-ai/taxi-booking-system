@@ -1,17 +1,11 @@
 {% extends 'components/base.html' %}
-<<<<<<< HEAD
 {% load static %}
 
 {% block title %}Admin Registration — CabZy Console{% endblock %}
-=======
-
-{% block title %}Admin Registration{% endblock %}
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
 
 {% block body_class %}login-page-body{% endblock %}
 
 {% block content %}
-<<<<<<< HEAD
 <div class="auth-split-container register-split-container">
     <div class="auth-brand-pane">
         <div class="brand-pane-content">
@@ -43,30 +37,6 @@
 
             {% if success_message %}
                 <div class="custom-alert-success mb-3">{{ success_message }}</div>
-=======
-<div class="register-wrapper">
-    <div class="brand-header-compact">
-        <h1 class="brand-title-compact">Cabzy Taxi Booking</h1>
-    </div>
-
-    <div class="login-card">
-        <div class="card-top-accent"></div>
-        <div class="card-body-compact">
-            <div class="text-center">
-                <span class="badge-access-compact">Admin Registration</span>
-            </div>
-
-            {% if error_message %}
-            <div class="custom-alert-error py-2 px-3 mb-2">
-                {{ error_message }}
-            </div>
-            {% endif %}
-
-            {% if success_message %}
-            <div class="custom-alert-success py-2 px-3 mb-2">
-                {{ success_message }}
-            </div>
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
             {% endif %}
 
             <form method="post" action="{% url 'admin_register' %}">
@@ -74,27 +44,17 @@
                 
                 <div class="row g-2 mb-2">
                     <div class="col-12 col-md-6">
-<<<<<<< HEAD
                         <label class="nest-form-label">Full Name</label>
                         <input type="text" name="full_name" class="nest-input" placeholder="e.g. Sarah Jenkins" value="{{ form_data.full_name|default:'' }}" required autofocus>
                     </div>
                     <div class="col-12 col-md-6">
                         <label class="nest-form-label">Username</label>
                         <input type="text" name="username" class="nest-input" placeholder="Unique username" value="{{ form_data.username|default:'' }}" required>
-=======
-                        <label class="form-label-compact">Full Name</label>
-                        <input type="text" name="full_name" class="form-control custom-input-compact" placeholder="e.g. Sarah Jenkins" value="{{ form_data.full_name|default:'' }}" required autofocus>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <label class="form-label-compact">Admin Username</label>
-                        <input type="text" name="username" class="form-control custom-input-compact" placeholder="Enter unique username" value="{{ form_data.username|default:'' }}" required>
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
                     </div>
                 </div>
 
                 <div class="row g-2 mb-2">
                     <div class="col-12 col-md-6">
-<<<<<<< HEAD
                         <label class="nest-form-label">Email Address</label>
                         <input type="email" name="email" class="nest-input" placeholder="admin@cabzy.com" value="{{ form_data.email|default:'' }}" required>
                     </div>
@@ -118,38 +78,12 @@
                 <div class="mb-4">
                     <label class="nest-form-label">Admin Role</label>
                     <select name="role" class="nest-select" required>
-=======
-                        <label class="form-label-compact">Email Address</label>
-                        <input type="email" name="email" class="form-control custom-input-compact" placeholder="admin@fleet.com" value="{{ form_data.email|default:'' }}" required>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <label class="form-label-compact">Phone Number (Optional)</label>
-                        <input type="text" name="phone" class="form-control custom-input-compact" placeholder="+1 (555) 019-2834" value="{{ form_data.phone|default:'' }}">
-                    </div>
-                </div>
-
-                <div class="row g-2 mb-2">
-                    <div class="col-12 col-md-6">
-                        <label class="form-label-compact">Password</label>
-                        <input type="password" name="password" class="form-control custom-input-compact" placeholder="Min 6 chars" required>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <label class="form-label-compact">Confirm Password</label>
-                        <input type="password" name="confirm_password" class="form-control custom-input-compact" placeholder="Re-enter password" required>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label-compact">Admin Role</label>
-                    <select name="role" class="form-select custom-input-compact" required>
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
                         <option value="SUPER_ADMIN" {% if form_data.role == 'SUPER_ADMIN' or not form_data.role %}selected{% endif %}>Super Admin</option>
                         <option value="DISPATCHER" {% if form_data.role == 'DISPATCHER' %}selected{% endif %}>Fleet Dispatcher</option>
                         <option value="MANAGER" {% if form_data.role == 'MANAGER' %}selected{% endif %}>System Manager</option>
                     </select>
                 </div>
 
-<<<<<<< HEAD
                 <button type="submit" class="btn-nest-accent w-100 py-3 mb-3">
                     Register Admin Account &rarr;
                 </button>
@@ -165,22 +99,5 @@
             CabZy Mobility Console &copy; 2026 &bull; All Rights Reserved
         </div>
     </div>
-=======
-                <button type="submit" class="btn btn-custom-primary btn-compact w-100">
-                    Register Admin Account
-                </button>
-            </form>
-
-            <div class="text-center mt-2">
-                <span style="font-size: 0.8rem; color: var(--secondary-text-muted-brown);">
-                    Already have an account? 
-                    <a href="{% url 'admin_login' %}" class="auth-link-text">Sign In to Dashboard</a>
-                </span>
-            </div>
-
-        </div>
-    </div>
-
->>>>>>> 2caebf79202aefa6a8387d6fd2594af48dd0171c
 </div>
 {% endblock %}
