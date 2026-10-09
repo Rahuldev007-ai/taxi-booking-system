@@ -36,10 +36,18 @@
             <form method="post" action="{% url 'user_verify_otp' %}">
                 {% csrf_token %}
                 <div class="mb-4">
-                    <input type="text" name="otp" class="nest-input text-center fw-extrabold fs-3" placeholder="123456" maxlength="6" 
-                           inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required autofocus style="letter-spacing: 6px; color: var(--nest-copper);">
+                    <label class="nest-form-label text-center d-block">6-Digit Verification Code</label>
+                    <div class="otp-container mb-3" id="otpContainer">
+                        <input type="text" class="otp-digit-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autofocus autocomplete="off" />
+                        <input type="text" class="otp-digit-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off" />
+                        <input type="text" class="otp-digit-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off" />
+                        <input type="text" class="otp-digit-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off" />
+                        <input type="text" class="otp-digit-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off" />
+                        <input type="text" class="otp-digit-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off" />
+                    </div>
+                    <input type="hidden" name="otp" id="hidden_otp" required />
                 </div>
-                <button type="submit" class="btn-nest-accent w-100 py-3 mb-3">
+                <button type="submit" class="btn-nest-primary w-100 py-3 mb-3">
                     Verify & Continue &rarr;
                 </button>
             </form>
