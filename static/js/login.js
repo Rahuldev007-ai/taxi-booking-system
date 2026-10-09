@@ -48,6 +48,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!validEmail || !validPws) {
                 e.preventDefault();
+                if (window.showToast) {
+                    window.showToast("Please enter a valid email address and password.", "error", 4000);
+                }
                 return false;
             }
 
