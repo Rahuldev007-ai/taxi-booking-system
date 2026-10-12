@@ -56,3 +56,30 @@ class Driver(models.Model):
 
     def __str__(self):
         return f"{self.name} (License: {self.license_number})"
+
+
+class Taxi(models.Model):
+    TYPE_CHOICES = [
+        ('SEDAN', 'Sedan'),
+        ('SUV', 'SUV'),
+        ('HATCHBACK', 'Hatchback'),
+        ('PREMIUM', 'Premium'),
+    ]
+
+    number = models.CharField(max_length=50, unique=True)
+    type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='SEDAN')
+    source = models.CharField(max_length=255)
+    destination = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    availability = models.BooleanField(default=True)
+    driver = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name='taxis')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'custom_taxis'
+        verbose_name = 'Taxi'
+        verbose_name_plural = 'Taxis'
+
+    def __str__(self):
+        return f"Taxi {self.number} ({self.type}) - {self.source} to {self.destination}"
