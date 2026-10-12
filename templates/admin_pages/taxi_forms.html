@@ -1,0 +1,196 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}
+  {% if taxi_create %}Add New Taxi — CabZy Admin{% else %}Edit Taxi - {{ taxi_obj.number }} — CabZy Admin{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="admin-layout-wrapper">
+  {% include 'components/sidebar.html' %}
+
+  <main class="admin-main-content">
+    <header class="dashboard-header-bar mb-4">
+      <div class="container-fluid d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-outline-dark btn-sm rounded-3 fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+            <i class="bi bi-list fs-5"></i>
+          </button>
+
+          <div>
+            <span class="nest-eyebrow mb-0">Fleet Dispatch</span>
+            <h1 class="dashboard-brand-title m-0">
+              {% if taxi_create %}
+                Add New Taxi
+              {% else %}
+                Edit Taxi {{ taxi_obj.number }}
+              {% endif %}
+            </h1>
+          </div>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+          <a href="{% url 'admin_taxis' %}" class="btn-nest-outline py-2 px-3 fs-7">
+            <i class="bi bi-arrow-left me-1"></i> Back to Taxis
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <div class="container-fluid px-3 px-lg-4 pb-5">
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-9 col-xl-8">
+          <div class="dashboard-card p-4 p-md-5">
+            <div class="d-flex align-items-center justify-content-between mb-4 border-bottom pb-3">
+              <div>
+                <span class="nest-eyebrow mb-0">Vehicle Configuration</span>
+                <h2 class="fs-5 fw-extrabold m-0 text-dark">
+                  {% if taxi_create %}
+                    Manual Taxi Onboarding Form
+                  {% else %}
+                    Update Taxi Specifications
+                  {% endif %}
+                </h2>
+              </div>
+              <span class="nest-badge nest-badge-pending">Fleet Dispatch</span>
+            </div>
+
+            {% if form.errors %}
+              <div class="alert alert-danger rounded-3 mb-4 shadow-sm" role="alert">
+                <div class="d-flex align-items-center gap-2 mb-2 fw-bold">
+                  <i class="bi bi-exclamation-triangle-fill text-danger"></i> Please correct the following errors:
+                </div>
+                <ul class="mb-0 ps-3 small">
+                  {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                      <li><strong>{{ field|capfirst }}:</strong> {{ error }}</li>
+                    {% endfor %}
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
+            <form method="post" action="{% if taxi_create %}{% url 'admin_create_taxi' %}{% else %}{% url 'admin_edit_taxi' taxi_obj.id %}{% endif %}">
+              {% csrf_token %}
+
+              <div class="row g-4 mb-4">
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-bold text-dark small mb-1" for="id_number">
+                    Taxi Plate / Number <span class="text-danger">*</span>
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted">
+                      <i class="bi bi-123"></i>
+                    </span>
+                    {{ form.number }}
+                  </div>
+                  <div class="form-text small">Unique license plate or taxi badge (e.g. TX-8041 or MH-02-AB-1234).</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-bold text-dark small mb-1" for="id_type">
+                    Taxi Type / Category <span class="text-danger">*</span>
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted">
+                      <i class="bi bi-car-front"></i>
+                    </span>
+                    {{ form.type }}
+                  </div>
+                  <div class="form-text small">Select vehicle category (Sedan, SUV, Hatchback, Premium).</div>
+                </div>
+              </div>
+
+              <div class="row g-4 mb-4">
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-bold text-dark small mb-1" for="id_source">
+                    Source (Origin / Pickup Point) <span class="text-danger">*</span>
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted">
+                      <i class="bi bi-geo-alt-fill text-danger"></i>
+                    </span>
+                    {{ form.source }}
+                  </div>
+                  <div class="form-text small">Primary pickup location, terminal, or origin hub.</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-bold text-dark small mb-1" for="id_destination">
+                    Destination (Drop-off Point) <span class="text-danger">*</span>
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted">
+                      <i class="bi bi-pin-map-fill text-success"></i>
+                    </span>
+                    {{ form.destination }}
+                  </div>
+                  <div class="form-text small">Target route drop-off hub or operating corridor.</div>
+                </div>
+              </div>
+
+              <div class="row g-4 mb-4">
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-bold text-dark small mb-1" for="id_price">
+                    Standard Route Fare (&#8377;) <span class="text-danger">*</span>
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted fw-bold">
+                      &#8377;
+                    </span>
+                    {{ form.price }}
+                  </div>
+                  <div class="form-text small">Fare amount charged in INR for this corridor/taxi.</div>
+                </div>
+
+                <div class="col-12 col-md-6">
+                  <label class="form-label fw-bold text-dark small mb-1" for="id_driver">
+                    Assigned Driver (Foreign Key) <span class="text-danger">*</span>
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light border-end-0 text-muted">
+                      <i class="bi bi-person-badge"></i>
+                    </span>
+                    {{ form.driver }}
+                  </div>
+                  <div class="form-text small">
+                    Select a registered driver from the roster.
+                    {% if not drivers %}
+                      <span class="text-danger fw-bold">(No drivers found. <a href="{% url 'admin_create_driver' %}">Add driver</a> first)</span>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3 mb-4 rounded-3 border bg-light bg-opacity-50">
+                <div class="form-check form-switch d-flex align-items-center gap-3 m-0">
+                  {{ form.availability }}
+                  <div>
+                    <label class="form-check-label fw-bold text-dark cursor-pointer" for="id_availability">
+                      Ready & Available for Dispatch
+                    </label>
+                    <div class="text-muted small">
+                      When active, this taxi appears in rider booking searches and dispatch queues.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                <a href="{% url 'admin_taxis' %}" class="btn btn-outline-secondary rounded-pill px-4 fw-semibold">
+                  Cancel
+                </a>
+
+                <button type="submit" class="btn-nest-accent py-2 px-5 rounded-pill fw-bold">
+                  <i class="bi bi-check2-circle me-1"></i>
+                  {% if taxi_create %}Add Taxi to Fleet{% else %}Update Taxi{% endif %}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

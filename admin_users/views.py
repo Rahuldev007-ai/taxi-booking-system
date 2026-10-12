@@ -1,5 +1,6 @@
-from django.shortcuts import render,redirect,get_object_or_404
-from .models import User,Driver
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import User, Driver, Taxi
+from .forms import TaxiForm
 from django.db.models import Q
 from django.contrib import messages
 
@@ -343,5 +344,97 @@ def admin_edit_driver(request, driver_id):
         "typed_status": driver_obj.status,
     })
 
-    
- 
+
+def admin_taxis(request):
+    taxis = Taxi.objects.select_related('driver').all().order_by('-created_at')
+    q = request.GET.get('q')
+    total_count = taxis.count()
+
+    if q:
+        taxis = taxis.filter(
+            Q(number__icontains=q) |
+            Q(type__icontains=q) |
+            Q(source__icontains=q) |
+            Q(destination__icontains=q) |
+            Q(driver__name__icontains=q)
+        )
+        total_count = taxis.count()
+
+    context = {
+        "taxis": taxis,
+        "search_query": q,
+        "total": total_count,
+        "admin_full_name": request.session.get('admin_full_name', 'Administrator'),
+    }
+    return render(request, 'admin_pages/taxis.html', context)
+
+
+def admin_create_taxi(request):
+    taxi_create = True
+    drivers = Driver.objects.all().order_by('name')
+
+    if request.method == "POST":
+        form = TaxiForm(request.POST)
+        if form.is_valid():
+            taxi_obj = form.save()
+            messages.success(request, f"Taxi '{taxi_obj.number}' created and added to fleet successfully.")
+            return redirect('admin_taxis')
+        else:
+            return render(request, "admin_pages/taxi_forms.html", {
+                "taxi_create": taxi_create,
+                "form": form,
+                "drivers": drivers,
+                "admin_full_name": request.session.get('admin_full_name', 'Administrator'),
+            })
+
+    form = TaxiForm()
+    return render(request, "admin_pages/taxi_forms.html", {
+        "taxi_create": taxi_create,
+        "form": form,
+        "drivers": drivers,
+        "admin_full_name": request.session.get('admin_full_name', 'Administrator'),
+    })
+
+
+def admin_edit_taxi(request, taxi_id):
+    taxi_obj = get_object_or_404(Taxi, id=taxi_id)
+    taxi_create = False
+    drivers = Driver.objects.all().order_by('name')
+
+    if request.method == "POST":
+        form = TaxiForm(request.POST, instance=taxi_obj)
+        if form.is_valid():
+            taxi_obj = form.save()
+            messages.success(request, f"Taxi '{taxi_obj.number}' updated successfully.")
+            return redirect('admin_taxis')
+        else:
+            return render(request, "admin_pages/taxi_forms.html", {
+                "taxi_create": taxi_create,
+                "taxi_obj": taxi_obj,
+                "form": form,
+                "drivers": drivers,
+                "admin_full_name": request.session.get('admin_full_name', 'Administrator'),
+            })
+
+    form = TaxiForm(instance=taxi_obj)
+    return render(request, "admin_pages/taxi_forms.html", {
+        "taxi_create": taxi_create,
+        "taxi_obj": taxi_obj,
+        "form": form,
+        "drivers": drivers,
+        "admin_full_name": request.session.get('admin_full_name', 'Administrator'),
+    })
+
+
+def admin_delete_taxi(request, taxi_id):
+    taxi_obj = get_object_or_404(Taxi, id=taxi_id)
+    if request.method == "POST":
+        taxi_number = taxi_obj.number
+        taxi_obj.delete()
+        messages.success(request, f"Taxi '{taxi_number}' deleted successfully.")
+        return redirect('admin_taxis')
+
+    return render(request, "admin_pages/taxi_confirm_delete.html", {
+        "taxi_obj": taxi_obj,
+        "admin_full_name": request.session.get('admin_full_name', 'Administrator'),
+    })

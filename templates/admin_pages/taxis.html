@@ -1,0 +1,162 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}Taxis Fleet Management — CabZy Admin{% endblock %}
+
+{% block content %}
+<div class="admin-layout-wrapper">
+    {% include 'components/sidebar.html' %}
+
+    <main class="admin-main-content">
+        <header class="dashboard-header-bar mb-4">
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-outline-dark btn-sm rounded-pill fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
+                        <i class="bi bi-list fs-5"></i>
+                    </button>
+                    <div>
+                        <span class="nest-eyebrow mb-0">Fleet Dispatch</span>
+                        <h1 class="dashboard-brand-title m-0">Taxis Fleet Directory.</h1>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF; width: 36px; height: 36px; font-size: 0.85rem;">
+                            {{ admin_full_name|default:'A'|slice:":1" }}
+                        </div>
+                        <div class="text-end d-none d-md-block">
+                            <div class="fw-extrabold text-dark small">{{ admin_full_name|default:'Administrator' }}</div>
+                            <span class="text-muted" style="font-size: 0.7rem;">Dispatch Master</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container-fluid px-3 px-lg-4 pb-5">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show rounded-3 mb-4 shadow-sm" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i> {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+                <form method="get" action="{% url 'admin_taxis' %}" class="d-flex gap-2 flex-grow-1 max-w-md">
+                    <input type="text" name="q" value="{{ search_query|default:'' }}" class="nest-input form-control py-2 px-3" placeholder="Search plate, type, route, or driver..." />
+                    <button type="submit" class="btn-nest-primary py-2 px-3">Search</button>
+                    {% if search_query %}
+                        <a href="{% url 'admin_taxis' %}" class="btn-nest-outline py-2 px-3">Clear</a>
+                    {% endif %}
+                </form>
+
+                <a href="{% url 'admin_create_taxi' %}" class="btn-nest-accent py-2 px-4">
+                    <i class="bi bi-plus-circle me-1"></i> Add New Taxi
+                </a>
+            </div>
+
+            <div class="dashboard-card mb-4">
+                <div class="dashboard-card-header d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="nest-eyebrow mb-0">Active Fleet</span>
+                        <h2 class="fs-5 fw-extrabold m-0">Managed Taxi Vehicles</h2>
+                    </div>
+                    <span class="nest-badge nest-badge-completed">Total: {{ total|default:'0' }} Taxis</span>
+                </div>
+
+                <div class="dashboard-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="nest-table">
+                            <thead>
+                                <tr>
+                                    <th>Taxi Plate / Number</th>
+                                    <th>Type</th>
+                                    <th>Assigned Route</th>
+                                    <th>Fare Price</th>
+                                    <th>Assigned Driver</th>
+                                    <th>Availability</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for taxi in taxis %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-dark bg-opacity-10 text-dark fw-bold px-3 py-2 border rounded-pill font-monospace">
+                                                {{ taxi.number }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 rounded">
+                                                {{ taxi.get_type_display|default:taxi.type }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="fw-semibold text-dark">
+                                                <i class="bi bi-geo-alt-fill text-danger small me-1"></i> {{ taxi.source }}
+                                            </div>
+                                            <div class="text-muted small">
+                                                <i class="bi bi-pin-map-fill text-success small me-1"></i> {{ taxi.destination }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="fw-extrabold text-success fs-6">
+                                                &#8377; {{ taxi.price }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold text-dark">
+                                                <a href="{% url 'admin_driver_detail' taxi.driver.id %}" class="text-decoration-none text-dark hover-primary">
+                                                    {{ taxi.driver.name }}
+                                                </a>
+                                            </div>
+                                            <div class="text-muted small font-monospace">
+                                                DL: {{ taxi.driver.license_number }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if taxi.availability %}
+                                                <span class="nest-badge nest-badge-completed">
+                                                    <i class="bi bi-check-circle-fill me-1"></i> Available
+                                                </span>
+                                            {% else %}
+                                                <span class="nest-badge nest-badge-offline">
+                                                    <i class="bi bi-x-circle-fill me-1"></i> Unavailable
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'admin_edit_taxi' taxi.id %}" class="btn btn-outline-warning rounded-pill me-1 py-1 px-2" title="Edit Taxi">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <a href="{% url 'admin_delete_taxi' taxi.id %}" class="btn btn-outline-danger rounded-pill py-1 px-2" title="Delete Taxi">
+                                                    <i class="bi bi-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="7" class="text-center py-5 text-muted">
+                                            <i class="bi bi-car-front fs-1 d-block text-muted mb-2"></i>
+                                            <h4 class="fs-5 fw-bold text-dark">No taxis added yet.</h4>
+                                            <p class="small text-muted mb-3">Click below to manually register the first taxi vehicle and pair it with a driver.</p>
+                                            <a href="{% url 'admin_create_taxi' %}" class="btn-nest-accent py-2 px-4 d-inline-block">
+                                                + Add New Taxi
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
