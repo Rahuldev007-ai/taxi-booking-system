@@ -369,6 +369,14 @@ def admin_taxis(request):
     return render(request, 'admin_pages/taxis.html', context)
 
 
+def admin_taxi_detail(request, taxi_id):
+    taxi_obj = get_object_or_404(Taxi.objects.select_related('driver'), id=taxi_id)
+    return render(request, 'admin_pages/taxi_detail.html', {
+        'taxi_obj': taxi_obj,
+        'admin_full_name': request.session.get('admin_full_name', 'Administrator'),
+    })
+
+
 def admin_create_taxi(request):
     taxi_create = True
     drivers = Driver.objects.all().order_by('name')

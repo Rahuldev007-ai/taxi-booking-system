@@ -85,9 +85,11 @@
                                 {% for taxi in taxis %}
                                     <tr>
                                         <td>
-                                            <span class="badge bg-dark bg-opacity-10 text-dark fw-bold px-3 py-2 border rounded-pill font-monospace">
-                                                {{ taxi.number }}
-                                            </span>
+                                            <a href="{% url 'admin_taxi_detail' taxi.id %}" class="text-decoration-none" title="View Taxi Details">
+                                                <span class="badge bg-dark bg-opacity-10 text-dark fw-bold px-3 py-2 border rounded-pill font-monospace">
+                                                    {{ taxi.number }}
+                                                </span>
+                                            </a>
                                         </td>
                                         <td>
                                             <span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 rounded">
@@ -130,6 +132,9 @@
                                         </td>
                                         <td class="text-end">
                                             <div class="btn-group btn-group-sm">
+                                                <a href="{% url 'admin_taxi_detail' taxi.id %}" class="btn btn-outline-secondary rounded-pill me-1 py-1 px-2" title="View Taxi Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
                                                 <a href="{% url 'admin_edit_taxi' taxi.id %}" class="btn btn-outline-warning rounded-pill me-1 py-1 px-2" title="Edit Taxi">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>

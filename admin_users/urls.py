@@ -13,6 +13,7 @@ from .views import (
     admin_delete_driver,
 
     admin_taxis,
+    admin_taxi_detail,
     admin_create_taxi,
     admin_edit_taxi,
     admin_delete_taxi,
@@ -33,6 +34,7 @@ urlpatterns = [
 
     path('taxis/', admin_taxis, name='admin_taxis'),
     path('taxis/create/', admin_create_taxi, name='admin_create_taxi'),
+    path('taxis/<int:taxi_id>/', admin_taxi_detail, name='admin_taxi_detail'),
     path('taxis/<int:taxi_id>/edit/', admin_edit_taxi, name='admin_edit_taxi'),
     path('taxis/<int:taxi_id>/delete/', admin_delete_taxi, name='admin_delete_taxi'),
     ]
