@@ -44,15 +44,38 @@
                 {% endfor %}
             {% endif %}
 
-            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
-                <form method="get" action="{% url 'admin_taxis' %}" class="d-flex gap-2 flex-grow-1 max-w-md">
-                    <input type="text" name="q" value="{{ search_query|default:'' }}" class="nest-input form-control py-2 px-3" placeholder="Search plate, type, route, or driver..." />
-                    <button type="submit" class="btn-nest-primary py-2 px-3">Search</button>
-                    {% if search_query %}
-                        <a href="{% url 'admin_taxis' %}" class="btn-nest-outline py-2 px-3">Clear</a>
-                    {% endif %}
+            <div class="dashboard-card p-3 mb-4">
+                <form method="get" action="{% url 'admin_taxis' %}" class="row g-2 align-items-center">
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-123"></i></span>
+                            <input type="text" name="taxi_number" value="{{ taxi_number|default:'' }}" class="nest-input form-control py-2" placeholder="Taxi Number..." />
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-geo-alt-fill text-danger"></i></span>
+                            <input type="text" name="source" value="{{ source|default:'' }}" class="nest-input form-control py-2" placeholder="Source location..." />
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-muted"><i class="bi bi-pin-map-fill text-success"></i></span>
+                            <input type="text" name="destination" value="{{ destination|default:'' }}" class="nest-input form-control py-2" placeholder="Destination location..." />
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3 d-flex gap-2">
+                        <button type="submit" class="btn-nest-primary py-2 px-3 flex-grow-1">
+                            <i class="bi bi-search me-1"></i> Search
+                        </button>
+                        {% if is_filtered %}
+                            <a href="{% url 'admin_taxis' %}" class="btn-nest-outline py-2 px-3">Clear</a>
+                        {% endif %}
+                    </div>
                 </form>
+            </div>
 
+            <div class="d-flex justify-content-end mb-4">
                 <a href="{% url 'admin_create_taxi' %}" class="btn-nest-accent py-2 px-4">
                     <i class="bi bi-plus-circle me-1"></i> Add New Taxi
                 </a>
@@ -77,7 +100,8 @@
                                     <th>Assigned Route</th>
                                     <th>Fare Price</th>
                                     <th>Assigned Driver</th>
-                                    <th>Availability</th>
+                                    <th>Driver Email</th>
+                                    <th>Taxi Status</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
@@ -120,6 +144,14 @@
                                             </div>
                                         </td>
                                         <td>
+                                            <div class="fw-semibold text-dark">
+                                                <i class="bi bi-envelope text-muted me-1"></i> {{ taxi.driver.email }}
+                                            </div>
+                                            <div class="text-muted small">
+                                                <i class="bi bi-telephone text-muted me-1"></i> +91 {{ taxi.driver.mobile }}
+                                            </div>
+                                        </td>
+                                        <td>
                                             {% if taxi.availability %}
                                                 <span class="nest-badge nest-badge-completed">
                                                     <i class="bi bi-check-circle-fill me-1"></i> Available
@@ -146,13 +178,20 @@
                                     </tr>
                                 {% empty %}
                                     <tr>
-                                        <td colspan="7" class="text-center py-5 text-muted">
+                                        <td colspan="8" class="text-center py-5 text-muted">
                                             <i class="bi bi-car-front fs-1 d-block text-muted mb-2"></i>
-                                            <h4 class="fs-5 fw-bold text-dark">No taxis added yet.</h4>
-                                            <p class="small text-muted mb-3">Click below to manually register the first taxi vehicle and pair it with a driver.</p>
-                                            <a href="{% url 'admin_create_taxi' %}" class="btn-nest-accent py-2 px-4 d-inline-block">
-                                                + Add New Taxi
-                                            </a>
+                                            <h4 class="fs-5 fw-bold text-dark">No taxis found.</h4>
+                                            {% if is_filtered %}
+                                                <p class="small text-muted mb-3">No taxi matches the given search criteria.</p>
+                                                <a href="{% url 'admin_taxis' %}" class="btn-nest-outline py-2 px-3 d-inline-block">
+                                                    Clear Filters
+                                                </a>
+                                            {% else %}
+                                                <p class="small text-muted mb-3">Click below to manually register the first taxi vehicle and pair it with a driver.</p>
+                                                <a href="{% url 'admin_create_taxi' %}" class="btn-nest-accent py-2 px-4 d-inline-block">
+                                                    + Add New Taxi
+                                                </a>
+                                            {% endif %}
                                         </td>
                                     </tr>
                                 {% endfor %}

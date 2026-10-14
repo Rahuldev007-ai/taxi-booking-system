@@ -347,22 +347,38 @@ def admin_edit_driver(request, driver_id):
 
 def admin_taxis(request):
     taxis = Taxi.objects.select_related('driver').all().order_by('-created_at')
-    q = request.GET.get('q')
-    total_count = taxis.count()
+
+    q = request.GET.get('q', '').strip()
+    taxi_number = request.GET.get('taxi_number', '').strip()
+    source = request.GET.get('source', '').strip()
+    destination = request.GET.get('destination', '').strip()
 
     if q:
         taxis = taxis.filter(
             Q(number__icontains=q) |
-            Q(type__icontains=q) |
             Q(source__icontains=q) |
             Q(destination__icontains=q) |
-            Q(driver__name__icontains=q)
+            Q(type__icontains=q) |
+            Q(driver__name__icontains=q) |
+            Q(driver__email__icontains=q)
         )
-        total_count = taxis.count()
+    if taxi_number:
+        taxis = taxis.filter(number__icontains=taxi_number)
+    if source:
+        taxis = taxis.filter(source__icontains=source)
+    if destination:
+        taxis = taxis.filter(destination__icontains=destination)
+
+    is_filtered = bool(q or taxi_number or source or destination)
+    total_count = taxis.count()
 
     context = {
         "taxis": taxis,
         "search_query": q,
+        "taxi_number": taxi_number,
+        "source": source,
+        "destination": destination,
+        "is_filtered": is_filtered,
         "total": total_count,
         "admin_full_name": request.session.get('admin_full_name', 'Administrator'),
     }
