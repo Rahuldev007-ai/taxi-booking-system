@@ -37,6 +37,7 @@ class Driver(models.Model):
     license_number = models.CharField(max_length=50, unique=True)
     mobile = models.CharField(max_length=20, unique=True)
     vehicle_name = models.CharField(max_length=100, blank=True, null=True, default="Toyota Camry Hybrid")
+    taxi_number = models.CharField(max_length=50, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='AVAILABLE')    
     password = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
@@ -82,4 +83,24 @@ class Taxi(models.Model):
         verbose_name_plural = 'Taxis'
 
     def __str__(self):
-        return f"Taxi {self.number} ({self.type}) - {self.source} to {self.destination}"
+        return f"Taxi {self.number} ({self.type}) - {self.source} to {self.destination}"
+
+
+class TaxiDetails(models.Model):
+    source = models.CharField(max_length=255)
+    destination = models.CharField(max_length=255)
+    driver_details = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name='taxi_details')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'custom_taxi_details'
+        verbose_name = 'Taxi Detail'
+        verbose_name_plural = 'Taxi Details'
+
+    def __str__(self):
+        return f"{self.source} to {self.destination} (Driver: {self.driver_details.name if self.driver_details else 'None'})"
+
+
+TaxiDetail = TaxiDetails
+
