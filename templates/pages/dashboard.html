@@ -34,45 +34,30 @@
           <div class="col-lg-5" id="booking-form-card">
             <div class="bg-white text-dark p-4 p-md-4" style="border-radius: var(--nest-radius-lg); box-shadow: var(--nest-shadow-lg);">
               <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                <h2 class="fs-5 fw-extrabold text-dark mb-0">Reserve Your Ride</h2>
+                <h2 class="fs-5 fw-extrabold text-dark mb-0">Search Available Taxis</h2>
                 <span class="nest-badge nest-badge-completed">Live Fleet</span>
               </div>
 
-              <form>
+              <form method="get" action="{% url 'user-dashboard' %}#search-results">
                 <div class="mb-3">
-                  <label class="nest-form-label">Pickup Location</label>
+                  <label class="nest-form-label" for="search_source">Source (Pickup Location)</label>
                   <div class="input-group">
                     <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-geo-alt-fill text-danger"></i></span>
-                    <input type="text" class="form-control nest-input border-start-0" placeholder="e.g. Central Station, Hotel" required />
+                    <input type="text" id="search_source" name="source" value="{{ source|default:'' }}" class="form-control nest-input border-start-0" placeholder="e.g. Bandra, Airport, Hotel" required />
                   </div>
                 </div>
 
                 <div class="mb-3">
-                  <label class="nest-form-label">Destination Point</label>
+                  <label class="nest-form-label" for="search_destination">Destination Point</label>
                   <div class="input-group">
                     <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-pin-map-fill text-success"></i></span>
-                    <input type="text" class="form-control nest-input border-start-0" placeholder="e.g. International Airport" required />
+                    <input type="text" id="search_destination" name="destination" value="{{ destination|default:'' }}" class="form-control nest-input border-start-0" placeholder="e.g. Shivaji Terminal, Station" required />
                   </div>
                 </div>
 
-                <div class="row g-2 mb-3">
-                  <div class="col-6">
-                    <label class="nest-form-label">Date & Time</label>
-                    <input type="datetime-local" class="form-control nest-input" required />
-                  </div>
-                  <div class="col-6">
-                    <label class="nest-form-label">Vehicle Type</label>
-                    <select class="form-select nest-select">
-                      <option value="sedan">Executive Sedan</option>
-                      <option value="mini">City Mini Eco</option>
-                      <option value="suv">Premium SUV</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button type="button" class="btn-nest-primary w-100 py-3 mt-2">
-                  <span>Confirm & Find Driver</span>
-                  <i class="bi bi-arrow-right"></i>
+                <button type="submit" class="btn-nest-primary w-100 py-3 mt-2">
+                  <span>Search Matching Taxis</span>
+                  <i class="bi bi-search ms-1"></i>
                 </button>
               </form>
             </div>
@@ -80,6 +65,36 @@
         </div>
       </div>
     </section>
+
+    <!-- SEARCH QUERY RESULTS SECTION (Task 1: Query taxis based on availability & matching source/destination) -->
+    {% if searched %}
+    <section class="container mb-5" id="search-results">
+      <div class="dashboard-card p-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 border-bottom pb-3 mb-3">
+          <div>
+            <span class="nest-eyebrow mb-0">Search Query Status</span>
+            <h2 class="fs-4 fw-extrabold text-dark m-0">
+              Query Route: <span class="text-primary">{{ source }}</span> &rarr; <span class="text-primary">{{ destination }}</span>
+            </h2>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="nest-badge nest-badge-completed fs-6 py-2 px-3">
+              {{ total_matches }} Available Taxi{{ total_matches|pluralize }} Matched
+            </span>
+            <a href="{% url 'user-dashboard' %}" class="btn-nest-outline py-2 px-3 fs-7">Clear Search</a>
+          </div>
+        </div>
+
+        {% if not matching_taxis %}
+        <div class="text-center py-4 text-muted">
+          <i class="bi bi-search fs-2 d-block mb-2 text-muted"></i>
+          <h5 class="fw-bold text-dark mb-1">No Available Taxis Found</h5>
+          <p class="small text-muted mb-0">No active taxis found matching source "{{ source }}" and destination "{{ destination }}". Please check your spelling or search another route.</p>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
 
     <!-- STATS STRIP -->
     <section class="container mb-5">

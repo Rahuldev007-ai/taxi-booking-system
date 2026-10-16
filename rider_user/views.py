@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from admin_users.models import User, Driver
+from admin_users.models import User, Driver, Taxi
 from django.db.models import Q
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -126,7 +126,30 @@ def user_dashboard(request):
     if request.session.get("is_driver"):
         return redirect('driver-dashboard')
     
-    return render(request, "pages/dashboard.html")
+    source = request.GET.get('source', '').strip()
+    destination = request.GET.get('destination', '').strip()
+
+    searched = False
+    matching_taxis = Taxi.objects.none()
+
+    if source or destination:
+        searched = True
+        query = Q(availability=True)
+        if source:
+            query &= Q(source__icontains=source)
+        if destination:
+            query &= Q(destination__icontains=destination)
+        
+        matching_taxis = Taxi.objects.select_related('driver').filter(query).order_by('price')
+
+    context = {
+        "source": source,
+        "destination": destination,
+        "searched": searched,
+        "matching_taxis": matching_taxis,
+        "total_matches": matching_taxis.count() if searched else 0,
+    }
+    return render(request, "pages/dashboard.html", context)
 
 def driver_dashboard(request):
     if not request.session.get("user_id") or not request.session.get("is_driver"):
