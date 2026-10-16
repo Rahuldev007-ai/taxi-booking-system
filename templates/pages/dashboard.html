@@ -91,6 +91,75 @@
           <h5 class="fw-bold text-dark mb-1">No Available Taxis Found</h5>
           <p class="small text-muted mb-0">No active taxis found matching source "{{ source }}" and destination "{{ destination }}". Please check your spelling or search another route.</p>
         </div>
+        {% else %}
+        <!-- LIST OF MATCHING TAXIS (Task 2: Display list of matching taxis with driver email, price, and taxi number) -->
+        <div class="row g-4 mt-1">
+          {% for taxi in matching_taxis %}
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="p-4 rounded-4 border bg-white shadow-sm h-100 d-flex flex-column justify-content-between position-relative">
+              <div>
+                <!-- Taxi Number & Category Badge -->
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <span class="text-muted small d-block font-monospace text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Taxi Number</span>
+                    <span class="badge bg-dark bg-opacity-10 text-dark fw-bold px-3 py-2 border rounded-pill font-monospace fs-6">
+                      <i class="bi bi-car-front-fill me-1"></i> {{ taxi.number }}
+                    </span>
+                  </div>
+                  <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill fw-semibold">
+                    {{ taxi.get_type_display|default:taxi.type }}
+                  </span>
+                </div>
+
+                <!-- Route: Source & Destination -->
+                <div class="p-3 rounded-3 bg-light mb-3">
+                  <div class="d-flex align-items-start gap-2 mb-2">
+                    <i class="bi bi-geo-alt-fill text-danger mt-1"></i>
+                    <div>
+                      <span class="text-muted small d-block" style="font-size: 0.72rem;">Pickup (Source)</span>
+                      <strong class="text-dark small">{{ taxi.source }}</strong>
+                    </div>
+                  </div>
+                  <div class="d-flex align-items-start gap-2">
+                    <i class="bi bi-pin-map-fill text-success mt-1"></i>
+                    <div>
+                      <span class="text-muted small d-block" style="font-size: 0.72rem;">Drop-off (Destination)</span>
+                      <strong class="text-dark small">{{ taxi.destination }}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Driver Details: Driver Name & Email -->
+                <div class="mb-3 p-3 rounded-3 border bg-white">
+                  <span class="text-muted small d-block font-monospace text-uppercase mb-1" style="font-size: 0.7rem; letter-spacing: 0.05em;">Driver Information</span>
+                  <div class="fw-bold text-dark fs-6">{{ taxi.driver.name }}</div>
+                  <div class="text-muted small d-flex align-items-center gap-1 mt-1">
+                    <i class="bi bi-envelope text-primary"></i>
+                    <span><strong>Driver Email:</strong> {{ taxi.driver.email }}</span>
+                  </div>
+                  {% if taxi.driver.mobile %}
+                  <div class="text-muted small d-flex align-items-center gap-1 mt-1">
+                    <i class="bi bi-telephone text-muted"></i>
+                    <span>+91 {{ taxi.driver.mobile }}</span>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <!-- Price & Status Footer -->
+              <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-2">
+                <div>
+                  <span class="text-muted small d-block" style="font-size: 0.72rem;">Trip Fare</span>
+                  <span class="fs-4 fw-extrabold text-success">&#8377;{{ taxi.price }}</span>
+                </div>
+                <span class="nest-badge nest-badge-completed">
+                  <i class="bi bi-check-circle-fill me-1"></i> Available
+                </span>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
         {% endif %}
       </div>
     </section>
