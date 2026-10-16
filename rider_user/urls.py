@@ -13,7 +13,8 @@ from .views import (
     driver_resend_otp,
     user_forgot_password,
     user_verify_otp,
-    user_reset_password
+    user_reset_password,
+    user_taxi_detail,
 )
 
 urlpatterns = [
@@ -28,6 +29,8 @@ urlpatterns = [
     path('driver/logout/', driver_logout, name="driver-logout"),
     path('driver-logout/', driver_logout, name="driver_logout"),
     path("user/dashboard", user_dashboard, name="user-dashboard"),
+    path("user/dashboard/", user_dashboard, name="user-dashboard-slash"),
+    path("user/taxis/<int:taxi_id>/", user_taxi_detail, name="user-taxi-detail"),
     path("driver/dashboard/", driver_dashboard, name="driver-dashboard"),
     path("driver/dashboard", driver_dashboard, name="driver-dashboard-alt"),
     path("driver/profile/", driver_profile, name="driver-profile"),

@@ -102,9 +102,11 @@
                 <div class="d-flex justify-content-between align-items-center mb-3">
                   <div>
                     <span class="text-muted small d-block font-monospace text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">Taxi Number</span>
-                    <span class="badge bg-dark bg-opacity-10 text-dark fw-bold px-3 py-2 border rounded-pill font-monospace fs-6">
-                      <i class="bi bi-car-front-fill me-1"></i> {{ taxi.number }}
-                    </span>
+                    <a href="{% url 'user-taxi-detail' taxi.id %}" class="text-decoration-none" title="Click to view full taxi details">
+                      <span class="badge bg-dark bg-opacity-10 text-dark fw-bold px-3 py-2 border rounded-pill font-monospace fs-6">
+                        <i class="bi bi-car-front-fill me-1"></i> {{ taxi.number }}
+                      </span>
+                    </a>
                   </div>
                   <span class="badge bg-secondary bg-opacity-10 text-secondary px-3 py-2 rounded-pill fw-semibold">
                     {{ taxi.get_type_display|default:taxi.type }}
@@ -146,15 +148,21 @@
                 </div>
               </div>
 
-              <!-- Price & Status Footer -->
-              <div class="pt-3 border-top d-flex justify-content-between align-items-center mt-2">
-                <div>
-                  <span class="text-muted small d-block" style="font-size: 0.72rem;">Trip Fare</span>
-                  <span class="fs-4 fw-extrabold text-success">&#8377;{{ taxi.price }}</span>
+              <!-- Price, Status & Click to View Details Action (Task 3: Allow user to click and view detailed taxi information) -->
+              <div class="pt-3 border-top mt-2">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <span class="text-muted small d-block" style="font-size: 0.72rem;">Trip Fare</span>
+                    <span class="fs-4 fw-extrabold text-success">&#8377;{{ taxi.price }}</span>
+                  </div>
+                  <span class="nest-badge nest-badge-completed">
+                    <i class="bi bi-check-circle-fill me-1"></i> Available
+                  </span>
                 </div>
-                <span class="nest-badge nest-badge-completed">
-                  <i class="bi bi-check-circle-fill me-1"></i> Available
-                </span>
+                <a href="{% url 'user-taxi-detail' taxi.id %}" class="btn-nest-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2 text-decoration-none shadow-sm">
+                  <span>View Detailed Taxi Info</span>
+                  <i class="bi bi-arrow-right"></i>
+                </a>
               </div>
             </div>
           </div>

@@ -151,6 +151,17 @@ def user_dashboard(request):
     }
     return render(request, "pages/dashboard.html", context)
 
+def user_taxi_detail(request, taxi_id):
+    if not request.session.get("user_id"):
+        return render(request, "pages/login.html", {
+            "error_message": "Unauthorized access. Please sign in.",
+        })
+    
+    taxi_obj = get_object_or_404(Taxi.objects.select_related('driver'), id=taxi_id)
+    return render(request, "pages/taxi_detail.html", {
+        "taxi_obj": taxi_obj,
+    })
+
 def driver_dashboard(request):
     if not request.session.get("user_id") or not request.session.get("is_driver"):
         return render(request, "pages/login.html", {
