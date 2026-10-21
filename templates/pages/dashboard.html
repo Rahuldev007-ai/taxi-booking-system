@@ -2,6 +2,13 @@
 {% load static %}
 {% block title %}CabZy — Premium Taxi & City Mobility{% endblock %}
 
+{% block extra_css %}
+<!-- Leaflet OpenStreetMap CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<!-- Real-Time Map Stylesheet -->
+<link rel="stylesheet" href="{% static 'css/realtime_map.css' %}">
+{% endblock %}
+
 {% block content %}
   {% include 'components/navbar.html' %}
 
@@ -12,14 +19,26 @@
     <section class="container mb-5">
       <div class="nest-hero-card">
         <div class="row align-items-center g-4 position-relative" style="z-index: 2;">
-          <!-- Hero Left: Headline & Booking Form Card -->
-          <div class="col-lg-7">
+          <!-- Hero Left: Headline & Mobility Highlights -->
+          <div class="col-lg-5">
             <span class="nest-eyebrow" style="color: var(--nest-copper);">Urban Mobility Redefined</span>
             <h1 class="nest-hero-title mb-3">Premium taxi service for seamless city travels.</h1>
             <p class="nest-hero-subtitle">
-              Book instant rides with 24/7 verified drivers, upfront pricing, and absolute comfort. Guaranteed punctuality for every destination.
+              Book instant rides with 24/7 verified drivers, upfront pricing, and absolute comfort. Real-time GPS routing with zero surge surprises.
             </p>
             
+            <div class="d-flex flex-wrap gap-2 my-3">
+              <span class="badge bg-white bg-opacity-10 text-white border border-light border-opacity-25 py-2 px-3 rounded-pill fw-medium">
+                <i class="bi bi-geo-alt text-warning me-1"></i> Live OSM Maps
+              </span>
+              <span class="badge bg-white bg-opacity-10 text-white border border-light border-opacity-25 py-2 px-3 rounded-pill fw-medium">
+                <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Auto-Suggestions
+              </span>
+              <span class="badge bg-white bg-opacity-10 text-white border border-light border-opacity-25 py-2 px-3 rounded-pill fw-medium">
+                <i class="bi bi-shield-check text-success me-1"></i> Verified Fleet
+              </span>
+            </div>
+
             <div class="d-flex flex-wrap gap-3 mt-4">
               <a href="#booking-form-card" class="btn-nest-accent">
                 Book Instant Cab <i class="bi bi-arrow-right"></i>
@@ -30,32 +49,101 @@
             </div>
           </div>
 
-          <!-- Hero Right: Booking Card Container -->
-          <div class="col-lg-5" id="booking-form-card">
+          <!-- Hero Right: Booking Card Container with Real-Time Free Map API -->
+          <div class="col-lg-7" id="booking-form-card">
             <div class="bg-white text-dark p-4 p-md-4" style="border-radius: var(--nest-radius-lg); box-shadow: var(--nest-shadow-lg);">
               <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                <h2 class="fs-5 fw-extrabold text-dark mb-0">Search Available Taxis</h2>
-                <span class="nest-badge nest-badge-completed">Live Fleet</span>
+                <div>
+                  <h2 class="fs-5 fw-extrabold text-dark mb-0">Search Available Taxis</h2>
+                  <p class="text-muted small mb-0">Real-time route suggestions & interactive live map</p>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="nest-badge nest-badge-completed">Live Fleet</span>
+                  <span class="badge bg-light text-muted border py-1 px-2 font-monospace" style="font-size: 0.7rem;">
+                    <i class="bi bi-globe-americas me-1 text-primary"></i>Live Route Map
+                  </span>
+                </div>
               </div>
 
-              <form method="get" action="{% url 'user-dashboard' %}#search-results">
-                <div class="mb-3">
-                  <label class="nest-form-label" for="search_source">Source (Pickup Location)</label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-geo-alt-fill text-danger"></i></span>
-                    <input type="text" id="search_source" name="source" value="{{ source|default:'' }}" class="form-control nest-input border-start-0" placeholder="e.g. Bandra, Airport, Hotel" required />
+              <form method="get" action="{% url 'user-dashboard' %}#search-results" autocomplete="off">
+                <div class="row g-2 mb-2">
+                  <!-- Source / Pickup Input -->
+                  <div class="col-12 location-input-container">
+                    <label class="nest-form-label mb-1" for="search_source">Source (Pickup Location)</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light border-end-0 text-muted">
+                        <i class="bi bi-geo-alt-fill text-success"></i>
+                      </span>
+                      <input type="text" id="search_source" name="source" value="{{ source|default:'' }}" class="form-control nest-input border-start-0 border-end-0" placeholder="Type pickup location (e.g. Bandra, Airport)" required />
+                      <button type="button" class="btn btn-light border border-start-0 input-action-btn btn-locate" id="btnLocateMe" title="Use My Current Location">
+                        <i class="bi bi-crosshair"></i>
+                      </button>
+                    </div>
+                    <!-- Source Suggestions Dropdown -->
+                    <div id="sourceSuggestions" class="map-suggestions-dropdown"></div>
+                  </div>
+
+                  <!-- Swap Locations Button -->
+                  <div class="col-12 route-swap-row">
+                    <button type="button" class="btn-swap-route" id="swapLocationsBtn" title="Swap Pickup & Destination">
+                      <i class="bi bi-arrow-down-up"></i>
+                    </button>
+                  </div>
+
+                  <!-- Destination Input -->
+                  <div class="col-12 location-input-container">
+                    <label class="nest-form-label mb-1" for="search_destination">Destination Point</label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light border-end-0 text-muted">
+                        <i class="bi bi-pin-map-fill text-danger"></i>
+                      </span>
+                      <input type="text" id="search_destination" name="destination" value="{{ destination|default:'' }}" class="form-control nest-input border-start-0" placeholder="Type destination (e.g. CST Station, BKC, Hotel)" required />
+                    </div>
+                    <!-- Destination Suggestions Dropdown -->
+                    <div id="destSuggestions" class="map-suggestions-dropdown"></div>
                   </div>
                 </div>
 
-                <div class="mb-3">
-                  <label class="nest-form-label" for="search_destination">Destination Point</label>
-                  <div class="input-group">
-                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-pin-map-fill text-success"></i></span>
-                    <input type="text" id="search_destination" name="destination" value="{{ destination|default:'' }}" class="form-control nest-input border-start-0" placeholder="e.g. Shivaji Terminal, Station" required />
-                  </div>
+                <!-- Quick Pick Suggestions Chips -->
+                <div class="quick-picks-container">
+                  <span class="quick-picks-label"><i class="bi bi-magic me-1"></i>Quick Picks:</span>
+                  <span class="quick-pick-chip" data-query="Chhatrapati Shivaji Maharaj International Airport, Mumbai">Airport</span>
+                  <span class="quick-pick-chip" data-query="Bandra Railway Station, Mumbai">Bandra Station</span>
+                  <span class="quick-pick-chip" data-query="Bandra Kurla Complex, Mumbai">BKC</span>
+                  <span class="quick-pick-chip" data-query="Chhatrapati Shivaji Maharaj Terminus, Mumbai">CST Terminus</span>
+                  <span class="quick-pick-chip" data-query="Marine Drive, Mumbai">Marine Drive</span>
                 </div>
 
-                <button type="submit" class="btn-nest-primary w-100 py-3 mt-2">
+                <!-- Live OpenStreetMap Container -->
+                <div class="map-wrapper">
+                  <!-- Floating Route Stats Pill -->
+                  <div id="routeStatPill" class="route-stat-pill">
+                    <span class="route-pill-dot"></span>
+                    <span id="routeStatText">Calculating route...</span>
+                  </div>
+
+                  <!-- Floating Map Controls -->
+                  <div class="map-floating-controls">
+                    <button type="button" id="toggleMapSizeBtn" class="map-float-btn" title="Expand Map">
+                      <i class="bi bi-arrows-angle-expand"></i>
+                    </button>
+                    <button type="button" id="resetMapBtn" class="map-float-btn" title="Reset Map View">
+                      <i class="bi bi-crosshair2"></i>
+                    </button>
+                  </div>
+
+                  <!-- Leaflet Map Canvas -->
+                  <div id="routeMap"></div>
+                </div>
+
+                <!-- Map Helper Footnote -->
+                <div class="map-helper-caption">
+                  <i class="bi bi-info-circle text-primary"></i>
+                  <span>Type for real-time auto-suggestions, click on map to set points, or drag pins to adjust.</span>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-nest-primary w-100 py-3">
                   <span>Search Matching Taxis</span>
                   <i class="bi bi-search ms-1"></i>
                 </button>
@@ -754,6 +842,15 @@
     </div>
   </div>
 
+  {% include 'components/footer.html' %}
+{% endblock %}
+
+{% block extra_js %}
+  <!-- Leaflet OpenStreetMap Engine -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Real-Time Auto-Suggestions & Routing Script -->
+  <script src="{% static 'js/realtime_map.js' %}"></script>
+
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       const bookButtons = document.querySelectorAll('.book-now-btn');
@@ -776,6 +873,4 @@
       });
     });
   </script>
-
-  {% include 'components/footer.html' %}
 {% endblock %}
