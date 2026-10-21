@@ -159,10 +159,15 @@
                     <i class="bi bi-check-circle-fill me-1"></i> Available
                   </span>
                 </div>
-                <a href="{% url 'user-taxi-detail' taxi.id %}" class="btn-nest-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2 text-decoration-none shadow-sm">
-                  <span>View Detailed Taxi Info</span>
-                  <i class="bi bi-arrow-right"></i>
-                </a>
+                <div class="d-flex gap-2">
+                  <a href="{% url 'user-taxi-detail' taxi.id %}" class="btn-nest-outline py-2 px-3 flex-grow-1 text-center text-decoration-none fs-7 fw-bold d-flex align-items-center justify-content-center">
+                    <span>View Details</span>
+                  </a>
+                  <button type="button" class="btn-nest-accent py-2 px-3 flex-grow-1 text-center text-decoration-none fs-7 fw-bold d-flex align-items-center justify-content-center gap-1 book-now-btn" data-bs-toggle="modal" data-bs-target="#bookNowModal" data-taxi-id="{{ taxi.id }}" data-taxi-number="{{ taxi.number }}" data-taxi-source="{{ taxi.source }}" data-taxi-dest="{{ taxi.destination }}" data-taxi-price="{{ taxi.price }}" data-driver-name="{{ taxi.driver.name }}">
+                    <i class="bi bi-calendar-check-fill me-1"></i>
+                    <span>Book Now</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -494,6 +499,76 @@
     </section>
 
   </main>
+
+
+  <!-- BOOK NOW MODAL (Task 1: Add "Book Now" button to each result) -->
+  <div class="modal fade" id="bookNowModal" tabindex="-1" aria-labelledby="bookNowModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: var(--nest-radius-lg);">
+        <div class="modal-header border-bottom pb-3">
+          <div>
+            <span class="nest-eyebrow mb-0">Confirm Reservation</span>
+            <h5 class="modal-title fw-extrabold text-dark" id="bookNowModalLabel">Book Taxi: <span id="modalTaxiNumber" class="font-monospace text-primary"></span></h5>
+          </div>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="p-3 rounded-3 bg-light mb-3">
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted small">Route:</span>
+              <strong class="text-dark small"><span id="modalSource"></span> &rarr; <span id="modalDest"></span></strong>
+            </div>
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-muted small">Assigned Driver:</span>
+              <strong class="text-dark small" id="modalDriverName"></strong>
+            </div>
+            <div class="d-flex justify-content-between">
+              <span class="text-muted small">Trip Fare:</span>
+              <span class="fw-extrabold text-success fs-6">&#8377;<span id="modalPrice"></span></span>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="nest-form-label fw-bold">Select Ride Date & Time</label>
+            <input type="datetime-local" class="form-control nest-input" id="bookingDateTime" required />
+          </div>
+
+          <div class="alert alert-info py-2 px-3 small rounded-3 mb-0">
+            <i class="bi bi-info-circle me-1"></i> Your booking request will be placed with status <strong>Pending</strong>.
+          </div>
+        </div>
+        <div class="modal-footer border-top pt-3">
+          <button type="button" class="btn-nest-outline py-2 px-4" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn-nest-accent py-2 px-4" data-bs-dismiss="modal" onclick="alert('Booking request placed successfully! Status: Pending.');">
+            <i class="bi bi-check2-circle me-1"></i> Confirm Booking
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const bookButtons = document.querySelectorAll('.book-now-btn');
+      bookButtons.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          document.getElementById('modalTaxiNumber').textContent = this.dataset.taxiNumber || '';
+          document.getElementById('modalSource').textContent = this.dataset.taxiSource || '';
+          document.getElementById('modalDest').textContent = this.dataset.taxiDest || '';
+          document.getElementById('modalDriverName').textContent = this.dataset.driverName || '';
+          document.getElementById('modalPrice').textContent = this.dataset.taxiPrice || '';
+          
+          const now = new Date();
+          now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+          const defaultTime = now.toISOString().slice(0, 16);
+          const dateInput = document.getElementById('bookingDateTime');
+          if (dateInput && !dateInput.value) {
+            dateInput.value = defaultTime;
+          }
+        });
+      });
+    });
+  </script>
 
   {% include 'components/footer.html' %}
 {% endblock %}
