@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Driver, Taxi, TaxiDetails
+from .models import User, Driver, Taxi, TaxiDetails, Booking
 
 # Register your models here.
 admin.site.register(User)
@@ -28,5 +28,8 @@ class TaxiDetailsAdmin(admin.ModelAdmin):
         return obj.driver_details.email if obj.driver_details else "-"
     get_driver_email.short_description = 'Driver Email'
 
-
-
+@admin.register(Booking)
+class BookingAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'taxi', 'date', 'status', 'created_at')
+    list_filter = ('status', 'date')
+    search_fields = ('user__name', 'user__email', 'taxi__number', 'status')

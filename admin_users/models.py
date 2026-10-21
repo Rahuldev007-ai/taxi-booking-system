@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password, check_password
-    
+from django.utils import timezone
+
 # Create your models here.
 
 class User(models.Model):
@@ -103,4 +104,28 @@ class TaxiDetails(models.Model):
 
 
 TaxiDetail = TaxiDetails
-
+
+
+class Booking(models.Model):
+    STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Confirmed', 'Confirmed'),
+        ('Completed', 'Completed'),
+        ('Cancelled', 'Cancelled'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
+    taxi = models.ForeignKey(Taxi, on_delete=models.CASCADE, related_name='bookings')
+    date = models.DateTimeField(default=timezone.now)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'custom_bookings'
+        verbose_name = 'Booking'
+        verbose_name_plural = 'Bookings'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Booking #{self.id} - {self.user.name} for Taxi {self.taxi.number} ({self.status})"
