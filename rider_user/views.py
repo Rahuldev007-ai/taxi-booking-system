@@ -162,6 +162,20 @@ def user_taxi_detail(request, taxi_id):
         "taxi_obj": taxi_obj,
     })
 
+def confirm_booking(request, taxi_id):
+    if not request.session.get("user_id"):
+        return render(request, "pages/login.html", {
+            "error_message": "Unauthorized access. Please sign in to confirm booking.",
+        })
+    
+    taxi_obj = get_object_or_404(Taxi.objects.select_related('driver'), id=taxi_id)
+    
+    # Task 1: Allow users to confirm booking from the taxi detail page
+    return render(request, "pages/taxi_detail.html", {
+        "taxi_obj": taxi_obj,
+        "show_confirm_modal": True,
+    })
+
 def driver_dashboard(request):
     if not request.session.get("user_id") or not request.session.get("is_driver"):
         return render(request, "pages/login.html", {
