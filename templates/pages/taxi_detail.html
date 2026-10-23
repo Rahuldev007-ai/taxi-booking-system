@@ -22,6 +22,27 @@
       </div>
     </div>
 
+    <!-- Booking Saved Status Alert (Task 2) -->
+    {% if booking_placed %}
+    <div class="alert alert-success alert-dismissible fade show p-4 rounded-4 shadow-sm mb-4 border border-success" role="alert">
+      <div class="d-flex align-items-center gap-3">
+        <div class="avatar-circle bg-success text-white" style="width: 50px; height: 50px; font-size: 1.5rem; flex-shrink: 0;">
+          <i class="bi bi-check2-circle"></i>
+        </div>
+        <div>
+          <h5 class="fw-bold m-0 text-success">Booking Saved Successfully!</h5>
+          <p class="m-0 text-dark small mt-1">
+            Your booking status : <span class="badge bg-warning text-dark font-monospace fw-bold px-2 py-1">Pending</span>.
+            Booking Reference: <strong class="font-monospace">#BK-{{ booking_obj.id }}</strong> &bull;
+            Assigned Taxi: <strong>{{ taxi_obj.number }}</strong> &bull;
+            Date: <strong>{{ booking_obj.date|date:"d M Y, h:i A" }}</strong>.
+          </p>
+        </div>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
     <!-- Main Taxi Detail Card -->
     <div class="row justify-content-center">
       <div class="col-12 col-lg-10">
@@ -262,7 +283,7 @@
               </div>
 
               <div class="alert alert-info py-2 px-3 small rounded-3 mb-0" style="font-size: 0.8rem;">
-                <i class="bi bi-info-circle me-1"></i> Your booking request will be placed with status <strong>Pending</strong>.
+                <i class="bi bi-info-circle me-1"></i> Your booking status : <strong>Pending</strong>.
               </div>
             </div>
 

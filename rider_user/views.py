@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from admin_users.models import User, Driver, Taxi
+from admin_users.models import User, Driver, Taxi, Booking
+from django.utils import timezone
+from datetime import datetime
 from django.db.models import Q
 from django.contrib import messages
 from django.core.mail import send_mail
@@ -169,8 +171,47 @@ def confirm_booking(request, taxi_id):
         })
     
     taxi_obj = get_object_or_404(Taxi.objects.select_related('driver'), id=taxi_id)
+    user_obj = get_object_or_404(User, id=request.session.get("user_id"))
+
+    if request.method == "POST":
+        # Task 2: Save booking in the database with "Pending" status
+        booking_date_raw = request.POST.get('booking_date', '').strip()
+        booking_datetime = timezone.now()
+
+        if booking_date_raw:
+            try:
+                # Handle 'YYYY-MM-DDTHH:MM' format from datetime-local input
+                naive_dt = datetime.strptime(booking_date_raw, "%Y-%m-%dT%H:%M")
+                booking_datetime = timezone.make_aware(naive_dt, timezone.get_current_timezone())
+            except (ValueError, TypeError):
+                try:
+                    booking_datetime = datetime.fromisoformat(booking_date_raw)
+                    if timezone.is_naive(booking_datetime):
+                        booking_datetime = timezone.make_aware(booking_datetime, timezone.get_current_timezone())
+                except Exception:
+                    booking_datetime = timezone.now()
+
+        # Create and persist booking with status "Pending"
+        new_booking = Booking.objects.create(
+            user=user_obj,
+            taxi=taxi_obj,
+            date=booking_datetime,
+            status='Pending'
+        )
+
+        request.session['latest_booking_id'] = new_booking.id
+        formatted_date = new_booking.date.strftime("%d %b %Y, %I:%M %p")
+        status_msg = f"Your booking status : Pending. Booking Reference: #BK-{new_booking.id} • Assigned Taxi: {taxi_obj.number} • Date: {formatted_date}."
+        messages.success(request, status_msg)
+
+        return render(request, "pages/taxi_detail.html", {
+            "taxi_obj": taxi_obj,
+            "booking_obj": new_booking,
+            "booking_placed": True,
+            "success_message": status_msg,
+        })
     
-    # Task 1: Allow users to confirm booking from the taxi detail page
+    # GET request: Show taxi detail with modal opened
     return render(request, "pages/taxi_detail.html", {
         "taxi_obj": taxi_obj,
         "show_confirm_modal": True,
