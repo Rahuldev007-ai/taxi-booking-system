@@ -204,17 +204,30 @@ def confirm_booking(request, taxi_id):
         status_msg = f"Your booking status : Pending. Booking Reference: #BK-{new_booking.id} • Assigned Taxi: {taxi_obj.number} • Date: {formatted_date}."
         messages.success(request, status_msg)
 
-        return render(request, "pages/taxi_detail.html", {
-            "taxi_obj": taxi_obj,
-            "booking_obj": new_booking,
-            "booking_placed": True,
-            "success_message": status_msg,
-        })
+        # Task 3: Redirect to display booking confirmation page
+        return redirect('booking-confirmation', booking_id=new_booking.id)
     
     # GET request: Show taxi detail with modal opened
     return render(request, "pages/taxi_detail.html", {
         "taxi_obj": taxi_obj,
         "show_confirm_modal": True,
+    })
+
+def booking_confirmation(request, booking_id):
+    """Task 3: Display dedicated luxury booking confirmation page with booking reference, status, and details."""
+    booking_obj = get_object_or_404(
+        Booking.objects.select_related('taxi', 'taxi__driver', 'user'),
+        id=booking_id
+    )
+
+    # Deterministic 4-digit ride verification OTP for passenger security
+    ride_otp = f"{(booking_obj.id * 37 + 1289) % 9000 + 1000}"
+
+    return render(request, "pages/booking_confirmation.html", {
+        "booking": booking_obj,
+        "taxi_obj": booking_obj.taxi,
+        "driver_obj": booking_obj.taxi.driver,
+        "ride_otp": ride_otp,
     })
 
 def driver_dashboard(request):

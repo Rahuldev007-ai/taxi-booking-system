@@ -16,6 +16,7 @@ from .views import (
     user_reset_password,
     user_taxi_detail,
     confirm_booking,
+    booking_confirmation,
 )
 
 urlpatterns = [
@@ -33,6 +34,7 @@ urlpatterns = [
     path("user/dashboard/", user_dashboard, name="user-dashboard-slash"),
     path("user/taxis/<int:taxi_id>/", user_taxi_detail, name="user-taxi-detail"),
     path("user/taxis/<int:taxi_id>/confirm/", confirm_booking, name="confirm-booking"),
+    path("user/booking/confirmation/<int:booking_id>/", booking_confirmation, name="booking-confirmation"),
     path("driver/dashboard/", driver_dashboard, name="driver-dashboard"),
     path("driver/dashboard", driver_dashboard, name="driver-dashboard-alt"),
     path("driver/profile/", driver_profile, name="driver-profile"),

@@ -1,0 +1,1272 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}Booking Confirmation #BK-{{ booking.id }} — CabZy{% endblock %}
+
+{% block extra_css %}
+<!-- Leaflet Map CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+<style>
+  /* ==========================================================================
+     CABZY LUXURY BOOKING CONFIRMATION & DIGITAL TICKET STYLING
+     ========================================================================== */
+
+  /* Confetti Canvas Overlay */
+  #confettiCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Luxury Hero Ticket Container */
+  .ticket-wrapper {
+    background: #FFFFFF;
+    border-radius: 28px;
+    box-shadow: 0 25px 60px rgba(0, 58, 64, 0.12), 0 4px 16px rgba(0, 58, 64, 0.04);
+    border: 1px solid rgba(0, 58, 64, 0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Header Banner */
+  .ticket-header {
+    background: linear-gradient(135deg, #003A40 0%, #002226 100%);
+    color: #FFFFFF;
+    padding: 2.5rem 2.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .ticket-header::after {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(217, 107, 67, 0.25) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Verified Reservation Pill (Fixed: explicit dark-glass background with crisp white text) */
+  .pill-verified-res {
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #FFFFFF !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+  }
+
+  /* Pulsing Celebratory Badge */
+  .celebrate-icon-box {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    color: #16a34a;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.8rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
+  }
+  .celebrate-icon-box::after {
+    content: '';
+    position: absolute;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    border: 2px solid rgba(22, 163, 74, 0.45);
+    animation: celebrate-pulse 2s infinite ease-out;
+  }
+  @keyframes celebrate-pulse {
+    0% { transform: scale(0.85); opacity: 1; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+
+  /* Ticket Perforation Notches */
+  .ticket-divider-row {
+    position: relative;
+    height: 32px;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+  }
+  .ticket-notch-left, .ticket-notch-right {
+    width: 26px;
+    height: 32px;
+    background: var(--nest-bg, #F7F8F5);
+    position: absolute;
+    top: 0;
+    z-index: 5;
+  }
+  .ticket-notch-left {
+    left: 0;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    border-right: 1px solid rgba(0, 58, 64, 0.08);
+  }
+  .ticket-notch-right {
+    right: 0;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-left: 1px solid rgba(0, 58, 64, 0.08);
+  }
+  .ticket-perforation {
+    width: 100%;
+    margin: 0 34px;
+    border-bottom: 2px dashed #d1dcdb;
+  }
+
+  /* Stepper Bar */
+  .dispatch-stepper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin: 1.5rem 0 2rem;
+  }
+  .dispatch-stepper::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 40px;
+    right: 40px;
+    height: 3px;
+    background: #e2e8f0;
+    z-index: 1;
+  }
+  .stepper-progress-fill {
+    position: absolute;
+    top: 18px;
+    left: 40px;
+    width: 33%;
+    height: 3px;
+    background: linear-gradient(90deg, #16a34a, #eab308);
+    z-index: 2;
+  }
+  .step-node {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    width: 80px;
+  }
+  .step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    background: #FFFFFF;
+    border: 3px solid #cbd5e1;
+    color: #64748b;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .step-node.completed .step-circle {
+    background: #16a34a;
+    border-color: #16a34a;
+    color: #FFFFFF;
+  }
+  .step-node.active .step-circle {
+    background: #fef08a;
+    border-color: #ca8a04;
+    color: #854d0e;
+    box-shadow: 0 0 0 5px rgba(234, 179, 8, 0.25);
+  }
+  .step-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #475569;
+    line-height: 1.2;
+    display: block;
+  }
+  .step-node.active .step-label {
+    color: #003A40;
+    font-weight: 800;
+  }
+
+  /* Embossed Indian Taxi Plate */
+  .license-plate-badge {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F1F3F5 100%);
+    border: 2px solid #2B3A42;
+    border-radius: 8px;
+    padding: 4px 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Plus Jakarta Sans', monospace, sans-serif;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  .plate-country-tag {
+    background: #003399;
+    color: #FFFFFF;
+    font-size: 0.62rem;
+    font-weight: 800;
+    padding: 2px 4px;
+    border-radius: 3px;
+    line-height: 1;
+    letter-spacing: 0.05em;
+  }
+  .plate-number {
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    color: #111827;
+  }
+
+  /* Ride Verification PIN Card */
+  .ride-otp-card {
+    background: linear-gradient(135deg, #F8FAFA 0%, #EEF4F4 100%);
+    border: 1px solid rgba(0, 58, 64, 0.12);
+    border-radius: 18px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .otp-digits-row {
+    display: flex;
+    gap: 8px;
+  }
+  .otp-digit-box {
+    width: 44px;
+    height: 48px;
+    background: #FFFFFF;
+    border: 2px solid #003A40;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #003A40;
+    box-shadow: 0 4px 10px rgba(0, 58, 64, 0.08);
+    font-family: 'Plus Jakarta Sans', monospace;
+  }
+
+  /* Itinerary Stepper */
+  .itinerary-step-box {
+    position: relative;
+    padding-left: 36px;
+    margin-bottom: 1.25rem;
+  }
+  .itinerary-step-box:last-child {
+    margin-bottom: 0;
+  }
+  .itinerary-step-box::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 28px;
+    bottom: -18px;
+    width: 2px;
+    border-left: 2px dashed #94a3b8;
+  }
+  .itinerary-step-box:last-child::before {
+    display: none;
+  }
+  .itinerary-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: #FFFFFF;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+
+  /* Interactive Mini-Map Preview */
+  .confirmation-map-container {
+    height: 220px;
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 58, 64, 0.12);
+    position: relative;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  }
+  #confirmationRouteMap {
+    height: 100%;
+    width: 100%;
+  }
+  .map-stat-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    background: rgba(0, 40, 44, 0.92);
+    backdrop-filter: blur(8px);
+    color: #FFFFFF;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  /* Digital Quality Assurance Stamp */
+  .assurance-stamp {
+    width: 110px;
+    height: 110px;
+    border: 3px double #16a34a;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #16a34a;
+    transform: rotate(-12deg);
+    padding: 8px;
+    user-select: none;
+    background: rgba(22, 163, 74, 0.03);
+  }
+  .assurance-stamp span {
+    font-size: 0.58rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    line-height: 1.15;
+    text-transform: uppercase;
+  }
+  .assurance-stamp i {
+    font-size: 1.3rem;
+    margin: 2px 0;
+  }
+
+  /* ==========================================================================
+     TEXT-BASED TABLE RECEIPT STYLING (PRINT ONLY - NO DESIGN, ZERO GRAPHICS)
+     ========================================================================== */
+  #printableTextReceipt {
+    display: none;
+  }
+
+  @media print {
+    /* Hide all web components, confetti, headers, footers, maps and interactive buttons */
+    nav, footer, .no-print, #confettiCanvas, .ticket-wrapper, #webConfirmationView {
+      display: none !important;
+    }
+
+    body {
+      background: #FFFFFF !important;
+      color: #000000 !important;
+      margin: 0 !important;
+      padding: 10px !important;
+      font-family: Arial, sans-serif !important;
+      font-size: 10pt !important;
+      line-height: 1.35 !important;
+    }
+
+    /* Display ONLY the pure text-based table receipt */
+    #printableTextReceipt {
+      display: block !important;
+      width: 100% !important;
+      background: #FFFFFF !important;
+      color: #000000 !important;
+    }
+
+    .raw-receipt-table {
+      width: 100% !important;
+      border-collapse: collapse !important;
+      margin-top: 8px !important;
+      margin-bottom: 12px !important;
+      font-size: 9.5pt !important;
+    }
+
+    .raw-receipt-table th,
+    .raw-receipt-table td {
+      border: 1px solid #000000 !important;
+      padding: 5px 8px !important;
+      text-align: left !important;
+      color: #000000 !important;
+      background: transparent !important;
+    }
+
+    .raw-receipt-table th {
+      font-weight: bold !important;
+      background: #f2f2f2 !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'components/navbar.html' %}
+
+<!-- Confetti Celebration Canvas -->
+<canvas id="confettiCanvas"></canvas>
+
+<!-- ==========================================================================
+     1. PURE TEXT-BASED TABLE RECEIPT (PRINT-ONLY & MODAL PREVIEW)
+     Strictly text-based design and table formatting with NO fancy design
+     ========================================================================== -->
+<div id="printableTextReceipt">
+  <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 10px;">
+    <h3 style="margin: 0; font-size: 15pt; font-weight: bold; text-transform: uppercase;">CABZY TAXI MOBILITY SERVICES</h3>
+    <div style="font-size: 10pt; font-weight: bold; margin-top: 2px;">OFFICIAL TRIP BOOKING RECEIPT &amp; TAX INVOICE</div>
+    <div style="font-size: 8.5pt; color: #333;">Computer-Generated Electronic Reservation Voucher</div>
+  </div>
+
+  <table class="raw-receipt-table">
+    <tbody>
+      <tr>
+        <td style="width: 25%; font-weight: bold;">Booking Reference</td>
+        <td style="width: 25%; font-family: monospace; font-weight: bold;">#BK-{{ booking.id }}</td>
+        <td style="width: 25%; font-weight: bold;">Booking Status</td>
+        <td style="width: 25%; font-weight: bold;">{{ booking.status|upper }}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold;">Receipt Issue Date</td>
+        <td>{{ booking.created_at|date:"d M Y, h:i A" }}</td>
+        <td style="font-weight: bold;">Payment Mode</td>
+        <td>Cash / UPI to Driver upon Arrival</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold;">Ride Verification PIN</td>
+        <td style="font-family: monospace; font-weight: bold; font-size: 11pt;">{{ ride_otp }}</td>
+        <td style="font-weight: bold;">Service Category</td>
+        <td>{{ taxi_obj.get_type_display|default:taxi_obj.type }} Transfer</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="font-size: 10pt; font-weight: bold; text-transform: uppercase; margin-top: 10px; border-bottom: 1px solid #000; padding-bottom: 2px;">
+    1. Passenger &amp; Journey Schedule
+  </div>
+  <table class="raw-receipt-table">
+    <thead>
+      <tr>
+        <th style="width: 32%;">Parameter</th>
+        <th>Recorded Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="font-weight: bold;">Passenger Name</td>
+        <td>{{ booking.user.name }}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold;">Contact Mobile</td>
+        <td>+91 {{ booking.user.mobile }}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold;">Contact Email</td>
+        <td>{{ booking.user.email }}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold;">Pickup Origin (Source)</td>
+        <td>{{ taxi_obj.source }}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold;">Drop-off Hub (Destination)</td>
+        <td>{{ taxi_obj.destination }}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold;">Scheduled Pickup Time</td>
+        <td style="font-weight: bold;">{{ booking.date|date:"l, d F Y &bull; h:i A" }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="font-size: 10pt; font-weight: bold; text-transform: uppercase; margin-top: 10px; border-bottom: 1px solid #000; padding-bottom: 2px;">
+    2. Vehicle &amp; Driver Partner Particulars
+  </div>
+  <table class="raw-receipt-table">
+    <thead>
+      <tr>
+        <th style="width: 32%;">Item</th>
+        <th>Particulars</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="font-weight: bold;">Assigned Taxi Number</td>
+        <td style="font-family: monospace; font-weight: bold;">{{ taxi_obj.number }}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold;">Vehicle Category</td>
+        <td>{{ taxi_obj.get_type_display|default:taxi_obj.type }}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold;">Vehicle Model</td>
+        <td>{{ driver_obj.vehicle_name|default:"Toyota Camry Hybrid" }}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold;">Driver Partner Name</td>
+        <td>{{ driver_obj.name }}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold;">Driver Mobile Number</td>
+        <td>+91 {{ driver_obj.mobile }}</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold;">Driver Commercial License</td>
+        <td>{{ driver_obj.license_number }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="font-size: 10pt; font-weight: bold; text-transform: uppercase; margin-top: 10px; border-bottom: 1px solid #000; padding-bottom: 2px;">
+    3. Fare &amp; Billing Breakdown
+  </div>
+  <table class="raw-receipt-table">
+    <thead>
+      <tr>
+        <th style="width: 8%;">S.No</th>
+        <th style="width: 52%;">Billing Description</th>
+        <th style="width: 20%;">Rate Basis</th>
+        <th style="width: 20%; text-align: right;">Amount (INR)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>Point-to-Point Base Journey Fare ({{ taxi_obj.source }} to {{ taxi_obj.destination }})</td>
+        <td>Fixed Upfront</td>
+        <td style="text-align: right;">Rs. {{ taxi_obj.price }}</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>Surge Surcharge &amp; Peak Hour Multiplier</td>
+        <td>Zero Surge Guarantee</td>
+        <td style="text-align: right;">Rs. 0.00</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>GST, Municipal Tax &amp; Fleet Service Fee</td>
+        <td>Complimentary</td>
+        <td style="text-align: right;">Rs. 0.00</td>
+      </tr>
+      <tr style="font-weight: bold; font-size: 10.5pt;">
+        <td colspan="3" style="text-align: right; text-transform: uppercase;">Total Fare Payable Upon Arrival</td>
+        <td style="text-align: right;">Rs. {{ taxi_obj.price }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="border: 1px solid #000; padding: 8px 10px; font-size: 8pt; margin-top: 10px; line-height: 1.35;">
+    <strong>TERMS &amp; INSTRUCTIONS:</strong><br>
+    &bull; Verify vehicle registration plate <strong>{{ taxi_obj.number }}</strong> and driver name before boarding.<br>
+    &bull; Provide your 4-digit Ride Start PIN (<strong>{{ ride_otp }}</strong>) to your driver partner only after entering the cab.<br>
+    &bull; Pay total fare of Rs. {{ taxi_obj.price }} directly to the driver partner upon destination arrival via Cash or UPI.<br>
+    &bull; This is an authentic computer-generated booking receipt; no physical signature is required.
+  </div>
+
+  <div style="text-align: center; font-size: 8pt; color: #555; border-top: 1px solid #888; padding-top: 5px; margin-top: 10px;">
+    CabZy Mobility Platform &bull; Customer Care Support &bull; Booking Reference #BK-{{ booking.id }}
+  </div>
+</div>
+
+<!-- ==========================================================================
+     2. INTERACTIVE LUXURY WEB UI DOSSIER
+     ========================================================================== -->
+<main class="py-4 py-lg-5" id="webConfirmationView">
+  <div class="container pb-5">
+    
+    <!-- Top Action Breadcrumb Bar (no-print) -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 no-print">
+      <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'user-dashboard' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">
+          <i class="bi bi-arrow-left me-1"></i> Dashboard
+        </a>
+        <span class="text-muted small">/</span>
+        <span class="text-muted small fw-medium">Booking Dossier</span>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-dark btn-sm rounded-pill px-3 fw-bold shadow-sm" onclick="window.print();">
+          <i class="bi bi-printer me-1"></i> Print Official Receipt
+        </button>
+        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-bold" data-bs-toggle="modal" data-bs-target="#plainTextReceiptModal">
+          <i class="bi bi-table me-1"></i> View Table Receipt
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold" onclick="copyRefCode('BK-{{ booking.id }}')">
+          <i class="bi bi-clipboard-check me-1"></i> <span id="copyRefBtnText">Copy Ref #BK-{{ booking.id }}</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN LUXURY BOOKING TICKET DOSSIER -->
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-10 col-xl-9">
+        
+        <div class="ticket-wrapper">
+          
+          <!-- 1. TICKET HEADER BANNER -->
+          <div class="ticket-header">
+            <div class="row align-items-center g-4 position-relative" style="z-index: 2;">
+              <div class="col-md-2 text-center text-md-start">
+                <div class="celebrate-icon-box">
+                  <i class="bi bi-check2-circle"></i>
+                </div>
+              </div>
+              <div class="col-md-7 text-center text-md-start">
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2 mb-2">
+                  <!-- Fixed Pill: Crisp white text on dark-teal glass background -->
+                  <span class="badge rounded-pill px-3 py-1 font-monospace pill-verified-res">
+                    <i class="bi bi-shield-check text-success me-1"></i> VERIFIED RESERVATION
+                  </span>
+                  <span class="badge bg-warning text-dark font-monospace fw-bold px-3 py-1 rounded-pill" style="font-size: 0.72rem;">
+                    Status: {{ booking.status }}
+                  </span>
+                </div>
+                <h1 class="fs-2 fw-extrabold text-white m-0">Booking Confirmed!</h1>
+                <p class="text-white-50 small mt-1 mb-0">
+                  Your ride request is locked in. Driver partner <strong>{{ driver_obj.name }}</strong> has been notified for dispatch.
+                </p>
+              </div>
+              <div class="col-md-3 text-center text-md-end">
+                <span class="text-white-50 small d-block" style="font-size: 0.72rem;">BOOKING REFERENCE</span>
+                <span class="fs-4 fw-extrabold text-white font-monospace">#BK-{{ booking.id }}</span>
+                <span class="badge bg-success bg-opacity-25 text-white border border-success border-opacity-50 rounded-pill px-2 py-1 mt-1 font-monospace" style="font-size: 0.68rem;">
+                  Instant Dispatch
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TICKET PERFORATION & NOTCHES -->
+          <div class="ticket-divider-row">
+            <div class="ticket-notch-left"></div>
+            <div class="ticket-perforation"></div>
+            <div class="ticket-notch-right"></div>
+          </div>
+
+          <!-- 2. TICKET BODY -->
+          <div class="p-4 p-md-5">
+
+            <!-- DISPATCH STEP PROGRESS TRACKER -->
+            <div class="mb-4">
+              <span class="nest-eyebrow mb-1">Live Journey Progress</span>
+              <div class="dispatch-stepper">
+                <div class="stepper-progress-fill"></div>
+
+                <!-- Step 1: Placed -->
+                <div class="step-node completed">
+                  <div class="step-circle"><i class="bi bi-check2"></i></div>
+                  <span class="step-label">Request Placed</span>
+                </div>
+
+                <!-- Step 2: Driver Assigned / Pending -->
+                <div class="step-node active">
+                  <div class="step-circle"><i class="bi bi-hourglass-split"></i></div>
+                  <span class="step-label">Driver Dispatch<br><span class="badge bg-warning text-dark font-monospace p-1" style="font-size: 0.6rem;">Pending</span></span>
+                </div>
+
+                <!-- Step 3: Arriving -->
+                <div class="step-node">
+                  <div class="step-circle"><i class="bi bi-geo-alt"></i></div>
+                  <span class="step-label">Pickup Transit</span>
+                </div>
+
+                <!-- Step 4: Completed -->
+                <div class="step-node">
+                  <div class="step-circle"><i class="bi bi-flag"></i></div>
+                  <span class="step-label">Destination Reached</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. RIDE START SECURITY PIN (OTP CARD) -->
+            <div class="ride-otp-card mb-4">
+              <div>
+                <div class="d-flex align-items-center gap-2 mb-1">
+                  <span class="badge bg-dark text-white rounded-pill px-2 py-1" style="font-size: 0.7rem;">
+                    <i class="bi bi-shield-lock-fill text-warning me-1"></i> Passenger Security PIN
+                  </span>
+                  <span class="text-muted small">Ride Start Code</span>
+                </div>
+                <h5 class="fw-extrabold text-dark m-0">Your Ride OTP:</h5>
+                <p class="text-muted small m-0" style="font-size: 0.76rem;">
+                  Share this 4-digit verification code with your driver only after entering vehicle <strong>{{ taxi_obj.number }}</strong>.
+                </p>
+              </div>
+
+              <!-- 4 Digits -->
+              <div class="otp-digits-row">
+                {% for digit in ride_otp %}
+                <div class="otp-digit-box">{{ digit }}</div>
+                {% empty %}
+                <div class="otp-digit-box">4</div>
+                <div class="otp-digit-box">8</div>
+                <div class="otp-digit-box">2</div>
+                <div class="otp-digit-box">1</div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- 4. TWO-COLUMN DETAILS: ROUTE & REAL-TIME MINI-MAP -->
+            <div class="row g-4 mb-4">
+              
+              <!-- Left: Route Trajectory & Schedule -->
+              <div class="col-12 col-lg-6">
+                <div class="p-4 rounded-4 bg-light border h-100 d-flex flex-column justify-content-between">
+                  <div>
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                      <span class="nest-eyebrow mb-0">Route Dossier</span>
+                      <span class="badge bg-white text-dark border font-monospace small">
+                        <i class="bi bi-calendar-event me-1 text-primary"></i> {{ booking.date|date:"d M Y" }}
+                      </span>
+                    </div>
+
+                    <!-- Pickup Point -->
+                    <div class="itinerary-step-box">
+                      <span class="itinerary-icon bg-success">
+                        <i class="bi bi-geo-alt-fill"></i>
+                      </span>
+                      <div>
+                        <span class="text-muted small d-block" style="font-size: 0.72rem;">PICKUP ORIGIN</span>
+                        <strong class="text-dark fs-6 d-block">{{ taxi_obj.source }}</strong>
+                        <span class="text-muted small" style="font-size: 0.75rem;">
+                          Scheduled: <strong>{{ booking.date|date:"h:i A" }}</strong>
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Destination Point -->
+                    <div class="itinerary-step-box">
+                      <span class="itinerary-icon bg-danger">
+                        <i class="bi bi-pin-map-fill"></i>
+                      </span>
+                      <div>
+                        <span class="text-muted small d-block" style="font-size: 0.72rem;">DROP-OFF HUB</span>
+                        <strong class="text-dark fs-6 d-block">{{ taxi_obj.destination }}</strong>
+                        <span class="text-muted small" style="font-size: 0.75rem;">Direct Dedicated Transit</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Quick Add to Calendar Button -->
+                  <div class="pt-3 border-top mt-3">
+                    <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ 'CabZy Ride: '|urlencode }}{{ taxi_obj.source|urlencode }}{{ ' to '|urlencode }}{{ taxi_obj.destination|urlencode }}&details={{ 'Booking Ref: #BK-'|urlencode }}{{ booking.id }}{{ ' with Taxi '|urlencode }}{{ taxi_obj.number }}{{ ' (Driver: '|urlencode }}{{ driver_obj.name }}{{ ')'|urlencode }}&location={{ taxi_obj.source|urlencode }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-dark rounded-pill w-100 fw-bold no-print">
+                      <i class="bi bi-calendar-plus me-1 text-primary"></i> Add Trip to Google Calendar
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Interactive Route Mini-Map -->
+              <div class="col-12 col-lg-6">
+                <div class="p-3 rounded-4 bg-light border h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-2 pb-1">
+                    <span class="nest-eyebrow mb-0">Live Route Map</span>
+                    <span class="badge bg-white text-muted border font-monospace" style="font-size: 0.68rem;">
+                      <i class="bi bi-globe-americas me-1 text-primary"></i>Esri StreetMap
+                    </span>
+                  </div>
+
+                  <!-- Map Canvas -->
+                  <div class="confirmation-map-container">
+                    <div id="confirmationMapStat" class="map-stat-badge">
+                      <i class="bi bi-lightning-charge-fill text-warning"></i>
+                      <span id="confirmationMapStatText">Mapping route trajectory...</span>
+                    </div>
+                    <div id="confirmationRouteMap"></div>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center mt-2 small text-muted" style="font-size: 0.72rem;">
+                    <span><i class="bi bi-geo-alt-fill text-success"></i> {{ taxi_obj.source|truncatechars:18 }}</span>
+                    <span>&rarr;</span>
+                    <span><i class="bi bi-pin-map-fill text-danger"></i> {{ taxi_obj.destination|truncatechars:18 }}</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- 5. VEHICLE & DRIVER DOSSIER CARDS -->
+            <div class="row g-3 mb-4">
+              
+              <!-- Vehicle Card -->
+              <div class="col-12 col-md-6">
+                <div class="p-4 rounded-4 bg-light border h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="nest-eyebrow mb-0">Assigned Fleet Vehicle</span>
+                    <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill font-monospace small">
+                      {{ taxi_obj.get_type_display|default:taxi_obj.type }}
+                    </span>
+                  </div>
+
+                  <!-- Indian License Plate -->
+                  <div class="mb-3">
+                    <div class="license-plate-badge">
+                      <span class="plate-country-tag">IND 🇮🇳</span>
+                      <span class="plate-number">{{ taxi_obj.number }}</span>
+                    </div>
+                  </div>
+
+                  <div class="small text-muted mb-1">
+                    Vehicle Model: <strong class="text-dark">{{ driver_obj.vehicle_name|default:"Toyota Camry Hybrid" }}</strong>
+                  </div>
+                  <div class="small text-muted">
+                    Comfort &amp; Amenities: <span class="badge bg-white border text-dark font-monospace py-1 px-2">Air Conditioned</span> <span class="badge bg-white border text-dark font-monospace py-1 px-2">GPS Monitored</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Driver Card -->
+              <div class="col-12 col-md-6">
+                <div class="p-4 rounded-4 bg-light border h-100 d-flex flex-column justify-content-between">
+                  <div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <span class="nest-eyebrow mb-0">Verified Pilot</span>
+                      <span class="badge bg-success bg-opacity-10 text-success rounded-pill fw-bold">
+                        <i class="bi bi-patch-check-fill me-1"></i> Background Cleared
+                      </span>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                      <div class="avatar-circle" style="background: var(--nest-teal); color: #fff; width: 48px; height: 48px; font-size: 1.25rem;">
+                        <i class="bi bi-person-fill"></i>
+                      </div>
+                      <div>
+                        <h6 class="fw-extrabold text-dark m-0 fs-6">{{ driver_obj.name }}</h6>
+                        <span class="text-muted small d-block" style="font-size: 0.74rem;">License: {{ driver_obj.license_number }}</span>
+                        <div class="text-warning small" style="font-size: 0.72rem;">
+                          <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i> 
+                          <span class="text-muted ms-1 font-monospace fw-bold">4.9/5 (1,240+ trips)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Driver Direct Actions -->
+                  <div class="d-flex gap-2 pt-2 border-top no-print">
+                    <a href="tel:+91{{ driver_obj.mobile }}" class="btn btn-sm btn-outline-success rounded-pill flex-fill fw-bold">
+                      <i class="bi bi-telephone-fill me-1"></i> Call Pilot
+                    </a>
+                    <a href="https://wa.me/91{{ driver_obj.mobile }}?text=Hello%20{{ driver_obj.name|urlencode }},%20I%20have%20booked%20your%20taxi%20{{ taxi_obj.number|urlencode }}%20(Booking%20Ref:%20%23BK-{{ booking.id }})." target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary rounded-pill flex-fill fw-bold">
+                      <i class="bi bi-chat-dots-fill me-1"></i> Message
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- 6. ITEMISED FARE LEDGER & ASSURANCE STAMP -->
+            <div class="border rounded-4 p-4 mb-4 position-relative overflow-hidden bg-white shadow-sm">
+              <div class="row align-items-center g-4">
+                
+                <div class="col-12 col-md-8">
+                  <span class="nest-eyebrow mb-1">Financial Dossier</span>
+                  <h5 class="fw-extrabold text-dark mb-3">Itemized Ride Ledger</h5>
+
+                  <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted small">Standard Base Distance Fare</span>
+                    <span class="fw-semibold text-dark">&#8377; {{ taxi_obj.price }}</span>
+                  </div>
+
+                  <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted small">Surge / Peak Hour Multiplier</span>
+                    <span class="text-success small fw-bold font-monospace">0.00 (Zero Surge Guaranteed)</span>
+                  </div>
+
+                  <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted small">GST, Tolls &amp; Dispatch Operating Fee</span>
+                    <span class="text-success small fw-bold font-monospace">Complimentary</span>
+                  </div>
+
+                  <div class="d-flex justify-content-between align-items-center pt-3">
+                    <div>
+                      <span class="fw-bold text-dark fs-5 d-block">Total Amount Payable</span>
+                      <small class="text-muted">Pay driver upon arrival (Cash / UPI / GPay / PhonePe)</small>
+                    </div>
+                    <div class="text-end">
+                      <span class="fw-extrabold text-success fs-2">&#8377; {{ taxi_obj.price }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Digital Assurance Stamp -->
+                <div class="col-12 col-md-4 text-center d-flex justify-content-center">
+                  <div class="assurance-stamp">
+                    <i class="bi bi-shield-check"></i>
+                    <span>CABZY FLEET</span>
+                    <span>100% ASSURED</span>
+                    <span style="font-size: 0.5rem; color: #64748b;">REF #BK-{{ booking.id }}</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- 7. PASSENGER NOTICE -->
+            <div class="alert alert-warning py-3 px-4 rounded-4 small mb-4 border-warning">
+              <div class="d-flex align-items-start gap-2">
+                <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 text-warning"></i>
+                <div class="text-dark">
+                  <strong>Booking Status : Pending.</strong> 
+                  Our dispatch server has assigned vehicle <strong>{{ taxi_obj.number }}</strong> for your route from <strong>{{ taxi_obj.source }}</strong> to <strong>{{ taxi_obj.destination }}</strong>.
+                  Please show your booking reference <strong>#BK-{{ booking.id }}</strong> or verification PIN <strong>{{ ride_otp }}</strong> when boarding.
+                </div>
+              </div>
+            </div>
+
+            <!-- 8. ACTION BUTTONS (no-print) -->
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 border-top pt-4 no-print">
+              <a href="{% url 'user-dashboard' %}" class="btn-nest-primary py-3 px-4 rounded-pill fw-bold text-decoration-none">
+                <i class="bi bi-house-door-fill me-1"></i> Return to Dashboard
+              </a>
+
+              <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-outline-dark py-3 px-4 rounded-pill fw-bold" onclick="window.print();">
+                  <i class="bi bi-printer-fill me-1"></i> Print Receipt
+                </button>
+                <button type="button" class="btn btn-outline-secondary py-3 px-4 rounded-pill fw-bold" onclick="shareRideDetails()">
+                  <i class="bi bi-share-fill me-1"></i> Share Ride
+                </button>
+                <a href="{% url 'user-taxi-detail' taxi_obj.id %}" class="btn btn-outline-secondary py-3 px-4 rounded-pill fw-bold text-decoration-none">
+                  <i class="bi bi-car-front me-1"></i> Vehicle Info
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ==========================================================================
+     3. ON-SCREEN TEXT-BASED TABLE RECEIPT MODAL
+     Allows user to view and copy the plain tabular receipt on screen
+     ========================================================================== -->
+<div class="modal fade no-print" id="plainTextReceiptModal" tabindex="-1" aria-labelledby="plainTextReceiptModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border shadow-lg" style="border-radius: 14px;">
+      <div class="modal-header bg-light border-bottom py-3">
+        <h5 class="modal-title fw-bold text-dark" id="plainTextReceiptModalLabel">
+          <i class="bi bi-table me-2 text-primary"></i> Real-Time Text Receipt (Table Formatting)
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4 bg-white font-monospace" style="font-size: 0.9rem;">
+        
+        <div class="text-center pb-3 mb-3 border-bottom">
+          <h4 class="fw-bold m-0 text-dark">CABZY TAXI MOBILITY SERVICES</h4>
+          <div class="small text-muted">Official Computer-Generated Trip Booking Receipt &amp; Tax Invoice</div>
+          <div class="small text-muted">Ref: #BK-{{ booking.id }} &bull; Status: {{ booking.status|upper }}</div>
+        </div>
+
+        <table class="table table-bordered table-sm mb-3">
+          <tbody>
+            <tr>
+              <th class="bg-light" style="width: 25%;">Booking Reference</th>
+              <td style="width: 25%;">#BK-{{ booking.id }}</td>
+              <th class="bg-light" style="width: 25%;">Status</th>
+              <td style="width: 25%; font-weight: bold;">{{ booking.status }}</td>
+            </tr>
+            <tr>
+              <th class="bg-light">Receipt Date</th>
+              <td>{{ booking.created_at|date:"d M Y, h:i A" }}</td>
+              <th class="bg-light">Payment Method</th>
+              <td>Pay to Driver upon Arrival</td>
+            </tr>
+            <tr>
+              <th class="bg-light">Ride Start PIN</th>
+              <td class="fw-bold text-primary">{{ ride_otp }}</td>
+              <th class="bg-light">Service Type</th>
+              <td>{{ taxi_obj.get_type_display|default:taxi_obj.type }} Transfer</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h6 class="fw-bold text-dark text-uppercase mt-3 mb-2" style="font-size: 0.85rem;">1. Passenger &amp; Journey Schedule</h6>
+        <table class="table table-bordered table-sm mb-3">
+          <tbody>
+            <tr><th class="bg-light" style="width: 30%;">Passenger Name</th><td>{{ booking.user.name }}</td></tr>
+            <tr><th class="bg-light">Contact Mobile</th><td>+91 {{ booking.user.mobile }}</td></tr>
+            <tr><th class="bg-light">Contact Email</th><td>{{ booking.user.email }}</td></tr>
+            <tr><th class="bg-light">Pickup Location</th><td>{{ taxi_obj.source }}</td></tr>
+            <tr><th class="bg-light">Drop-off Destination</th><td>{{ taxi_obj.destination }}</td></tr>
+            <tr><th class="bg-light">Scheduled Time</th><td>{{ booking.date|date:"l, d F Y - h:i A" }}</td></tr>
+          </tbody>
+        </table>
+
+        <h6 class="fw-bold text-dark text-uppercase mt-3 mb-2" style="font-size: 0.85rem;">2. Vehicle &amp; Driver Details</h6>
+        <table class="table table-bordered table-sm mb-3">
+          <tbody>
+            <tr><th class="bg-light" style="width: 30%;">Taxi Number</th><td class="fw-bold">{{ taxi_obj.number }}</td></tr>
+            <tr><th class="bg-light">Vehicle Category</th><td>{{ taxi_obj.get_type_display|default:taxi_obj.type }}</td></tr>
+            <tr><th class="bg-light">Vehicle Model</th><td>{{ driver_obj.vehicle_name|default:"Toyota Camry Hybrid" }}</td></tr>
+            <tr><th class="bg-light">Assigned Driver</th><td>{{ driver_obj.name }}</td></tr>
+            <tr><th class="bg-light">Driver Mobile</th><td>+91 {{ driver_obj.mobile }}</td></tr>
+            <tr><th class="bg-light">Commercial License</th><td>{{ driver_obj.license_number }}</td></tr>
+          </tbody>
+        </table>
+
+        <h6 class="fw-bold text-dark text-uppercase mt-3 mb-2" style="font-size: 0.85rem;">3. Fare &amp; Payment Ledger</h6>
+        <table class="table table-bordered table-sm mb-0">
+          <thead class="table-light">
+            <tr>
+              <th style="width: 10%;">#</th>
+              <th>Description</th>
+              <th>Rate Basis</th>
+              <th class="text-end">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Point-to-Point Route Fare</td><td>Fixed Upfront</td><td class="text-end">&#8377; {{ taxi_obj.price }}</td></tr>
+            <tr><td>2</td><td>Surge / Convenience Fee</td><td>Zero Surge</td><td class="text-end">&#8377; 0.00</td></tr>
+            <tr><td>3</td><td>GST &amp; Taxes</td><td>Included</td><td class="text-end">&#8377; 0.00</td></tr>
+            <tr class="table-light fw-bold">
+              <td colspan="3" class="text-end text-uppercase">Total Payable (INR)</td>
+              <td class="text-end fw-bold fs-6 text-success">&#8377; {{ taxi_obj.price }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+      <div class="modal-footer bg-light border-top py-2">
+        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-dark rounded-pill px-4" onclick="window.print();">
+          <i class="bi bi-printer me-1"></i> Print This Receipt
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include 'components/footer.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+  // 1. CELEBRATION CONFETTI ENGINE (Pure Canvas - Lightweight & Smooth)
+  (function runConfetti() {
+    const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const colors = ['#003A40', '#D96B43', '#16A34A', '#F59E0B', '#3B82F6', '#E2E8F0'];
+    const particles = [];
+    const count = 90;
+
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height - height,
+        r: Math.random() * 6 + 3,
+        d: Math.random() * count,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        tilt: Math.floor(Math.random() * 10) - 10,
+        tiltAngleIncremental: (Math.random() * 0.07) + 0.05,
+        tiltAngle: 0
+      });
+    }
+
+    let animationFrame;
+    let startTime = Date.now();
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+      const elapsed = Date.now() - startTime;
+      const opacity = Math.max(0, 1 - (elapsed / 3200));
+
+      if (opacity <= 0) {
+        ctx.clearRect(0, 0, width, height);
+        canvas.style.display = 'none';
+        cancelAnimationFrame(animationFrame);
+        return;
+      }
+
+      ctx.globalAlpha = opacity;
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        ctx.beginPath();
+        ctx.lineWidth = p.r / 2;
+        ctx.strokeStyle = p.color;
+        ctx.moveTo(p.x + p.tilt + (p.r / 4), p.y);
+        ctx.lineTo(p.x + p.tilt, p.y + p.tilt + (p.r / 4));
+        ctx.stroke();
+
+        p.tiltAngle += p.tiltAngleIncremental;
+        p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+        p.tilt = Math.sin(p.tiltAngle - (i / 3)) * 12;
+
+        if (p.y > height) {
+          p.x = Math.random() * width;
+          p.y = -20;
+        }
+      }
+
+      animationFrame = requestAnimationFrame(draw);
+    }
+
+    draw();
+  })();
+
+  // 2. ONE-CLICK COPY REFERENCE BUTTON
+  function copyRefCode(code) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(code).then(() => {
+        const label = document.getElementById('copyRefBtnText');
+        if (label) {
+          label.textContent = 'Copied to Clipboard!';
+          setTimeout(() => { label.textContent = 'Copy Ref #' + code; }, 2200);
+        }
+      });
+    } else {
+      alert('Booking Reference: ' + code);
+    }
+  }
+
+  // 3. SHARE RIDE DETAILS
+  function shareRideDetails() {
+    const shareData = {
+      title: 'CabZy Booking #BK-{{ booking.id }}',
+      text: 'My CabZy taxi has been booked! Assigned Taxi: {{ taxi_obj.number }} (Driver: {{ driver_obj.name }}). Route: {{ taxi_obj.source }} to {{ taxi_obj.destination }}.',
+      url: window.location.href
+    };
+    if (navigator.share) {
+      navigator.share(shareData).catch(() => {});
+    } else {
+      copyRefCode('BK-{{ booking.id }}');
+    }
+  }
+
+  // 4. INTERACTIVE ROUTE MINI-MAP (Leaflet + Esri WorldStreetMap + Photon + OSRM)
+  document.addEventListener('DOMContentLoaded', async function () {
+    const mapEl = document.getElementById('confirmationRouteMap');
+    if (!mapEl || typeof L === 'undefined') return;
+
+    const sourceText = '{{ taxi_obj.source|escapejs }}';
+    const destText = '{{ taxi_obj.destination|escapejs }}';
+
+    // Initialize Map with Esri WorldStreetMap (100% Free, Zero Watermark, High Resolution)
+    const miniMap = L.map('confirmationRouteMap', {
+      zoomControl: false,
+      attributionControl: false
+    }).setView([19.0760, 72.8777], 12);
+
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      referrerPolicy: 'no-referrer'
+    }).addTo(miniMap);
+
+    const statText = document.getElementById('confirmationMapStatText');
+
+    // Geocoding helper with Photon
+    async function geocode(query) {
+      try {
+        const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&lat=19.0760&lon=72.8777&limit=1`;
+        const resp = await fetch(url);
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data && data.features && data.features.length > 0) {
+            const coords = data.features[0].geometry.coordinates;
+            return { lat: coords[1], lng: coords[0] };
+          }
+        }
+      } catch (e) {
+        console.warn('Geocoding error:', e);
+      }
+      return null;
+    }
+
+    const sCoords = await geocode(sourceText) || { lat: 19.0549, lng: 72.8402 };
+    const dCoords = await geocode(destText) || { lat: 19.1101, lng: 72.8741 };
+
+    // Custom Markers
+    const pickupIcon = L.divIcon({
+      className: 'nest-mini-pin-pickup',
+      html: '<div style="background:#16a34a;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,0.3);border:2px solid #fff;"><i class="bi bi-geo-alt-fill" style="font-size:0.85rem;"></i></div>',
+      iconSize: [28, 28],
+      iconAnchor: [14, 28]
+    });
+
+    const destIcon = L.divIcon({
+      className: 'nest-mini-pin-dest',
+      html: '<div style="background:#dc2626;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,0.3);border:2px solid #fff;"><i class="bi bi-pin-map-fill" style="font-size:0.85rem;"></i></div>',
+      iconSize: [28, 28],
+      iconAnchor: [14, 28]
+    });
+
+    L.marker([sCoords.lat, sCoords.lng], { icon: pickupIcon }).addTo(miniMap).bindPopup(`<strong>📍 Pickup:</strong><br>${sourceText}`);
+    L.marker([dCoords.lat, dCoords.lng], { icon: destIcon }).addTo(miniMap).bindPopup(`<strong>🏁 Destination:</strong><br>${destText}`);
+
+    // Fetch OSRM route line
+    try {
+      const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${sCoords.lng},${sCoords.lat};${dCoords.lng},${dCoords.lat}?overview=full&geometries=geojson`;
+      const rResp = await fetch(osrmUrl);
+      if (rResp.ok) {
+        const rData = await rResp.json();
+        if (rData && rData.routes && rData.routes.length > 0) {
+          const route = rData.routes[0];
+          const distKm = (route.distance / 1000).toFixed(1);
+          const durMins = Math.max(1, Math.round(route.duration / 60));
+
+          // Draw Glowing Polyline
+          L.geoJSON(route.geometry, {
+            style: { color: '#003A40', weight: 6, opacity: 0.3 }
+          }).addTo(miniMap);
+
+          const mainLine = L.geoJSON(route.geometry, {
+            style: { color: '#D96B43', weight: 4, opacity: 0.95 }
+          }).addTo(miniMap);
+
+          miniMap.fitBounds(mainLine.getBounds(), { padding: [30, 30] });
+
+          if (statText) {
+            statText.innerHTML = `<strong>${distKm} km</strong> &bull; ~${durMins} mins direct route`;
+          }
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('OSRM route error:', err);
+    }
+
+    // Straight polyline fallback
+    const directLine = L.polyline([[sCoords.lat, sCoords.lng], [dCoords.lat, dCoords.lng]], {
+      color: '#D96B43',
+      weight: 3.5,
+      dashArray: '6, 6',
+      opacity: 0.85
+    }).addTo(miniMap);
+
+    miniMap.fitBounds(directLine.getBounds(), { padding: [30, 30] });
+    if (statText) {
+      statText.textContent = 'Direct City Transit Route Plotted';
+    }
+  });
+</script>
+{% endblock %}
