@@ -3,6 +3,7 @@ from .models import User, Driver, Taxi
 from .forms import TaxiForm
 from django.db.models import Q
 from django.contrib import messages
+from django.http import JsonResponse
 
 
 
@@ -346,12 +347,56 @@ def admin_edit_driver(request, driver_id):
 
 
 def admin_taxis(request):
-    taxis = Taxi.objects.select_related('driver').all().order_by('-created_at')
+    if request.method == "POST" and request.POST.get('action') == 'toggle_availability':
+        taxi_id = request.POST.get('taxi_id')
+        taxi = get_object_or_404(Taxi, id=taxi_id)
+        taxi.availability = not taxi.availability
+        taxi.save()
+        status_str = "Available" if taxi.availability else "Unavailable"
+
+        is_ajax = (
+            request.headers.get('x-requested-with') == 'XMLHttpRequest' or
+            'application/json' in request.headers.get('Accept', '') or
+            request.POST.get('is_ajax') == 'true'
+        )
+        if is_ajax:
+            all_taxis = Taxi.objects.all()
+            return JsonResponse({
+                'success': True,
+                'taxi_id': taxi.id,
+                'taxi_number': taxi.number,
+                'availability': taxi.availability,
+                'status_label': status_str,
+                'total_count': all_taxis.count(),
+                'available_count': all_taxis.filter(availability=True).count(),
+                'unavailable_count': all_taxis.filter(availability=False).count(),
+                'message': f"Taxi '{taxi.number}' is now marked as {status_str}."
+            })
+
+        messages.success(request, f"Taxi '{taxi.number}' is now marked as {status_str}.")
+        return redirect('admin_taxis')
+
+    all_taxis = Taxi.objects.select_related('driver').all()
+
+    total_fleet = all_taxis.count()
+    available_count = all_taxis.filter(availability=True).count()
+    unavailable_count = all_taxis.filter(availability=False).count()
+    sedan_count = all_taxis.filter(type__iexact='SEDAN').count()
+    suv_count = all_taxis.filter(type__iexact='SUV').count()
+    hatchback_count = all_taxis.filter(type__iexact='HATCHBACK').count()
+    premium_count = all_taxis.filter(type__iexact='PREMIUM').count()
+
+    sources = sorted(list(set([s for s in all_taxis.values_list('source', flat=True) if s])))
+    destinations = sorted(list(set([d for d in all_taxis.values_list('destination', flat=True) if d])))
+
+    taxis = all_taxis.order_by('-created_at')
 
     q = request.GET.get('q', '').strip()
     taxi_number = request.GET.get('taxi_number', '').strip()
     source = request.GET.get('source', '').strip()
     destination = request.GET.get('destination', '').strip()
+    filter_status = request.GET.get('status', '').strip().lower()
+    filter_type = request.GET.get('type', '').strip().upper()
 
     if q:
         taxis = taxis.filter(
@@ -368,8 +413,14 @@ def admin_taxis(request):
         taxis = taxis.filter(source__icontains=source)
     if destination:
         taxis = taxis.filter(destination__icontains=destination)
+    if filter_status == 'available':
+        taxis = taxis.filter(availability=True)
+    elif filter_status == 'unavailable':
+        taxis = taxis.filter(availability=False)
+    if filter_type in ['SEDAN', 'SUV', 'HATCHBACK', 'PREMIUM']:
+        taxis = taxis.filter(type__iexact=filter_type)
 
-    is_filtered = bool(q or taxi_number or source or destination)
+    is_filtered = bool(q or taxi_number or source or destination or filter_status or filter_type)
     total_count = taxis.count()
 
     context = {
@@ -378,12 +429,22 @@ def admin_taxis(request):
         "taxi_number": taxi_number,
         "source": source,
         "destination": destination,
+        "filter_status": filter_status,
+        "filter_type": filter_type,
         "is_filtered": is_filtered,
-        "total": total_count,
+        "total": total_fleet,
+        "filtered_total": total_count,
+        "available_count": available_count,
+        "unavailable_count": unavailable_count,
+        "sedan_count": sedan_count,
+        "suv_count": suv_count,
+        "hatchback_count": hatchback_count,
+        "premium_count": premium_count,
+        "sources": sources,
+        "destinations": destinations,
         "admin_full_name": request.session.get('admin_full_name', 'Administrator'),
     }
     return render(request, 'admin_pages/taxis.html', context)
-
 
 def admin_taxi_detail(request, taxi_id):
     taxi_obj = get_object_or_404(Taxi.objects.select_related('driver'), id=taxi_id)
@@ -461,4 +522,4 @@ def admin_delete_taxi(request, taxi_id):
     return render(request, "admin_pages/taxi_confirm_delete.html", {
         "taxi_obj": taxi_obj,
         "admin_full_name": request.session.get('admin_full_name', 'Administrator'),
-    })
+    })

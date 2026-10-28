@@ -8,20 +8,32 @@
     {% include 'components/sidebar.html' %}
 
     <main class="admin-main-content">
+        <!-- Top Navigation / Header -->
         <header class="dashboard-header-bar mb-4">
-            <div class="container-fluid d-flex align-items-center justify-content-between">
+            <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-3">
                     <button class="btn btn-outline-dark btn-sm rounded-pill fw-bold d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminSidebarOffcanvas" aria-controls="adminSidebarOffcanvas">
                         <i class="bi bi-list fs-5"></i>
                     </button>
                     <div>
-                        <span class="nest-eyebrow mb-0">Fleet Dispatch</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="nest-eyebrow mb-0">Fleet Dispatch &amp; Operations</span>
+                            <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 small d-inline-flex align-items-center gap-1">
+                                <span class="spinner-grow spinner-grow-sm text-success" style="width: 7px; height: 7px;" role="status"></span> Live Fleet Sync
+                            </span>
+                        </div>
                         <h1 class="dashboard-brand-title m-0">Taxis Fleet Directory.</h1>
                     </div>
                 </div>
 
-                <div class="d-flex align-items-center gap-3">
-                    <div class="d-flex align-items-center gap-2">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <button type="button" onclick="window.print()" class="btn btn-sm btn-outline-secondary rounded-pill px-3 py-2 d-none d-sm-inline-flex align-items-center gap-1 fw-bold">
+                        <i class="bi bi-printer"></i> Print Roster
+                    </button>
+                    <a href="{% url 'admin_create_taxi' %}" class="btn-nest-accent py-2 px-4 rounded-pill d-inline-flex align-items-center gap-2 shadow-sm text-decoration-none">
+                        <i class="bi bi-plus-circle-fill"></i> Add New Taxi
+                    </a>
+                    <div class="d-flex align-items-center gap-2 ps-2 border-start">
                         <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF; width: 36px; height: 36px; font-size: 0.85rem;">
                             {{ admin_full_name|default:'A'|slice:":1" }}
                         </div>
@@ -35,6 +47,20 @@
         </header>
 
         <div class="container-fluid px-3 px-lg-4 pb-5">
+            <!-- Toast notification for dynamic actions -->
+            <div id="liveToastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+                <div id="liveStatusToast" class="toast align-items-center text-white bg-dark border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                    <div class="d-flex">
+                        <div class="toast-body d-flex align-items-center gap-2">
+                            <i id="toastIcon" class="bi bi-check-circle-fill text-success fs-5"></i>
+                            <span id="toastMessage">Taxi status updated successfully.</span>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Server-side Messages -->
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show rounded-3 mb-4 shadow-sm" role="alert">
@@ -44,130 +70,367 @@
                 {% endfor %}
             {% endif %}
 
-            <div class="dashboard-card p-3 mb-4">
-                <form method="get" action="{% url 'admin_taxis' %}" class="row g-2 align-items-center">
-                    <div class="col-12 col-sm-6 col-lg-3">
-                        <div class="input-group">
-                            <span class="input-group-text bg-light text-muted"><i class="bi bi-123"></i></span>
-                            <input type="text" name="taxi_number" value="{{ taxi_number|default:'' }}" class="nest-input form-control py-2" placeholder="Taxi Number..." />
+            <!-- Dynamic Fleet KPI Cards -->
+            <div class="row g-3 mb-4">
+                <!-- Total Fleet Card -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="dashboard-card p-3 h-100 kpi-interactive-card" onclick="filterByChip('all')" title="Click to view all fleet" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="text-muted small fw-bold text-uppercase tracking-wider">Total Fleet</span>
+                            <div class="p-2 rounded-circle" style="background-color: var(--nest-teal-subtle); color: var(--nest-teal);">
+                                <i class="bi bi-car-front-fill fs-5"></i>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-baseline gap-2">
+                            <h2 class="display-6 fw-extrabold text-dark m-0" id="kpiTotal">{{ total }}</h2>
+                            <span class="text-muted small">vehicles</span>
+                        </div>
+                        <div class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between">
+                            <span class="small text-muted">All registered units</span>
+                            <span class="badge rounded-pill bg-dark bg-opacity-10 text-dark small fw-bold">100%</span>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-6 col-lg-3">
-                        <div class="input-group">
-                            <span class="input-group-text bg-light text-muted"><i class="bi bi-geo-alt-fill text-danger"></i></span>
-                            <input type="text" name="source" value="{{ source|default:'' }}" class="nest-input form-control py-2" placeholder="Source location..." />
+                </div>
+
+                <!-- On-Duty Available Card -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="dashboard-card p-3 h-100 kpi-interactive-card" onclick="filterByChip('available')" title="Click to filter available taxis" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="text-muted small fw-bold text-uppercase tracking-wider">Available On Duty</span>
+                            <div class="p-2 rounded-circle bg-success bg-opacity-10 text-success">
+                                <i class="bi bi-check-circle-fill fs-5"></i>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-baseline gap-2">
+                            <h2 class="display-6 fw-extrabold text-success m-0" id="kpiAvailable">{{ available_count }}</h2>
+                            <span class="text-muted small">active</span>
+                        </div>
+                        <div class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between">
+                            <span class="small text-muted">Ready for booking</span>
+                            <span class="badge rounded-pill bg-success text-white small fw-bold" id="kpiAvailableBadge">Active</span>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-6 col-lg-3">
-                        <div class="input-group">
-                            <span class="input-group-text bg-light text-muted"><i class="bi bi-pin-map-fill text-success"></i></span>
-                            <input type="text" name="destination" value="{{ destination|default:'' }}" class="nest-input form-control py-2" placeholder="Destination location..." />
+                </div>
+
+                <!-- Maintenance / Unavailable Card -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="dashboard-card p-3 h-100 kpi-interactive-card" onclick="filterByChip('unavailable')" title="Click to filter unavailable taxis" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="text-muted small fw-bold text-uppercase tracking-wider">In Maintenance</span>
+                            <div class="p-2 rounded-circle bg-warning bg-opacity-10 text-warning">
+                                <i class="bi bi-wrench-adjustable fs-5"></i>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-baseline gap-2">
+                            <h2 class="display-6 fw-extrabold text-warning m-0" id="kpiUnavailable">{{ unavailable_count }}</h2>
+                            <span class="text-muted small">offline</span>
+                        </div>
+                        <div class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between">
+                            <span class="small text-muted">Reserved / Inactive</span>
+                            <span class="badge rounded-pill bg-warning text-dark small fw-bold" id="kpiUnavailableBadge">Offline</span>
                         </div>
                     </div>
-                    <div class="col-12 col-sm-6 col-lg-3 d-flex gap-2">
-                        <button type="submit" class="btn-nest-primary py-2 px-3 flex-grow-1">
-                            <i class="bi bi-search me-1"></i> Search
+                </div>
+
+                <!-- Fleet Types Breakdown Card -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="dashboard-card p-3 h-100">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="text-muted small fw-bold text-uppercase tracking-wider">Fleet Categories</span>
+                            <div class="p-2 rounded-circle" style="background-color: var(--nest-copper-subtle); color: var(--nest-copper);">
+                                <i class="bi bi-grid-fill fs-5"></i>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap gap-1 mt-1">
+                            <span class="badge rounded-pill bg-light text-dark border px-2 py-1 type-kpi-pill" onclick="filterByChip('SEDAN')" style="cursor: pointer;">
+                                Sedan: <strong id="kpiSedan">{{ sedan_count }}</strong>
+                            </span>
+                            <span class="badge rounded-pill bg-light text-dark border px-2 py-1 type-kpi-pill" onclick="filterByChip('SUV')" style="cursor: pointer;">
+                                SUV: <strong id="kpiSuv">{{ suv_count }}</strong>
+                            </span>
+                            <span class="badge rounded-pill bg-light text-dark border px-2 py-1 type-kpi-pill" onclick="filterByChip('HATCHBACK')" style="cursor: pointer;">
+                                Hatch: <strong id="kpiHatch">{{ hatchback_count }}</strong>
+                            </span>
+                            {% if premium_count > 0 %}
+                            <span class="badge rounded-pill bg-light text-dark border px-2 py-1 type-kpi-pill" onclick="filterByChip('PREMIUM')" style="cursor: pointer;">
+                                Lux: <strong id="kpiPremium">{{ premium_count }}</strong>
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div class="mt-2 pt-2 border-top d-flex align-items-center justify-content-between">
+                            <span class="small text-muted">Click badge to filter</span>
+                            <span class="small text-primary fw-bold" style="cursor: pointer;" onclick="filterByChip('all')">Reset</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Search & Filter Control Bar -->
+            <div class="dashboard-card p-3 mb-4 shadow-sm">
+                <div class="row g-2 align-items-center">
+                    <!-- Instant Live Search Bar -->
+                    <div class="col-12 col-lg-5">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input 
+                                type="text" 
+                                id="taxiLiveSearch" 
+                                class="form-control border-start-0 border-end-0 py-2 ps-0" 
+                                placeholder="Instant search by plate, driver, phone, route, type..." 
+                                value="{{ search_query|default:'' }}"
+                                autocomplete="off"
+                            />
+                            <button class="btn btn-outline-secondary border-start-0 bg-white text-muted" type="button" id="clearSearchBtn" title="Clear Search">
+                                <i class="bi bi-x-circle-fill"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Filter Chips -->
+                    <div class="col-12 col-lg-5">
+                        <div class="d-flex align-items-center gap-1 flex-wrap" id="filterChipsContainer">
+                            <button type="button" class="btn btn-sm btn-filter-chip active" data-filter="all">
+                                All ({{ total }})
+                            </button>
+                            <button type="button" class="btn btn-sm btn-filter-chip" data-filter="available">
+                                <span class="badge-dot bg-success"></span> Available
+                            </button>
+                            <button type="button" class="btn btn-sm btn-filter-chip" data-filter="unavailable">
+                                <span class="badge-dot bg-warning"></span> Unavailable
+                            </button>
+                            <button type="button" class="btn btn-sm btn-filter-chip" data-filter="SEDAN">
+                                Sedan
+                            </button>
+                            <button type="button" class="btn btn-sm btn-filter-chip" data-filter="SUV">
+                                SUV
+                            </button>
+                            <button type="button" class="btn btn-sm btn-filter-chip" data-filter="HATCHBACK">
+                                Hatchback
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Route Search Toggle -->
+                    <div class="col-12 col-lg-2 text-lg-end">
+                        <button type="button" class="btn btn-sm btn-outline-dark rounded-pill w-100 w-lg-auto px-3 py-2 fw-semibold" data-bs-toggle="collapse" data-bs-target="#advancedFilterPanel" aria-expanded="false" aria-controls="advancedFilterPanel">
+                            <i class="bi bi-sliders me-1"></i> Routes <i class="bi bi-chevron-down small"></i>
                         </button>
-                        {% if is_filtered %}
-                            <a href="{% url 'admin_taxis' %}" class="btn-nest-outline py-2 px-3">Clear</a>
-                        {% endif %}
                     </div>
-                </form>
+                </div>
+
+                <!-- Collapsible Advanced Multi-Parameter Route Filter (Server Query) -->
+                <div class="collapse mt-3 pt-3 border-top {% if is_filtered %}show{% endif %}" id="advancedFilterPanel">
+                    <form method="get" action="{% url 'admin_taxis' %}" class="row g-2 align-items-center">
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light text-muted"><i class="bi bi-123"></i></span>
+                                <input type="text" name="taxi_number" value="{{ taxi_number|default:'' }}" class="form-control" placeholder="Plate Number (e.g. MH-02)..." />
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light text-danger"><i class="bi bi-geo-alt-fill"></i></span>
+                                <input type="text" name="source" list="sourceLocations" value="{{ source|default:'' }}" class="form-control" placeholder="Source Pickup City..." />
+                                <datalist id="sourceLocations">
+                                    {% for src in sources %}
+                                        <option value="{{ src }}">{{ src }}</option>
+                                    {% endfor %}
+                                </datalist>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light text-success"><i class="bi bi-pin-map-fill"></i></span>
+                                <input type="text" name="destination" list="destLocations" value="{{ destination|default:'' }}" class="form-control" placeholder="Destination Drop..." />
+                                <datalist id="destLocations">
+                                    {% for dst in destinations %}
+                                        <option value="{{ dst }}">{{ dst }}</option>
+                                    {% endfor %}
+                                </datalist>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-3 d-flex gap-2">
+                            <button type="submit" class="btn btn-sm btn-nest-primary py-1 px-3 flex-grow-1">
+                                <i class="bi bi-filter me-1"></i> Apply Route Query
+                            </button>
+                            {% if is_filtered %}
+                                <a href="{% url 'admin_taxis' %}" class="btn btn-sm btn-outline-danger py-1 px-2" title="Clear Server Filters">
+                                    <i class="bi bi-x-lg"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
             </div>
 
-            <div class="d-flex justify-content-end mb-4">
-                <a href="{% url 'admin_create_taxi' %}" class="btn-nest-accent py-2 px-4">
-                    <i class="bi bi-plus-circle me-1"></i> Add New Taxi
-                </a>
-            </div>
-
-            <div class="dashboard-card mb-4">
-                <div class="dashboard-card-header d-flex align-items-center justify-content-between">
+            <!-- Active Fleet Table Card -->
+            <div class="dashboard-card mb-4 shadow-sm overflow-hidden">
+                <div class="dashboard-card-header d-flex align-items-center justify-content-between flex-wrap gap-2 py-3 px-4 bg-white border-bottom">
                     <div>
-                        <span class="nest-eyebrow mb-0">Active Fleet</span>
-                        <h2 class="fs-5 fw-extrabold m-0">Managed Taxi Vehicles</h2>
+                        <span class="nest-eyebrow mb-0">Live Fleet Roster</span>
+                        <h2 class="fs-5 fw-extrabold m-0 text-dark">Managed Taxi Vehicles</h2>
                     </div>
-                    <span class="nest-badge nest-badge-completed">Total: {{ total|default:'0' }} Taxis</span>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="nest-badge nest-badge-completed px-3 py-1 font-monospace" id="liveMatchCounterBadge">
+                            Showing <span id="visibleRowCount">{{ total }}</span> of {{ total }} Taxis
+                        </span>
+                    </div>
                 </div>
 
                 <div class="dashboard-card-body p-0">
                     <div class="table-responsive">
-                        <table class="nest-table">
+                        <table class="nest-table w-100" id="fleetTable">
                             <thead>
                                 <tr>
-                                    <th>Taxi Plate / Number</th>
-                                    <th>Type</th>
-                                    <th>Assigned Route</th>
-                                    <th>Fare Price</th>
-                                    <th>Assigned Driver</th>
-                                    <th>Driver Email</th>
-                                    <th>Taxi Status</th>
+                                    <th class="sortable-th" onclick="sortTable(0, 'string')" style="cursor: pointer;">
+                                        Taxi Plate / Number <i class="bi bi-arrow-down-up small ms-1 text-muted"></i>
+                                    </th>
+                                    <th class="sortable-th" onclick="sortTable(1, 'string')" style="cursor: pointer;">
+                                        Vehicle Type <i class="bi bi-arrow-down-up small ms-1 text-muted"></i>
+                                    </th>
+                                    <th class="sortable-th" onclick="sortTable(2, 'string')" style="cursor: pointer;">
+                                        Assigned Route <i class="bi bi-arrow-down-up small ms-1 text-muted"></i>
+                                    </th>
+                                    <th class="sortable-th" onclick="sortTable(3, 'number')" style="cursor: pointer;">
+                                        Fare Price <i class="bi bi-arrow-down-up small ms-1 text-muted"></i>
+                                    </th>
+                                    <th class="sortable-th" onclick="sortTable(4, 'string')" style="cursor: pointer;">
+                                        Assigned Driver <i class="bi bi-arrow-down-up small ms-1 text-muted"></i>
+                                    </th>
+                                    <th>Driver Contact</th>
+                                    <th class="sortable-th" onclick="sortTable(6, 'string')" style="cursor: pointer;">
+                                        Duty Status <i class="bi bi-arrow-down-up small ms-1 text-muted"></i>
+                                    </th>
                                     <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="fleetTableBody">
                                 {% for taxi in taxis %}
-                                    <tr>
+                                    <tr 
+                                        class="taxi-table-row align-middle"
+                                        id="taxi-row-{{ taxi.id }}"
+                                        data-id="{{ taxi.id }}"
+                                        data-plate="{{ taxi.number|lower }}"
+                                        data-type="{{ taxi.type|upper }}"
+                                        data-source="{{ taxi.source|lower }}"
+                                        data-destination="{{ taxi.destination|lower }}"
+                                        data-price="{{ taxi.price }}"
+                                        data-driver="{{ taxi.driver.name|lower }}"
+                                        data-email="{{ taxi.driver.email|lower }}"
+                                        data-phone="{{ taxi.driver.mobile }}"
+                                        data-status="{% if taxi.availability %}available{% else %}unavailable{% endif %}"
+                                    >
+                                        <!-- Plate Number -->
                                         <td>
-                                            <a href="{% url 'admin_taxi_detail' taxi.id %}" class="text-decoration-none" title="View Taxi Details">
-                                                <span class="badge bg-dark bg-opacity-10 text-dark fw-bold px-3 py-2 border rounded-pill font-monospace">
-                                                    {{ taxi.number }}
-                                                </span>
+                                            <a href="{% url 'admin_taxi_detail' taxi.id %}" class="text-decoration-none" title="View Full Taxi Details">
+                                                <div class="plate-badge d-inline-flex align-items-center font-monospace">
+                                                    <span class="plate-ind">IND</span>
+                                                    <span class="plate-number">{{ taxi.number }}</span>
+                                                </div>
                                             </a>
                                         </td>
+
+                                        <!-- Vehicle Type -->
                                         <td>
-                                            <span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1 rounded">
-                                                {{ taxi.get_type_display|default:taxi.type }}
+                                            <span class="badge rounded-pill px-3 py-2 fw-bold 
+                                                {% if taxi.type == 'SEDAN' %}bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25
+                                                {% elif taxi.type == 'SUV' %}bg-info bg-opacity-10 text-info border border-info border-opacity-25
+                                                {% elif taxi.type == 'HATCHBACK' %}bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25
+                                                {% else %}bg-dark bg-opacity-10 text-dark border{% endif %}">
+                                                <i class="bi bi-car-front me-1"></i> {{ taxi.get_type_display|default:taxi.type }}
                                             </span>
                                         </td>
+
+                                        <!-- Assigned Route -->
                                         <td>
-                                            <div class="fw-semibold text-dark">
-                                                <i class="bi bi-geo-alt-fill text-danger small me-1"></i> {{ taxi.source }}
-                                            </div>
-                                            <div class="text-muted small">
-                                                <i class="bi bi-pin-map-fill text-success small me-1"></i> {{ taxi.destination }}
+                                            <div class="d-flex flex-column gap-1">
+                                                <div class="d-flex align-items-center gap-1 text-dark fw-semibold small">
+                                                    <i class="bi bi-circle-fill text-success" style="font-size: 0.55rem;"></i>
+                                                    <span class="text-truncate" style="max-width: 170px;" title="{{ taxi.source }}">{{ taxi.source }}</span>
+                                                </div>
+                                                <div class="d-flex align-items-center gap-1 text-muted small">
+                                                    <i class="bi bi-geo-alt-fill text-danger" style="font-size: 0.65rem;"></i>
+                                                    <span class="text-truncate" style="max-width: 170px;" title="{{ taxi.destination }}">{{ taxi.destination }}</span>
+                                                </div>
                                             </div>
                                         </td>
+
+                                        <!-- Fare Price -->
                                         <td>
-                                            <span class="fw-extrabold text-success fs-6">
+                                            <div class="fw-extrabold fs-6" style="color: var(--nest-teal);">
                                                 &#8377; {{ taxi.price }}
-                                            </span>
+                                            </div>
+                                            <span class="text-muted" style="font-size: 0.7rem;">Base Fare</span>
                                         </td>
+
+                                        <!-- Assigned Driver -->
                                         <td>
-                                            <div class="fw-bold text-dark">
-                                                <a href="{% url 'admin_driver_detail' taxi.driver.id %}" class="text-decoration-none text-dark hover-primary">
-                                                    {{ taxi.driver.name }}
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="avatar-circle" style="background-color: var(--nest-teal); color: #FFF; width: 32px; height: 32px; font-size: 0.8rem;">
+                                                    {{ taxi.driver.name|slice:":1" }}
+                                                </div>
+                                                <div>
+                                                    <a href="{% url 'admin_driver_detail' taxi.driver.id %}" class="fw-bold text-dark text-decoration-none hover-primary d-block">
+                                                        {{ taxi.driver.name }}
+                                                    </a>
+                                                    <span class="text-muted small font-monospace">DL: {{ taxi.driver.license_number }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                        <!-- Driver Contact -->
+                                        <td>
+                                            <div class="small">
+                                                <a href="mailto:{{ taxi.driver.email }}" class="text-decoration-none text-muted d-block text-truncate" style="max-width: 160px;" title="{{ taxi.driver.email }}">
+                                                    <i class="bi bi-envelope me-1"></i> {{ taxi.driver.email }}
+                                                </a>
+                                                <a href="tel:{{ taxi.driver.mobile }}" class="text-decoration-none text-dark fw-semibold">
+                                                    <i class="bi bi-telephone text-success me-1"></i> +91 {{ taxi.driver.mobile }}
                                                 </a>
                                             </div>
-                                            <div class="text-muted small font-monospace">
-                                                DL: {{ taxi.driver.license_number }}
-                                            </div>
                                         </td>
+
+                                        <!-- Duty Status with 1-Click Dynamic Toggle -->
                                         <td>
-                                            <div class="fw-semibold text-dark">
-                                                <i class="bi bi-envelope text-muted me-1"></i> {{ taxi.driver.email }}
-                                            </div>
-                                            <div class="text-muted small">
-                                                <i class="bi bi-telephone text-muted me-1"></i> +91 {{ taxi.driver.mobile }}
+                                            <div class="d-flex align-items-center gap-2">
+                                                <button 
+                                                    type="button" 
+                                                    class="btn btn-sm status-toggle-btn p-0 border-0 bg-transparent"
+                                                    onclick="toggleTaxiAvailability({{ taxi.id }}, '{{ taxi.number }}', this)"
+                                                    title="Click to toggle availability"
+                                                >
+                                                    {% if taxi.availability %}
+                                                        <span class="nest-badge nest-badge-completed d-inline-flex align-items-center gap-1 status-badge-pill">
+                                                            <i class="bi bi-check-circle-fill"></i> Available
+                                                        </span>
+                                                    {% else %}
+                                                        <span class="nest-badge nest-badge-offline d-inline-flex align-items-center gap-1 status-badge-pill">
+                                                            <i class="bi bi-x-circle-fill"></i> Unavailable
+                                                        </span>
+                                                    {% endif %}
+                                                </button>
+                                                <!-- Small quick action switch icon -->
+                                                <button 
+                                                    type="button"
+                                                    class="btn btn-outline-secondary btn-sm rounded-circle p-1 d-inline-flex align-items-center justify-content-center"
+                                                    style="width: 24px; height: 24px; font-size: 0.7rem;"
+                                                    onclick="toggleTaxiAvailability({{ taxi.id }}, '{{ taxi.number }}', this)"
+                                                    title="Toggle Status (Available &harr; Unavailable)"
+                                                >
+                                                    <i class="bi bi-arrow-repeat"></i>
+                                                </button>
                                             </div>
                                         </td>
-                                        <td>
-                                            {% if taxi.availability %}
-                                                <span class="nest-badge nest-badge-completed">
-                                                    <i class="bi bi-check-circle-fill me-1"></i> Available
-                                                </span>
-                                            {% else %}
-                                                <span class="nest-badge nest-badge-offline">
-                                                    <i class="bi bi-x-circle-fill me-1"></i> Unavailable
-                                                </span>
-                                            {% endif %}
-                                        </td>
+
+                                        <!-- Actions -->
                                         <td class="text-end">
                                             <div class="btn-group btn-group-sm">
-                                                <a href="{% url 'admin_taxi_detail' taxi.id %}" class="btn btn-outline-secondary rounded-pill me-1 py-1 px-2" title="View Taxi Details">
+                                                <a href="{% url 'admin_taxi_detail' taxi.id %}" class="btn btn-outline-secondary rounded-pill me-1 py-1 px-2" title="View Full Taxi Details">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
-                                                <a href="{% url 'admin_edit_taxi' taxi.id %}" class="btn btn-outline-warning rounded-pill me-1 py-1 px-2" title="Edit Taxi">
+                                                <a href="{% url 'admin_edit_taxi' taxi.id %}" class="btn btn-outline-warning rounded-pill me-1 py-1 px-2" title="Edit Taxi Profile">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
                                                 <a href="{% url 'admin_delete_taxi' taxi.id %}" class="btn btn-outline-danger rounded-pill py-1 px-2" title="Delete Taxi">
@@ -177,17 +440,17 @@
                                         </td>
                                     </tr>
                                 {% empty %}
-                                    <tr>
+                                    <tr id="serverEmptyRow">
                                         <td colspan="8" class="text-center py-5 text-muted">
                                             <i class="bi bi-car-front fs-1 d-block text-muted mb-2"></i>
-                                            <h4 class="fs-5 fw-bold text-dark">No taxis found.</h4>
+                                            <h4 class="fs-5 fw-bold text-dark">No taxis found in fleet database.</h4>
                                             {% if is_filtered %}
                                                 <p class="small text-muted mb-3">No taxi matches the given search criteria.</p>
                                                 <a href="{% url 'admin_taxis' %}" class="btn-nest-outline py-2 px-3 d-inline-block">
-                                                    Clear Filters
+                                                    Clear Route Query
                                                 </a>
                                             {% else %}
-                                                <p class="small text-muted mb-3">Click below to manually register the first taxi vehicle and pair it with a driver.</p>
+                                                <p class="small text-muted mb-3">Click below to register the first taxi vehicle and link it to an active driver.</p>
                                                 <a href="{% url 'admin_create_taxi' %}" class="btn-nest-accent py-2 px-4 d-inline-block">
                                                     + Add New Taxi
                                                 </a>
@@ -195,6 +458,20 @@
                                         </td>
                                     </tr>
                                 {% endfor %}
+
+                                <!-- Client-side Dynamic No Matches Found Row -->
+                                <tr id="noLiveMatchesRow" style="display: none;">
+                                    <td colspan="8" class="text-center py-5 text-muted">
+                                        <div class="py-4">
+                                            <i class="bi bi-search fs-1 d-block text-secondary mb-2 opacity-50"></i>
+                                            <h4 class="fs-5 fw-bold text-dark">No matching taxis found.</h4>
+                                            <p class="small text-muted mb-3" id="noMatchesText">No vehicle matches your active search or filters.</p>
+                                            <button type="button" class="btn btn-sm btn-nest-outline py-2 px-4 rounded-pill" onclick="resetAllFilters()">
+                                                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filters
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -203,4 +480,363 @@
         </div>
     </main>
 </div>
+
+<!-- CSRF Token helper for dynamic AJAX calls -->
+<form id="csrfForm" style="display: none;">
+    {% csrf_token %}
+</form>
+
+<style>
+/* Luxury License Plate Badge */
+.plate-badge {
+    background: #FFFFFF;
+    border: 2px solid #2B2D42;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    overflow: hidden;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    transition: all 0.2s ease;
+}
+.plate-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+.plate-ind {
+    background: #003A40;
+    color: #FFFFFF;
+    padding: 3px 6px;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+}
+.plate-number {
+    color: #1A1A1A;
+    padding: 3px 8px;
+}
+
+/* KPI Card interactive hover */
+.kpi-interactive-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 58, 64, 0.08) !important;
+}
+
+/* Dynamic Filter Chips */
+.btn-filter-chip {
+    background-color: #FFFFFF;
+    border: 1px solid #D5DBD8;
+    color: #4A5568;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+}
+.btn-filter-chip:hover {
+    background-color: #EDF2F0;
+    color: var(--nest-teal);
+    border-color: var(--nest-teal);
+}
+.btn-filter-chip.active {
+    background-color: var(--nest-teal);
+    color: #FFFFFF;
+    border-color: var(--nest-teal);
+    box-shadow: 0 2px 8px rgba(0, 58, 64, 0.2);
+}
+.badge-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+}
+
+/* Sortable column header styling */
+.sortable-th {
+    user-select: none;
+    transition: background-color 0.15s ease;
+}
+.sortable-th:hover {
+    background-color: rgba(0, 58, 64, 0.04);
+}
+
+/* Hover link utility */
+.hover-primary:hover {
+    color: var(--nest-copper) !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const liveSearchInput = document.getElementById('taxiLiveSearch');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const filterChips = document.querySelectorAll('.btn-filter-chip');
+    const tableRows = document.querySelectorAll('.taxi-table-row');
+    const noLiveMatchesRow = document.getElementById('noLiveMatchesRow');
+    const visibleRowCountSpan = document.getElementById('visibleRowCount');
+    const noMatchesText = document.getElementById('noMatchesText');
+
+    let currentFilter = 'all';
+    let currentSearchTerm = liveSearchInput.value.trim().toLowerCase();
+
+    // 1. Live Instant Client Search
+    liveSearchInput.addEventListener('input', function() {
+        currentSearchTerm = this.value.trim().toLowerCase();
+        applyClientFilters();
+    });
+
+    clearSearchBtn.addEventListener('click', function() {
+        liveSearchInput.value = '';
+        currentSearchTerm = '';
+        applyClientFilters();
+        liveSearchInput.focus();
+    });
+
+    // Keyboard shortcut '/' to search
+    document.addEventListener('keydown', function(e) {
+        if (e.key === '/' && document.activeElement !== liveSearchInput) {
+            e.preventDefault();
+            liveSearchInput.focus();
+            liveSearchInput.select();
+        }
+    });
+
+    // 2. Filter Chips Click Handling
+    filterChips.forEach(chip => {
+        chip.addEventListener('click', function() {
+            filterChips.forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+            currentFilter = this.getAttribute('data-filter');
+            applyClientFilters();
+        });
+    });
+
+    // 3. Dynamic Filter Function
+    function applyClientFilters() {
+        let visibleCount = 0;
+
+        tableRows.forEach(row => {
+            const plate = row.getAttribute('data-plate') || '';
+            const type = row.getAttribute('data-type') || '';
+            const source = row.getAttribute('data-source') || '';
+            const destination = row.getAttribute('data-destination') || '';
+            const driver = row.getAttribute('data-driver') || '';
+            const email = row.getAttribute('data-email') || '';
+            const phone = row.getAttribute('data-phone') || '';
+            const status = row.getAttribute('data-status') || '';
+
+            // Search matching
+            const matchesSearch = !currentSearchTerm || 
+                plate.includes(currentSearchTerm) ||
+                type.toLowerCase().includes(currentSearchTerm) ||
+                source.includes(currentSearchTerm) ||
+                destination.includes(currentSearchTerm) ||
+                driver.includes(currentSearchTerm) ||
+                email.includes(currentSearchTerm) ||
+                phone.includes(currentSearchTerm);
+
+            // Filter matching
+            let matchesFilter = false;
+            if (currentFilter === 'all') {
+                matchesFilter = true;
+            } else if (currentFilter === 'available') {
+                matchesFilter = (status === 'available');
+            } else if (currentFilter === 'unavailable') {
+                matchesFilter = (status === 'unavailable');
+            } else {
+                matchesFilter = (type === currentFilter.toUpperCase());
+            }
+
+            if (matchesSearch && matchesFilter) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // Update visible count in table header
+        if (visibleRowCountSpan) {
+            visibleRowCountSpan.textContent = visibleCount;
+        }
+
+        // Toggle No Matches row
+        if (tableRows.length > 0) {
+            if (visibleCount === 0) {
+                noLiveMatchesRow.style.display = '';
+                if (noMatchesText) {
+                    noMatchesText.textContent = `No vehicle matches "${currentSearchTerm || currentFilter}".`;
+                }
+            } else {
+                noLiveMatchesRow.style.display = 'none';
+            }
+        }
+    }
+
+    // Expose helpers to window
+    window.filterByChip = function(filterVal) {
+        currentFilter = filterVal;
+        filterChips.forEach(chip => {
+            if (chip.getAttribute('data-filter').toLowerCase() === filterVal.toLowerCase()) {
+                chip.classList.add('active');
+            } else {
+                chip.classList.remove('active');
+            }
+        });
+        applyClientFilters();
+    };
+
+    window.resetAllFilters = function() {
+        liveSearchInput.value = '';
+        currentSearchTerm = '';
+        window.filterByChip('all');
+    };
+
+    // 4. Interactive Column Header Sorting
+    let sortDirections = {};
+    window.sortTable = function(columnIndex, type) {
+        const tbody = document.getElementById('fleetTableBody');
+        const rows = Array.from(tbody.querySelectorAll('.taxi-table-row'));
+        const direction = sortDirections[columnIndex] === 'asc' ? 'desc' : 'asc';
+        sortDirections[columnIndex] = direction;
+
+        // Reset arrow icons
+        document.querySelectorAll('.sortable-th i').forEach(icon => {
+            icon.className = 'bi bi-arrow-down-up small ms-1 text-muted';
+        });
+
+        // Update active header arrow
+        const headers = document.querySelectorAll('.sortable-th');
+        if (headers[columnIndex]) {
+            const activeIcon = headers[columnIndex].querySelector('i');
+            if (activeIcon) {
+                activeIcon.className = direction === 'asc' ? 'bi bi-sort-up text-primary small ms-1' : 'bi bi-sort-down text-primary small ms-1';
+            }
+        }
+
+        rows.sort((a, b) => {
+            let valA = a.cells[columnIndex].innerText.trim();
+            let valB = b.cells[columnIndex].innerText.trim();
+
+            if (type === 'number') {
+                valA = parseFloat(valA.replace(/[^0-9.-]+/g, "")) || 0;
+                valB = parseFloat(valB.replace(/[^0-9.-]+/g, "")) || 0;
+                return direction === 'asc' ? valA - valB : valB - valA;
+            } else {
+                return direction === 'asc' 
+                    ? valA.localeCompare(valB) 
+                    : valB.localeCompare(valA);
+            }
+        });
+
+        rows.forEach(row => tbody.insertBefore(row, noLiveMatchesRow));
+    };
+
+    // 5. Dynamic 1-Click Status Availability Toggle via AJAX
+    window.toggleTaxiAvailability = function(taxiId, taxiNumber, btnElement) {
+        const csrfToken = document.querySelector('#csrfForm input[name="csrfmiddlewaretoken"]').value;
+        const row = document.getElementById(`taxi-row-${taxiId}`);
+
+        // Visual loading feedback
+        const originalContent = btnElement.innerHTML;
+        btnElement.innerHTML = `<span class="spinner-border spinner-border-sm text-secondary" role="status"></span>`;
+        btnElement.disabled = true;
+
+        const formData = new FormData();
+        formData.append('action', 'toggle_availability');
+        formData.append('taxi_id', taxiId);
+        formData.append('is_ajax', 'true');
+        formData.append('csrfmiddlewaretoken', csrfToken);
+
+        fetch("{% url 'admin_taxis' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            btnElement.disabled = false;
+            if (data.success) {
+                // Update row's data-status attribute
+                const newStatus = data.availability ? 'available' : 'unavailable';
+                row.setAttribute('data-status', newStatus);
+
+                // Update row status button UI
+                const statusContainer = row.querySelector('.status-toggle-btn');
+                if (statusContainer) {
+                    if (data.availability) {
+                        statusContainer.innerHTML = `
+                            <span class="nest-badge nest-badge-completed d-inline-flex align-items-center gap-1 status-badge-pill">
+                                <i class="bi bi-check-circle-fill"></i> Available
+                            </span>
+                        `;
+                    } else {
+                        statusContainer.innerHTML = `
+                            <span class="nest-badge nest-badge-offline d-inline-flex align-items-center gap-1 status-badge-pill">
+                                <i class="bi bi-x-circle-fill"></i> Unavailable
+                            </span>
+                        `;
+                    }
+                }
+
+                // If button clicked was the repeat icon, restore it
+                if (btnElement.classList.contains('rounded-circle')) {
+                    btnElement.innerHTML = `<i class="bi bi-arrow-repeat"></i>`;
+                }
+
+                // Update KPI counters dynamically
+                const kpiAvail = document.getElementById('kpiAvailable');
+                const kpiUnavail = document.getElementById('kpiUnavailable');
+                if (kpiAvail && data.available_count !== undefined) {
+                    kpiAvail.textContent = data.available_count;
+                }
+                if (kpiUnavail && data.unavailable_count !== undefined) {
+                    kpiUnavail.textContent = data.unavailable_count;
+                }
+
+                // Show luxury Toast
+                showToast(`Taxi ${taxiNumber} is now marked as ${data.status_label}.`, data.availability ? 'success' : 'warning');
+
+                // Re-apply current client filter so row updates visibility if in a filtered view
+                applyClientFilters();
+            } else {
+                btnElement.innerHTML = originalContent;
+                showToast(data.message || 'Failed to update taxi status', 'danger');
+            }
+        })
+        .catch(err => {
+            btnElement.disabled = false;
+            btnElement.innerHTML = originalContent;
+            console.error('Toggle error:', err);
+            showToast('Network error while toggling status', 'danger');
+        });
+    };
+
+    function showToast(message, type) {
+        const toastEl = document.getElementById('liveStatusToast');
+        const toastMsg = document.getElementById('toastMessage');
+        const toastIcon = document.getElementById('toastIcon');
+
+        if (toastMsg) toastMsg.textContent = message;
+        if (toastIcon) {
+            if (type === 'success') {
+                toastIcon.className = 'bi bi-check-circle-fill text-success fs-5';
+            } else if (type === 'warning') {
+                toastIcon.className = 'bi bi-exclamation-circle-fill text-warning fs-5';
+            } else {
+                toastIcon.className = 'bi bi-x-circle-fill text-danger fs-5';
+            }
+        }
+
+        if (window.bootstrap && bootstrap.Toast) {
+            const toast = new bootstrap.Toast(toastEl, { delay: 3500 });
+            toast.show();
+        }
+    }
+});
+</script>
 {% endblock %}
