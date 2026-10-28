@@ -233,7 +233,7 @@ def booking_confirmation(request, booking_id):
 
 
 def booking_history(request):
-    """Task 53: Redirect user to booking history and display user bookings."""
+    """Task 55: Create a booking history page for logged-in users with status filters and trip dossiers."""
     if not request.session.get("user_id"):
         return render(request, "pages/login.html", {
             "error_message": "Unauthorized access. Please sign in to view your booking history.",
@@ -244,24 +244,35 @@ def booking_history(request):
 
     user_id = request.session.get("user_id")
     user_obj = get_object_or_404(User, id=user_id)
-    bookings = Booking.objects.filter(user=user_obj).select_related('taxi', 'taxi__driver').order_by('-created_at')
+    all_bookings = Booking.objects.filter(user=user_obj).select_related('taxi', 'taxi__driver').order_by('-created_at')
 
     # Status counts for dashboard summary pills
-    pending_count = bookings.filter(status__iexact='Pending').count()
-    confirmed_count = bookings.filter(status__iexact='Confirmed').count()
-    completed_count = bookings.filter(status__iexact='Completed').count()
-    cancelled_count = bookings.filter(status__iexact='Cancelled').count()
+    total_count = all_bookings.count()
+    pending_count = all_bookings.filter(status__iexact='Pending').count()
+    confirmed_count = all_bookings.filter(status__iexact='Confirmed').count()
+    completed_count = all_bookings.filter(status__iexact='Completed').count()
+    cancelled_count = all_bookings.filter(status__iexact='Cancelled').count()
+
+    # Server-side query parameter filter support (?status=pending / confirmed / etc.)
+    status_filter = request.GET.get('status', '').strip().lower()
+    if status_filter in ['pending', 'confirmed', 'completed', 'cancelled']:
+        bookings = all_bookings.filter(status__iexact=status_filter)
+    else:
+        status_filter = 'all'
+        bookings = all_bookings
 
     latest_booking_id = request.session.get('latest_booking_id')
 
     return render(request, "pages/booking_history.html", {
         "user_obj": user_obj,
         "bookings": bookings,
-        "total_bookings": bookings.count(),
+        "all_bookings": all_bookings,
+        "total_bookings": total_count,
         "pending_count": pending_count,
         "confirmed_count": confirmed_count,
         "completed_count": completed_count,
         "cancelled_count": cancelled_count,
+        "current_status_filter": status_filter,
         "latest_booking_id": latest_booking_id,
     })
 

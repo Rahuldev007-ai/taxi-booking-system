@@ -6,7 +6,7 @@
 {% block extra_css %}
 <style>
   /* ==========================================================================
-     CABZY BOOKING HISTORY & TRIP DOSSIER STYLES
+     CABZY LUXURY BOOKING HISTORY & TRIP DOSSIER STYLES
      ========================================================================== */
   .history-hero {
     background: linear-gradient(135deg, #003A40 0%, #002226 100%);
@@ -29,17 +29,25 @@
     pointer-events: none;
   }
 
-  .stat-card {
+  .stat-card-clickable {
     background: #FFFFFF;
     border: 1px solid rgba(0, 58, 64, 0.08);
     border-radius: 18px;
     padding: 1.25rem 1.5rem;
     box-shadow: 0 6px 18px rgba(0, 58, 64, 0.04);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
   }
-  .stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 24px rgba(0, 58, 64, 0.08);
+  .stat-card-clickable:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 26px rgba(0, 58, 64, 0.09);
+    border-color: rgba(0, 58, 64, 0.22);
+  }
+  .stat-card-clickable.active {
+    border-color: #003A40;
+    box-shadow: 0 0 0 2px #003A40, 0 10px 24px rgba(0, 58, 64, 0.1);
   }
 
   /* Booking Item Card */
@@ -72,6 +80,7 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
+    white-space: nowrap;
   }
   .badge-status-pending {
     background: #FEF3C7;
@@ -142,12 +151,43 @@
     color: #475569;
     cursor: pointer;
     transition: all 0.2s ease;
+    white-space: nowrap;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
   }
   .history-filter-pill:hover,
   .history-filter-pill.active {
     background: #003A40;
     color: #FFFFFF;
     border-color: #003A40;
+  }
+
+  /* View Mode Switcher */
+  .view-mode-btn {
+    border: 1px solid rgba(0, 58, 64, 0.15);
+    background: #FFFFFF;
+    color: #475569;
+    padding: 0.45rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .view-mode-btn.active {
+    background: #003A40;
+    color: #FFFFFF;
+    border-color: #003A40;
+  }
+
+  /* Table View Enhancements */
+  .history-table-container {
+    background: #FFFFFF;
+    border-radius: 20px;
+    border: 1px solid rgba(0, 58, 64, 0.08);
+    box-shadow: 0 4px 14px rgba(0, 58, 64, 0.04);
+    overflow: hidden;
   }
 </style>
 {% endblock %}
@@ -192,31 +232,31 @@
       </div>
     </div>
 
-    <!-- Summary Stats Row -->
+    <!-- Summary Stats Row (Clickable Filters) -->
     <div class="row g-3 mb-4">
       <div class="col-6 col-md-3">
-        <div class="stat-card">
+        <div class="stat-card-clickable active" id="statCardAll" onclick="filterBookings('all')">
           <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.7rem;">Total Rides</div>
           <div class="fs-3 fw-extrabold text-dark mt-1">{{ total_bookings }}</div>
           <div class="text-muted small mt-1" style="font-size: 0.75rem;">Lifetime reservations</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="stat-card">
+        <div class="stat-card-clickable" id="statCardPending" onclick="filterBookings('pending')">
           <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.7rem;">Pending</div>
           <div class="fs-3 fw-extrabold text-warning mt-1">{{ pending_count }}</div>
           <div class="text-muted small mt-1" style="font-size: 0.75rem;">Awaiting driver dispatch</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="stat-card">
+        <div class="stat-card-clickable" id="statCardConfirmed" onclick="filterBookings('confirmed')">
           <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.7rem;">Confirmed</div>
           <div class="fs-3 fw-extrabold text-primary mt-1">{{ confirmed_count }}</div>
           <div class="text-muted small mt-1" style="font-size: 0.75rem;">Active & ready</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="stat-card">
+        <div class="stat-card-clickable" id="statCardCompleted" onclick="filterBookings('completed')">
           <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.7rem;">Completed</div>
           <div class="fs-3 fw-extrabold text-success mt-1">{{ completed_count }}</div>
           <div class="text-muted small mt-1" style="font-size: 0.75rem;">Successfully finished</div>
@@ -224,38 +264,60 @@
       </div>
     </div>
 
-    <!-- Filter Buttons & Search -->
+    <!-- Toolbar: Filter Pills, Search & View Switcher -->
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+      
+      <!-- Filter Chips -->
       <div class="d-flex flex-wrap align-items-center gap-2">
-        <button class="history-filter-pill active" onclick="filterBookings('all', this)">
+        <button class="history-filter-pill active" id="filterBtnAll" onclick="filterBookings('all')">
           All ({{ total_bookings }})
         </button>
-        <button class="history-filter-pill" onclick="filterBookings('pending', this)">
-          Pending ({{ pending_count }})
+        <button class="history-filter-pill" id="filterBtnPending" onclick="filterBookings('pending')">
+          <i class="bi bi-hourglass-split text-warning"></i> Pending ({{ pending_count }})
         </button>
-        <button class="history-filter-pill" onclick="filterBookings('confirmed', this)">
-          Confirmed ({{ confirmed_count }})
+        <button class="history-filter-pill" id="filterBtnConfirmed" onclick="filterBookings('confirmed')">
+          <i class="bi bi-check-circle-fill text-primary"></i> Confirmed ({{ confirmed_count }})
         </button>
-        <button class="history-filter-pill" onclick="filterBookings('completed', this)">
-          Completed ({{ completed_count }})
+        <button class="history-filter-pill" id="filterBtnCompleted" onclick="filterBookings('completed')">
+          <i class="bi bi-shield-fill-check text-success"></i> Completed ({{ completed_count }})
         </button>
+        {% if cancelled_count > 0 %}
+        <button class="history-filter-pill" id="filterBtnCancelled" onclick="filterBookings('cancelled')">
+          <i class="bi bi-x-circle text-danger"></i> Cancelled ({{ cancelled_count }})
+        </button>
+        {% endif %}
       </div>
 
-      <div class="d-flex align-items-center gap-2">
-        <div class="input-group input-group-sm" style="max-width: 260px;">
+      <!-- Search & View Toggle -->
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <!-- Live Search Input -->
+        <div class="input-group input-group-sm" style="max-width: 240px;">
           <span class="input-group-text bg-white border-end-0 rounded-start-pill text-muted ps-3">
             <i class="bi bi-search"></i>
           </span>
           <input type="text" id="bookingSearchInput" class="form-control border-start-0 rounded-end-pill py-2 pe-3" placeholder="Search reference, taxi..." onkeyup="searchBookings()">
         </div>
+
+        <!-- View Switcher (Card vs Table) -->
+        <div class="btn-group btn-group-sm rounded-pill overflow-hidden shadow-sm" role="group">
+          <button type="button" class="btn view-mode-btn active" id="cardViewBtn" onclick="setViewMode('cards')">
+            <i class="bi bi-grid-fill me-1"></i> Cards
+          </button>
+          <button type="button" class="btn view-mode-btn" id="tableViewBtn" onclick="setViewMode('table')">
+            <i class="bi bi-table me-1"></i> Table
+          </button>
+        </div>
       </div>
+
     </div>
 
-    <!-- Bookings Listing -->
-    <div id="bookingsListContainer">
+    <!-- ======================================================================
+         1. CARDS VIEW (DEFAULT)
+         ====================================================================== -->
+    <div id="cardsViewContainer">
       {% if bookings %}
         {% for b in bookings %}
-        <div class="booking-item-card {% if b.id == latest_booking_id %}is-latest{% endif %}" data-status="{{ b.status|lower }}" data-ref="#BK-{{ b.id }}" data-taxi="{{ b.taxi.number }}" data-route="{{ b.taxi.source }} {{ b.taxi.destination }}">
+        <div class="booking-item-card {% if b.id == latest_booking_id %}is-latest{% endif %}" data-status="{{ b.status|lower }}" data-ref="#BK-{{ b.id }}" data-taxi="{{ b.taxi.number }}" data-route="{{ b.taxi.source }} {{ b.taxi.destination }}" data-driver="{{ b.taxi.driver.name }}">
           
           {% if b.id == latest_booking_id %}
           <div class="d-inline-flex align-items-center gap-1 badge bg-success text-white py-1 px-3 rounded-pill fw-bold small mb-3">
@@ -364,6 +426,91 @@
       {% endif %}
     </div>
 
+    <!-- ======================================================================
+         2. TABLE VIEW (STRUCTURED TABULAR DOSSIER)
+         ====================================================================== -->
+    <div id="tableViewContainer" style="display: none;">
+      {% if bookings %}
+      <div class="history-table-container table-responsive">
+        <table class="nest-table">
+          <thead>
+            <tr>
+              <th>Reference</th>
+              <th>Route Details</th>
+              <th>Taxi / Class</th>
+              <th>Driver</th>
+              <th>Scheduled Time</th>
+              <th>Fare</th>
+              <th>Status</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b in bookings %}
+            <tr class="booking-table-row {% if b.id == latest_booking_id %}table-success bg-opacity-10{% endif %}" data-status="{{ b.status|lower }}" data-ref="#BK-{{ b.id }}" data-taxi="{{ b.taxi.number }}" data-route="{{ b.taxi.source }} {{ b.taxi.destination }}" data-driver="{{ b.taxi.driver.name }}">
+              <td>
+                <strong style="font-family: monospace;">#BK-{{ b.id }}</strong>
+                {% if b.id == latest_booking_id %}
+                <span class="badge bg-success small ms-1" style="font-size: 0.65rem;">NEW</span>
+                {% endif %}
+              </td>
+              <td>
+                <div class="fw-bold text-dark small text-truncate" style="max-width: 220px;">
+                  <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ b.taxi.source }} &rarr; {{ b.taxi.destination }}
+                </div>
+              </td>
+              <td>
+                <span class="badge bg-dark text-white fw-bold small" style="font-family: monospace;">{{ b.taxi.number }}</span>
+                <span class="text-muted small ms-1">({{ b.taxi.get_type_display|default:b.taxi.type }})</span>
+              </td>
+              <td>
+                <div class="small fw-semibold text-dark">{{ b.taxi.driver.name }}</div>
+                <div class="text-muted small" style="font-size: 0.72rem;">+91 {{ b.taxi.driver.mobile }}</div>
+              </td>
+              <td>
+                <div class="small fw-semibold text-dark">{{ b.date|date:"d M Y" }}</div>
+                <div class="text-muted small" style="font-size: 0.72rem;">{{ b.date|date:"h:i A" }}</div>
+              </td>
+              <td>
+                <strong class="text-dark">&#8377;{{ b.taxi.price }}</strong>
+              </td>
+              <td>
+                {% if b.status|lower == 'pending' %}
+                  <span class="badge-status badge-status-pending">Pending</span>
+                {% elif b.status|lower == 'confirmed' %}
+                  <span class="badge-status badge-status-confirmed">Confirmed</span>
+                {% elif b.status|lower == 'completed' %}
+                  <span class="badge-status badge-status-completed">Completed</span>
+                {% else %}
+                  <span class="badge-status badge-status-cancelled">{{ b.status }}</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <div class="d-inline-flex align-items-center gap-1">
+                  <a href="{% url 'booking-confirmation' b.id %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 py-1 fw-bold text-nowrap" title="View Full Receipt Dossier">
+                    <i class="bi bi-receipt me-1"></i> Receipt
+                  </a>
+                  <a href="{% url 'user-taxi-detail' b.taxi.id %}" class="btn btn-light btn-sm rounded-pill px-2 py-1 border" title="Vehicle Details">
+                    <i class="bi bi-info-circle"></i>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- No Search Results Found Alert (Hidden by default) -->
+    <div id="noResultsState" class="text-center py-5 my-4 bg-white rounded-4 border p-4 shadow-sm" style="display: none;">
+      <i class="bi bi-search text-muted mb-3" style="font-size: 2.2rem; display: block;"></i>
+      <h4 class="fs-5 fw-bold text-dark mb-1">No Matching Rides Found</h4>
+      <p class="text-muted small mb-3">Try adjusting your search terms or clearing the filter.</p>
+      <button class="btn btn-outline-dark btn-sm rounded-pill px-3" onclick="clearFilters()">Reset All Filters</button>
+    </div>
+
   </div>
 </main>
 
@@ -372,37 +519,101 @@
 
 {% block extra_js %}
 <script>
-  function filterBookings(status, btnElement) {
-    // Update active tab button styling
-    document.querySelectorAll('.history-filter-pill').forEach(btn => btn.classList.remove('active'));
-    btnElement.classList.add('active');
+  let currentStatusFilter = 'all';
 
-    const cards = document.querySelectorAll('.booking-item-card');
-    cards.forEach(card => {
-      const cardStatus = card.getAttribute('data-status');
-      if (status === 'all' || cardStatus === status) {
-        card.style.display = 'block';
-      } else {
-        card.style.display = 'none';
-      }
-    });
+  function setViewMode(mode) {
+    const cardBtn = document.getElementById('cardViewBtn');
+    const tableBtn = document.getElementById('tableViewBtn');
+    const cardsContainer = document.getElementById('cardsViewContainer');
+    const tableContainer = document.getElementById('tableViewContainer');
+
+    if (mode === 'table') {
+      cardBtn.classList.remove('active');
+      tableBtn.classList.add('active');
+      if (cardsContainer) cardsContainer.style.display = 'none';
+      if (tableContainer) tableContainer.style.display = 'block';
+    } else {
+      tableBtn.classList.remove('active');
+      cardBtn.classList.add('active');
+      if (tableContainer) tableContainer.style.display = 'none';
+      if (cardsContainer) cardsContainer.style.display = 'block';
+    }
+  }
+
+  function filterBookings(status) {
+    currentStatusFilter = status;
+
+    // Update active state on filter chips
+    document.querySelectorAll('.history-filter-pill').forEach(btn => btn.classList.remove('active'));
+    const targetBtn = document.getElementById('filterBtn' + status.charAt(0).toUpperCase() + status.slice(1));
+    if (targetBtn) targetBtn.classList.add('active');
+
+    // Update active state on summary stat cards
+    document.querySelectorAll('.stat-card-clickable').forEach(card => card.classList.remove('active'));
+    const targetStatCard = document.getElementById('statCard' + status.charAt(0).toUpperCase() + status.slice(1));
+    if (targetStatCard) targetStatCard.classList.add('active');
+
+    applyFilters();
   }
 
   function searchBookings() {
+    applyFilters();
+  }
+
+  function applyFilters() {
     const query = document.getElementById('bookingSearchInput').value.toLowerCase().trim();
     const cards = document.querySelectorAll('.booking-item-card');
+    const rows = document.querySelectorAll('.booking-table-row');
+    let visibleCount = 0;
 
     cards.forEach(card => {
+      const cardStatus = card.getAttribute('data-status');
       const ref = card.getAttribute('data-ref').toLowerCase();
       const taxi = card.getAttribute('data-taxi').toLowerCase();
       const route = card.getAttribute('data-route').toLowerCase();
+      const driver = (card.getAttribute('data-driver') || '').toLowerCase();
 
-      if (ref.includes(query) || taxi.includes(query) || route.includes(query)) {
+      const matchesStatus = (currentStatusFilter === 'all' || cardStatus === currentStatusFilter);
+      const matchesQuery = (!query || ref.includes(query) || taxi.includes(query) || route.includes(query) || driver.includes(query));
+
+      if (matchesStatus && matchesQuery) {
         card.style.display = 'block';
+        visibleCount++;
       } else {
         card.style.display = 'none';
       }
     });
+
+    rows.forEach(row => {
+      const rowStatus = row.getAttribute('data-status');
+      const ref = row.getAttribute('data-ref').toLowerCase();
+      const taxi = row.getAttribute('data-taxi').toLowerCase();
+      const route = row.getAttribute('data-route').toLowerCase();
+      const driver = (row.getAttribute('data-driver') || '').toLowerCase();
+
+      const matchesStatus = (currentStatusFilter === 'all' || rowStatus === currentStatusFilter);
+      const matchesQuery = (!query || ref.includes(query) || taxi.includes(query) || route.includes(query) || driver.includes(query));
+
+      if (matchesStatus && matchesQuery) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    const noResults = document.getElementById('noResultsState');
+    if (noResults) {
+      if (visibleCount === 0 && (cards.length > 0 || rows.length > 0)) {
+        noResults.style.display = 'block';
+      } else {
+        noResults.style.display = 'none';
+      }
+    }
+  }
+
+  function clearFilters() {
+    document.getElementById('bookingSearchInput').value = '';
+    filterBookings('all');
   }
 </script>
 {% endblock %}
