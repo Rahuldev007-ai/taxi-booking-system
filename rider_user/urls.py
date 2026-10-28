@@ -17,6 +17,7 @@ from .views import (
     user_taxi_detail,
     confirm_booking,
     booking_confirmation,
+    booking_history,
 )
 
 urlpatterns = [
@@ -35,6 +36,8 @@ urlpatterns = [
     path("user/taxis/<int:taxi_id>/", user_taxi_detail, name="user-taxi-detail"),
     path("user/taxis/<int:taxi_id>/confirm/", confirm_booking, name="confirm-booking"),
     path("user/booking/confirmation/<int:booking_id>/", booking_confirmation, name="booking-confirmation"),
+    path("user/booking-history/", booking_history, name="booking-history"),
+    path("user/bookings/", booking_history, name="user-bookings"),
     path("driver/dashboard/", driver_dashboard, name="driver-dashboard"),
     path("driver/dashboard", driver_dashboard, name="driver-dashboard-alt"),
     path("driver/profile/", driver_profile, name="driver-profile"),
@@ -45,4 +48,3 @@ urlpatterns = [
     path('user/verify-otp/', user_verify_otp, name="user_verify_otp"),
     path('user/reset-password/', user_reset_password, name="user_reset_password"),
 ]
-

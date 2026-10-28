@@ -355,6 +355,26 @@
     margin: 2px 0;
   }
 
+  /* Confirmation Footer Actions - Fixed horizontal alignment & nowrap */
+  .confirmation-action-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    white-space: nowrap !important;
+    font-size: 0.84rem !important;
+    font-weight: 700 !important;
+    padding: 0.52rem 1.05rem !important;
+    border-radius: 999px !important;
+    text-decoration: none !important;
+    line-height: 1.2 !important;
+    flex-shrink: 0 !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  }
+  .confirmation-action-btn:hover {
+    transform: translateY(-2px);
+  }
+
   /* ==========================================================================
      TEXT-BASED TABLE RECEIPT STYLING (PRINT ONLY - NO DESIGN, ZERO GRAPHICS)
      ========================================================================== */
@@ -589,8 +609,8 @@
     <!-- Top Action Breadcrumb Bar (no-print) -->
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 no-print">
       <div class="d-flex align-items-center gap-2">
-        <a href="{% url 'user-dashboard' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">
-          <i class="bi bi-arrow-left me-1"></i> Dashboard
+        <a href="{% url 'booking-history' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">
+          <i class="bi bi-arrow-left me-1"></i> Booking History
         </a>
         <span class="text-muted small">/</span>
         <span class="text-muted small fw-medium">Booking Dossier</span>
@@ -926,21 +946,33 @@
             </div>
 
             <!-- 8. ACTION BUTTONS (no-print) -->
-            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 border-top pt-4 no-print">
-              <a href="{% url 'user-dashboard' %}" class="btn-nest-primary py-3 px-4 rounded-pill fw-bold text-decoration-none">
-                <i class="bi bi-house-door-fill me-1"></i> Return to Dashboard
-              </a>
+            <div class="border-top pt-4 no-print">
+              <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="d-flex align-items-center gap-2 flex-nowrap">
+                  <a href="{% url 'booking-history' %}" class="btn-nest-primary confirmation-action-btn shadow-sm">
+                    <i class="bi bi-clock-history"></i>
+                    <span>View Booking History</span>
+                  </a>
+                  <a href="{% url 'user-dashboard' %}" class="btn-nest-outline confirmation-action-btn">
+                    <i class="bi bi-house-door-fill"></i>
+                    <span>Dashboard</span>
+                  </a>
+                </div>
 
-              <div class="d-flex align-items-center gap-2">
-                <button type="button" class="btn btn-outline-dark py-3 px-4 rounded-pill fw-bold" onclick="window.print();">
-                  <i class="bi bi-printer-fill me-1"></i> Print Receipt
-                </button>
-                <button type="button" class="btn btn-outline-secondary py-3 px-4 rounded-pill fw-bold" onclick="shareRideDetails()">
-                  <i class="bi bi-share-fill me-1"></i> Share Ride
-                </button>
-                <a href="{% url 'user-taxi-detail' taxi_obj.id %}" class="btn btn-outline-secondary py-3 px-4 rounded-pill fw-bold text-decoration-none">
-                  <i class="bi bi-car-front me-1"></i> Vehicle Info
-                </a>
+                <div class="d-flex align-items-center gap-2 flex-nowrap">
+                  <button type="button" class="btn btn-outline-dark confirmation-action-btn" onclick="window.print();">
+                    <i class="bi bi-printer-fill"></i>
+                    <span>Print Receipt</span>
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary confirmation-action-btn" onclick="shareRideDetails()">
+                    <i class="bi bi-share-fill"></i>
+                    <span>Share Ride</span>
+                  </button>
+                  <a href="{% url 'user-taxi-detail' taxi_obj.id %}" class="btn btn-outline-secondary confirmation-action-btn">
+                    <i class="bi bi-car-front"></i>
+                    <span>Vehicle Info</span>
+                  </a>
+                </div>
               </div>
             </div>
 

@@ -1,0 +1,408 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block title %}My Booking History — CabZy Mobility{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ==========================================================================
+     CABZY BOOKING HISTORY & TRIP DOSSIER STYLES
+     ========================================================================== */
+  .history-hero {
+    background: linear-gradient(135deg, #003A40 0%, #002226 100%);
+    color: #FFFFFF;
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 16px 36px rgba(0, 58, 64, 0.15);
+  }
+  .history-hero::after {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(217, 107, 67, 0.22) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .stat-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 58, 64, 0.08);
+    border-radius: 18px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 6px 18px rgba(0, 58, 64, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 58, 64, 0.08);
+  }
+
+  /* Booking Item Card */
+  .booking-item-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 58, 64, 0.08);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 4px 14px rgba(0, 58, 64, 0.04);
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  .booking-item-card:hover {
+    border-color: rgba(0, 58, 64, 0.2);
+    box-shadow: 0 12px 28px rgba(0, 58, 64, 0.08);
+  }
+  .booking-item-card.is-latest {
+    border: 2px solid #16a34a;
+    background: linear-gradient(180deg, #FAFCFA 0%, #FFFFFF 100%);
+  }
+
+  /* Status Badges */
+  .badge-status {
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .badge-status-pending {
+    background: #FEF3C7;
+    color: #92400E;
+    border: 1px solid #FDE68A;
+  }
+  .badge-status-confirmed {
+    background: #E0F2FE;
+    color: #0369A1;
+    border: 1px solid #BAE6FD;
+  }
+  .badge-status-completed {
+    background: #DCFCE7;
+    color: #15803D;
+    border: 1px solid #BBF7D0;
+  }
+  .badge-status-cancelled {
+    background: #FEE2E2;
+    color: #B91C1C;
+    border: 1px solid #FECACA;
+  }
+
+  /* Route Connector Line */
+  .route-track {
+    position: relative;
+    padding-left: 28px;
+  }
+  .route-track::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 14px;
+    bottom: 14px;
+    width: 2px;
+    border-left: 2px dashed #94a3b8;
+  }
+  .route-point {
+    position: relative;
+    margin-bottom: 10px;
+  }
+  .route-point:last-child {
+    margin-bottom: 0;
+  }
+  .route-dot {
+    position: absolute;
+    left: -28px;
+    top: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    color: #FFFFFF;
+  }
+  .route-dot.pickup { background: #16a34a; }
+  .route-dot.drop { background: #d96b43; }
+
+  /* Filter Tabs */
+  .history-filter-pill {
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: 1px solid rgba(0, 58, 64, 0.15);
+    background: #FFFFFF;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .history-filter-pill:hover,
+  .history-filter-pill.active {
+    background: #003A40;
+    color: #FFFFFF;
+    border-color: #003A40;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'components/navbar.html' %}
+
+<main class="py-4 py-lg-5">
+  <div class="container pb-5">
+    
+    <!-- Top Breadcrumb & Action Row -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+      <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'user-dashboard' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 fw-bold">
+          <i class="bi bi-arrow-left me-1"></i> Dashboard
+        </a>
+        <span class="text-muted small">/</span>
+        <span class="text-muted small fw-medium">Booking History</span>
+      </div>
+      <a href="{% url 'user-dashboard' %}#booking-form-card" class="btn-nest-accent btn-sm rounded-pill px-3 py-2 fw-bold text-decoration-none shadow-sm">
+        <i class="bi bi-plus-circle me-1"></i> Book New Taxi
+      </a>
+    </div>
+
+    <!-- Hero Header Banner -->
+    <div class="history-hero mb-4">
+      <div class="row align-items-center g-3">
+        <div class="col-lg-8">
+          <span class="nest-eyebrow" style="color: var(--nest-copper);">Passenger Activity Portal</span>
+          <h1 class="fs-2 fw-extrabold text-white mb-2" style="font-family: var(--nest-font-serif);">
+            My Booking History
+          </h1>
+          <p class="text-white-50 mb-0 small">
+            Welcome back, <strong>{{ user_obj.name }}</strong>. Track your active ride requests, verified driver dispatches, and electronic invoice receipts.
+          </p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+          <div class="d-inline-flex align-items-center gap-2 bg-white bg-opacity-10 py-2 px-3 rounded-pill border border-white border-opacity-20 text-white small fw-bold">
+            <i class="bi bi-shield-check text-success"></i> All Bookings Verified
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Stats Row -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.7rem;">Total Rides</div>
+          <div class="fs-3 fw-extrabold text-dark mt-1">{{ total_bookings }}</div>
+          <div class="text-muted small mt-1" style="font-size: 0.75rem;">Lifetime reservations</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.7rem;">Pending</div>
+          <div class="fs-3 fw-extrabold text-warning mt-1">{{ pending_count }}</div>
+          <div class="text-muted small mt-1" style="font-size: 0.75rem;">Awaiting driver dispatch</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.7rem;">Confirmed</div>
+          <div class="fs-3 fw-extrabold text-primary mt-1">{{ confirmed_count }}</div>
+          <div class="text-muted small mt-1" style="font-size: 0.75rem;">Active & ready</div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card">
+          <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.7rem;">Completed</div>
+          <div class="fs-3 fw-extrabold text-success mt-1">{{ completed_count }}</div>
+          <div class="text-muted small mt-1" style="font-size: 0.75rem;">Successfully finished</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filter Buttons & Search -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+      <div class="d-flex flex-wrap align-items-center gap-2">
+        <button class="history-filter-pill active" onclick="filterBookings('all', this)">
+          All ({{ total_bookings }})
+        </button>
+        <button class="history-filter-pill" onclick="filterBookings('pending', this)">
+          Pending ({{ pending_count }})
+        </button>
+        <button class="history-filter-pill" onclick="filterBookings('confirmed', this)">
+          Confirmed ({{ confirmed_count }})
+        </button>
+        <button class="history-filter-pill" onclick="filterBookings('completed', this)">
+          Completed ({{ completed_count }})
+        </button>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <div class="input-group input-group-sm" style="max-width: 260px;">
+          <span class="input-group-text bg-white border-end-0 rounded-start-pill text-muted ps-3">
+            <i class="bi bi-search"></i>
+          </span>
+          <input type="text" id="bookingSearchInput" class="form-control border-start-0 rounded-end-pill py-2 pe-3" placeholder="Search reference, taxi..." onkeyup="searchBookings()">
+        </div>
+      </div>
+    </div>
+
+    <!-- Bookings Listing -->
+    <div id="bookingsListContainer">
+      {% if bookings %}
+        {% for b in bookings %}
+        <div class="booking-item-card {% if b.id == latest_booking_id %}is-latest{% endif %}" data-status="{{ b.status|lower }}" data-ref="#BK-{{ b.id }}" data-taxi="{{ b.taxi.number }}" data-route="{{ b.taxi.source }} {{ b.taxi.destination }}">
+          
+          {% if b.id == latest_booking_id %}
+          <div class="d-inline-flex align-items-center gap-1 badge bg-success text-white py-1 px-3 rounded-pill fw-bold small mb-3">
+            <i class="bi bi-check-circle-fill"></i> Latest Booking Reservation
+          </div>
+          {% endif %}
+
+          <div class="row g-4 align-items-center">
+            
+            <!-- Reference, Date & Status -->
+            <div class="col-lg-3 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="fs-6 fw-extrabold text-dark" style="font-family: monospace;">#BK-{{ b.id }}</span>
+                {% if b.status|lower == 'pending' %}
+                  <span class="badge-status badge-status-pending">
+                    <i class="bi bi-hourglass-split"></i> Pending
+                  </span>
+                {% elif b.status|lower == 'confirmed' %}
+                  <span class="badge-status badge-status-confirmed">
+                    <i class="bi bi-check-circle-fill"></i> Confirmed
+                  </span>
+                {% elif b.status|lower == 'completed' %}
+                  <span class="badge-status badge-status-completed">
+                    <i class="bi bi-shield-fill-check"></i> Completed
+                  </span>
+                {% else %}
+                  <span class="badge-status badge-status-cancelled">
+                    <i class="bi bi-x-circle-fill"></i> {{ b.status }}
+                  </span>
+                {% endif %}
+              </div>
+              <div class="text-muted small d-flex align-items-center gap-1">
+                <i class="bi bi-calendar3"></i>
+                <span>{{ b.date|date:"d M Y, h:i A" }}</span>
+              </div>
+              <div class="text-muted small mt-1" style="font-size: 0.72rem;">
+                Placed: {{ b.created_at|date:"d M Y, h:i A" }}
+              </div>
+            </div>
+
+            <!-- Route Info -->
+            <div class="col-lg-4 col-md-6">
+              <div class="route-track">
+                <div class="route-point">
+                  <div class="route-dot pickup"><i class="bi bi-circle-fill" style="font-size: 0.4rem;"></i></div>
+                  <div class="text-muted small" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Pickup</div>
+                  <div class="fw-bold text-dark small text-truncate">{{ b.taxi.source }}</div>
+                </div>
+                <div class="route-point">
+                  <div class="route-dot drop"><i class="bi bi-geo-alt-fill" style="font-size: 0.5rem;"></i></div>
+                  <div class="text-muted small" style="font-size: 0.7rem; font-weight: 700; text-transform: uppercase;">Drop-off</div>
+                  <div class="fw-bold text-dark small text-truncate">{{ b.taxi.destination }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Vehicle & Driver Details -->
+            <div class="col-lg-3 col-md-6">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-light text-dark border fw-bold small">{{ b.taxi.get_type_display|default:b.taxi.type }}</span>
+                <span class="badge bg-dark text-white fw-bold small" style="font-family: monospace;">{{ b.taxi.number }}</span>
+              </div>
+              <div class="text-dark small fw-semibold">
+                <i class="bi bi-person-fill text-muted me-1"></i> {{ b.taxi.driver.name }}
+              </div>
+              <div class="text-muted small" style="font-size: 0.75rem;">
+                <i class="bi bi-telephone-fill me-1"></i> +91 {{ b.taxi.driver.mobile }}
+              </div>
+            </div>
+
+            <!-- Fare & Action Buttons -->
+            <div class="col-lg-2 col-md-6 text-lg-end">
+              <div class="mb-2">
+                <span class="fs-5 fw-extrabold text-dark">&#8377;{{ b.taxi.price }}</span>
+                <div class="text-muted small" style="font-size: 0.7rem;">Fare estimate</div>
+              </div>
+              <div class="d-flex flex-column gap-2">
+                <a href="{% url 'booking-confirmation' b.id %}" class="btn btn-outline-dark btn-sm rounded-pill fw-bold text-nowrap">
+                  <i class="bi bi-receipt me-1"></i> View Receipt
+                </a>
+                <a href="{% url 'user-taxi-detail' b.taxi.id %}" class="btn btn-light btn-sm rounded-pill fw-semibold text-nowrap border">
+                  Vehicle Info
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-5 my-4 bg-white rounded-4 border p-4 shadow-sm">
+          <div class="mb-3">
+            <div class="d-inline-flex align-items-center justify-content-center bg-light text-muted rounded-circle" style="width: 80px; height: 80px; font-size: 2.5rem;">
+              <i class="bi bi-journal-x"></i>
+            </div>
+          </div>
+          <h3 class="fs-4 fw-extrabold text-dark mb-2">No Booking Reservations Found</h3>
+          <p class="text-muted mb-4 mx-auto" style="max-width: 460px;">
+            You have not booked any taxi rides yet. Search available routes, choose from our premium fleet, and book your journey now.
+          </p>
+          <a href="{% url 'user-dashboard' %}" class="btn-nest-primary py-2 px-4 rounded-pill fw-bold text-decoration-none shadow-sm">
+            <i class="bi bi-search me-1"></i> Explore Available Taxis
+          </a>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</main>
+
+{% include 'components/footer.html' %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function filterBookings(status, btnElement) {
+    // Update active tab button styling
+    document.querySelectorAll('.history-filter-pill').forEach(btn => btn.classList.remove('active'));
+    btnElement.classList.add('active');
+
+    const cards = document.querySelectorAll('.booking-item-card');
+    cards.forEach(card => {
+      const cardStatus = card.getAttribute('data-status');
+      if (status === 'all' || cardStatus === status) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  function searchBookings() {
+    const query = document.getElementById('bookingSearchInput').value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.booking-item-card');
+
+    cards.forEach(card => {
+      const ref = card.getAttribute('data-ref').toLowerCase();
+      const taxi = card.getAttribute('data-taxi').toLowerCase();
+      const route = card.getAttribute('data-route').toLowerCase();
+
+      if (ref.includes(query) || taxi.includes(query) || route.includes(query)) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+</script>
+{% endblock %}

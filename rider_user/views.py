@@ -205,7 +205,8 @@ def confirm_booking(request, taxi_id):
         messages.success(request, status_msg)
 
         # Task 3: Redirect to display booking confirmation page
-        return redirect('booking-confirmation', booking_id=new_booking.id)
+        # Task 53: Redirect user to booking history
+        return redirect('booking-history')
     
     # GET request: Show taxi detail with modal opened
     return render(request, "pages/taxi_detail.html", {
@@ -228,6 +229,40 @@ def booking_confirmation(request, booking_id):
         "taxi_obj": booking_obj.taxi,
         "driver_obj": booking_obj.taxi.driver,
         "ride_otp": ride_otp,
+    })
+
+
+def booking_history(request):
+    """Task 53: Redirect user to booking history and display user bookings."""
+    if not request.session.get("user_id"):
+        return render(request, "pages/login.html", {
+            "error_message": "Unauthorized access. Please sign in to view your booking history.",
+        })
+    
+    if request.session.get("is_driver"):
+        return redirect('driver-dashboard')
+
+    user_id = request.session.get("user_id")
+    user_obj = get_object_or_404(User, id=user_id)
+    bookings = Booking.objects.filter(user=user_obj).select_related('taxi', 'taxi__driver').order_by('-created_at')
+
+    # Status counts for dashboard summary pills
+    pending_count = bookings.filter(status__iexact='Pending').count()
+    confirmed_count = bookings.filter(status__iexact='Confirmed').count()
+    completed_count = bookings.filter(status__iexact='Completed').count()
+    cancelled_count = bookings.filter(status__iexact='Cancelled').count()
+
+    latest_booking_id = request.session.get('latest_booking_id')
+
+    return render(request, "pages/booking_history.html", {
+        "user_obj": user_obj,
+        "bookings": bookings,
+        "total_bookings": bookings.count(),
+        "pending_count": pending_count,
+        "confirmed_count": confirmed_count,
+        "completed_count": completed_count,
+        "cancelled_count": cancelled_count,
+        "latest_booking_id": latest_booking_id,
     })
 
 def driver_dashboard(request):
