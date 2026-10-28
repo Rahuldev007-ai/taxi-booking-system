@@ -1,13 +1,270 @@
 {% extends 'components/base.html' %}
 {% load static %}
 
-{% block title %}Driver Console — CabZy Partner{% endblock %}
+{% block title %}Driver Partner Cockpit — {{ driver_obj.name }} | CabZy Mobility{% endblock %}
+
+{% block extra_css %}
+<!-- Leaflet Map CSS for Driver Live Radar -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+<style>
+  /* ==========================================================================
+     CABZY DRIVER PARTNER COCKPIT & DISPATCH STYLES
+     ========================================================================== */
+
+  /* Hero Cockpit Banner */
+  .driver-hero-banner {
+    background: linear-gradient(135deg, #003A40 0%, #002226 100%);
+    color: #FFFFFF;
+    border-radius: 24px;
+    padding: 2.2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 16px 36px rgba(0, 58, 64, 0.15);
+  }
+  .driver-hero-banner::after {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(217, 107, 67, 0.22) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Duty Status Pill Segmented Switcher */
+  .duty-switcher-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 18px;
+    padding: 0.85rem 1rem;
+  }
+  .duty-status-btn {
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .duty-status-btn:hover {
+    color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.12);
+  }
+  .duty-status-btn.active-available {
+    background: #16a34a !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4);
+  }
+  .duty-status-btn.active-on-trip {
+    background: #d97706 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4);
+  }
+  .duty-status-btn.active-offline {
+    background: #64748b !important;
+    color: #FFFFFF !important;
+  }
+
+  /* Live Pulsing Beacon */
+  .live-beacon {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+  }
+  .live-beacon.beacon-online {
+    background: #22c55e;
+  }
+  .live-beacon.beacon-online::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid #22c55e;
+    animation: beacon-pulse 1.8s infinite ease-out;
+  }
+  @keyframes beacon-pulse {
+    0% { transform: scale(0.6); opacity: 1; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+
+  /* Embossed Indian License Plate Tag */
+  .driver-plate-tag {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F1F3F5 100%);
+    border: 2px solid #1E293B;
+    border-radius: 8px;
+    padding: 3px 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: monospace;
+    font-weight: 800;
+    color: #0F172A;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+  }
+  .driver-plate-tag .country-tag {
+    background: #003399;
+    color: #FFFFFF;
+    font-size: 0.6rem;
+    padding: 1px 3px;
+    border-radius: 2px;
+    letter-spacing: 0.05em;
+  }
+
+  /* Driver KPI Cards */
+  .driver-kpi-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 58, 64, 0.08);
+    border-radius: 20px;
+    padding: 1.4rem;
+    box-shadow: 0 4px 16px rgba(0, 58, 64, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .driver-kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(0, 58, 64, 0.08);
+  }
+
+  /* Live Interactive Radar Mini-Map */
+  .driver-radar-container {
+    height: 260px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(0, 58, 64, 0.12);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
+  }
+  #driverRadarMap {
+    height: 100%;
+    width: 100%;
+  }
+  .radar-status-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 1000;
+    background: rgba(0, 40, 44, 0.9);
+    backdrop-filter: blur(8px);
+    color: #FFFFFF;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+  }
+
+  /* Ride Roster Cards */
+  .roster-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(0, 58, 64, 0.08);
+    border-radius: 18px;
+    padding: 1.25rem 1.4rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 3px 12px rgba(0, 58, 64, 0.03);
+    transition: all 0.2s ease;
+  }
+  .roster-card:hover {
+    border-color: rgba(0, 58, 64, 0.2);
+    box-shadow: 0 8px 22px rgba(0, 58, 64, 0.07);
+  }
+  .roster-card.pending-job {
+    border-left: 5px solid #EAB308;
+    background: linear-gradient(180deg, #FFFCF2 0%, #FFFFFF 100%);
+  }
+  .roster-card.confirmed-job {
+    border-left: 5px solid #0284C7;
+    background: linear-gradient(180deg, #F0F9FF 0%, #FFFFFF 100%);
+  }
+  .roster-card.completed-job {
+    border-left: 5px solid #16A34A;
+  }
+
+  /* Action Buttons */
+  .btn-driver-accept {
+    background: #16a34a;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+  .btn-driver-accept:hover {
+    background: #15803d;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+  }
+
+  .btn-driver-complete {
+    background: #0284c7;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 999px;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+  .btn-driver-complete:hover {
+    background: #0369a1;
+    color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+  }
+
+  .btn-driver-action-sm {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="admin-layout-wrapper">
     {% include 'components/sidebar.html' %}
 
     <main class="admin-main-content">
+        <!-- Top App Bar -->
         <header class="dashboard-header-bar mb-4">
             <div class="container-fluid d-flex align-items-center justify-content-between">
                 <div class="d-flex align-items-center gap-3">
@@ -15,143 +272,551 @@
                         <i class="bi bi-list fs-5"></i>
                     </button>
                     <div>
-                        <span class="nest-eyebrow mb-0">Driver Partner</span>
-                        <h1 class="dashboard-brand-title m-0">Duty Dashboard.</h1>
+                        <span class="nest-eyebrow mb-0">CabZy Driver Network</span>
+                        <h1 class="dashboard-brand-title m-0">Driver Partner Console.</h1>
                     </div>
                 </div>
 
                 <div class="d-flex align-items-center gap-3">
-                    <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF; width: 36px; height: 36px; font-size: 0.85rem;">
-                        {{ driver_obj.name|default:'D'|slice:":1" }}
-                    </div>
-                    <div class="text-end d-none d-md-block">
-                        <div class="fw-extrabold text-dark small">{{ driver_obj.name }}</div>
-                        <span class="text-muted" style="font-size: 0.7rem;">License: {{ driver_obj.license_number }}</span>
-                    </div>
+                    <!-- Duty Indicator Badge -->
+                    {% if driver_obj.status == 'AVAILABLE' %}
+                        <div class="d-none d-sm-inline-flex align-items-center gap-2 bg-success bg-opacity-10 text-success border border-success border-opacity-25 py-1 px-3 rounded-pill fw-bold small">
+                            <span class="live-beacon beacon-online"></span> On-Duty (Live Radar)
+                        </div>
+                    {% elif driver_obj.status == 'ON_TRIP' %}
+                        <div class="d-none d-sm-inline-flex align-items-center gap-2 bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 py-1 px-3 rounded-pill fw-bold small">
+                            <i class="bi bi-compass-fill"></i> Passenger on Board
+                        </div>
+                    {% else %}
+                        <div class="d-none d-sm-inline-flex align-items-center gap-2 bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 py-1 px-3 rounded-pill fw-bold small">
+                            <i class="bi bi-moon-fill"></i> Off-Duty
+                        </div>
+                    {% endif %}
+
+                    <!-- Driver Profile Capsule -->
+                    <a href="{% url 'driver-profile' %}" class="d-flex align-items-center gap-2 text-decoration-none bg-white py-1 px-2 pe-3 rounded-pill border shadow-sm">
+                        <div class="avatar-circle" style="background-color: var(--nest-copper); color: #FFF; width: 34px; height: 34px; font-size: 0.85rem;">
+                            {{ driver_obj.name|default:'D'|slice:":1" }}
+                        </div>
+                        <div class="text-start d-none d-md-block">
+                            <div class="fw-extrabold text-dark small line-height-1 mb-0">{{ driver_obj.name }}</div>
+                            <span class="text-muted" style="font-size: 0.68rem;">DL: {{ driver_obj.license_number }}</span>
+                        </div>
+                    </a>
                 </div>
             </div>
         </header>
 
         <div class="container-fluid px-3 px-lg-4 pb-5">
-            <!-- Hero Card -->
-            <div class="nest-card mb-4" style="background-color: var(--nest-teal); color: #FFF;">
-                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-4">
-                    <div>
-                        <span class="nest-eyebrow text-warning mb-1">Driver Partner Console</span>
-                        <h2 class="h3 fw-extrabold text-white mb-2">Welcome back, {{ driver_obj.name }}.</h2>
-                        <p class="text-white-50 mb-0 small">
-                            Assigned Vehicle: <strong class="text-white">{{ driver_obj.vehicle_name|default:'Toyota Camry Hybrid' }}</strong>
+            
+            <!-- 1. HERO COCKPIT BANNER & 1-CLICK DUTY STATUS SWITCHER -->
+            <div class="driver-hero-banner mb-4">
+                <div class="row align-items-center g-4 position-relative" style="z-index: 2;">
+                    <div class="col-lg-7">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge bg-white bg-opacity-15 text-white border border-white border-opacity-25 py-1 px-3 rounded-pill small fw-bold">
+                                <i class="bi bi-shield-check text-success me-1"></i> Fleet Verified Partner
+                            </span>
+                            {% if primary_taxi %}
+                            <span class="driver-plate-tag">
+                                <span class="country-tag">IND</span>
+                                <span>{{ primary_taxi.number }}</span>
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <h2 class="fs-2 fw-extrabold text-white mb-2" style="font-family: var(--nest-font-serif);">
+                            Welcome to Shift, {{ driver_obj.name }}!
+                        </h2>
+                        <p class="text-white-50 mb-0 small" style="max-width: 580px;">
+                            Vehicle: <strong class="text-white">{{ driver_obj.vehicle_name|default:'Toyota Camry Hybrid' }}</strong>
                             <span class="mx-2">&bull;</span>
-                            License: <strong class="text-white">{{ driver_obj.license_number }}</strong>
+                            Assigned Route: <strong class="text-white">{{ primary_taxi.source|default:'Central Hub' }} &rarr; {{ primary_taxi.destination|default:'City Airport' }}</strong>
                         </p>
                     </div>
 
-                    <!-- Duty Status Form -->
-                    <div class="bg-white text-dark p-3 rounded-4" style="min-width: 280px;">
-                        <span class="nest-eyebrow mb-2">Update Duty Status</span>
-                        <form method="post" action="{% url 'driver-dashboard' %}" class="d-flex gap-2">
-                            {% csrf_token %}
-                            <select name="status" class="form-select nest-select py-2 fs-7">
-                                <option value="AVAILABLE" {% if driver_obj.status == 'AVAILABLE' %}selected{% endif %}>Available for Rides</option>
-                                <option value="ON_TRIP" {% if driver_obj.status == 'ON_TRIP' %}selected{% endif %}>On Active Trip</option>
-                                <option value="OFFLINE" {% if driver_obj.status == 'OFFLINE' %}selected{% endif %}>Offline Duty</option>
-                            </select>
-                            <button type="submit" class="btn-nest-accent py-2 px-3 fs-7">Update</button>
-                        </form>
+                    <!-- 1-Click Duty Switcher Card -->
+                    <div class="col-lg-5 text-lg-end">
+                        <div class="duty-switcher-card text-start d-inline-block w-100" style="max-width: 380px;">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <span class="nest-eyebrow text-warning mb-0" style="font-size: 0.68rem;">Duty Status Controller</span>
+                                <span class="text-white-50 small" style="font-size: 0.7rem;">Click to toggle</span>
+                            </div>
+
+                            <form method="post" action="{% url 'driver-dashboard' %}" id="dutyStatusForm">
+                                {% csrf_token %}
+                                <input type="hidden" name="status" id="dutyStatusInput" value="{{ driver_obj.status }}">
+                                <div class="d-flex gap-1 bg-black bg-opacity-25 p-1 rounded-pill">
+                                    <button type="button" class="duty-status-btn flex-fill justify-content-center {% if driver_obj.status == 'AVAILABLE' %}active-available{% endif %}" onclick="submitDutyStatus('AVAILABLE')">
+                                        <span class="live-beacon beacon-online"></span> Available
+                                    </button>
+                                    <button type="button" class="duty-status-btn flex-fill justify-content-center {% if driver_obj.status == 'ON_TRIP' %}active-on-trip{% endif %}" onclick="submitDutyStatus('ON_TRIP')">
+                                        <i class="bi bi-compass-fill"></i> On Trip
+                                    </button>
+                                    <button type="button" class="duty-status-btn flex-fill justify-content-center {% if driver_obj.status == 'OFFLINE' %}active-offline{% endif %}" onclick="submitDutyStatus('OFFLINE')">
+                                        <i class="bi bi-power"></i> Offline
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Driver Metrics Grid -->
+            <!-- 2. DRIVER METRICS KPI GRID -->
             <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="kpi-card">
-                        <div>
-                            <div class="kpi-label">Today's Earnings</div>
-                            <div class="kpi-value">&#8377; 3,250</div>
-                            <div class="small text-success mt-1"><i class="bi bi-arrow-up-right"></i> 8 rides completed</div>
+                <!-- KPI 1: Today's Earnings -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="driver-kpi-card">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="nest-eyebrow mb-0">Shift Revenue</span>
+                            <div class="avatar-circle" style="background-color: #EAF7EF; color: #16a34a; width: 40px; height: 40px;">
+                                <i class="bi bi-wallet2 fs-5"></i>
+                            </div>
                         </div>
-                        <div class="kpi-icon-box" style="background-color: #EAF7EF; color: #1B7A43;">
-                            <i class="bi bi-wallet2"></i>
+                        <div>
+                            <div class="fs-2 fw-extrabold text-dark mb-1">&#8377; {{ today_earnings }}</div>
+                            <div class="d-flex align-items-center gap-1 text-success small fw-semibold">
+                                <i class="bi bi-arrow-up-right"></i>
+                                <span>{{ completed_count|default:"8" }} rides finished today</span>
+                            </div>
+                        </div>
+                        <div class="progress mt-3" style="height: 5px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 78%;" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-4">
-                    <div class="kpi-card">
-                        <div>
-                            <div class="kpi-label">Driver Rating</div>
-                            <div class="kpi-value">4.96 <span class="fs-6 text-muted">/ 5.0</span></div>
-                            <div class="small text-warning mt-1"><i class="bi bi-star-fill"></i> 140 ratings</div>
+                <!-- KPI 2: Driver Rating -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="driver-kpi-card">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="nest-eyebrow mb-0">Passenger Score</span>
+                            <div class="avatar-circle" style="background-color: #FEF3C7; color: #D97706; width: 40px; height: 40px;">
+                                <i class="bi bi-star-fill fs-5"></i>
+                            </div>
                         </div>
-                        <div class="kpi-icon-box" style="background-color: var(--nest-copper-subtle); color: var(--nest-copper);">
-                            <i class="bi bi-star-fill"></i>
+                        <div>
+                            <div class="fs-2 fw-extrabold text-dark mb-1">
+                                4.96 <span class="fs-6 text-muted fw-normal">/ 5.0</span>
+                            </div>
+                            <div class="text-warning small fw-bold">
+                                <i class="bi bi-patch-check-fill text-warning me-1"></i> Top 5% Gold Fleet Partner
+                            </div>
+                        </div>
+                        <div class="text-muted small mt-3" style="font-size: 0.72rem;">
+                            Based on 148 customer reviews
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-4">
-                    <div class="kpi-card">
-                        <div>
-                            <div class="kpi-label">Acceptance Rate</div>
-                            <div class="kpi-value">98.5%</div>
-                            <div class="small text-muted mt-1"><i class="bi bi-patch-check-fill text-success"></i> Top Tier Partner</div>
+                <!-- KPI 3: Assigned Bookings Queue -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="driver-kpi-card">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="nest-eyebrow mb-0">Assigned Dispatch</span>
+                            <div class="avatar-circle" style="background-color: #E0F2FE; color: #0284c7; width: 40px; height: 40px;">
+                                <i class="bi bi-journal-check fs-5"></i>
+                            </div>
                         </div>
-                        <div class="kpi-icon-box">
-                            <i class="bi bi-speedometer2"></i>
+                        <div>
+                            <div class="fs-2 fw-extrabold text-dark mb-1">{{ total_assigned }}</div>
+                            <div class="text-primary small fw-semibold">
+                                <i class="bi bi-hourglass-split me-1"></i> {{ pending_count }} awaiting acceptance
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between text-muted small mt-3" style="font-size: 0.72rem;">
+                            <span>Active: <strong>{{ active_count }}</strong></span>
+                            <span>Completed: <strong>{{ completed_count }}</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI 4: Acceptance Rate -->
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="driver-kpi-card">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <span class="nest-eyebrow mb-0">Acceptance Rate</span>
+                            <div class="avatar-circle" style="background-color: rgba(0, 58, 64, 0.08); color: #003A40; width: 40px; height: 40px;">
+                                <i class="bi bi-speedometer2 fs-5"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="fs-2 fw-extrabold text-dark mb-1">98.8%</div>
+                            <div class="text-success small fw-semibold">
+                                <i class="bi bi-check-circle-fill me-1"></i> Zero Cancellation Bonus
+                            </div>
+                        </div>
+                        <div class="text-muted small mt-3" style="font-size: 0.72rem;">
+                            Speed governor &amp; GPS active
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Assigned Rides Table -->
-            <div class="dashboard-card mb-4">
-                <div class="dashboard-card-header d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="nest-eyebrow mb-0">Dispatched Jobs</span>
-                        <h2 class="fs-5 fw-extrabold m-0">Assigned Rides Roster</h2>
+            <!-- 3. MAIN SECTION: LIVE DISPATCH RADAR MAP + VEHICLE INFO -->
+            <div class="row g-4 mb-4">
+                
+                <!-- Left Column: Interactive Dispatch Radar Map -->
+                <div class="col-lg-7 col-xl-8">
+                    <div class="dashboard-card h-100">
+                        <div class="dashboard-card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="nest-eyebrow mb-0">GPS Fleet Radar</span>
+                                <h2 class="fs-5 fw-extrabold m-0">Live City Route &amp; Base Positioning</h2>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 rounded-pill small fw-bold">
+                                    <i class="bi bi-wifi"></i> GPS 5G Sync
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="p-3">
+                            <div class="driver-radar-container">
+                                <div id="driverRadarMap"></div>
+                                <div class="radar-status-badge">
+                                    <span class="live-beacon beacon-online"></span>
+                                    <span>Base: {{ primary_taxi.source|default:'Central Station Gate 2' }}</span>
+                                </div>
+                            </div>
+
+                            <div class="row g-2 mt-3 text-center">
+                                <div class="col-4">
+                                    <div class="p-2 rounded-3 bg-light border">
+                                        <span class="text-muted d-block small" style="font-size: 0.68rem; text-transform: uppercase;">Route Hub</span>
+                                        <strong class="text-dark small text-truncate d-block">{{ primary_taxi.source|default:'Central Hub' }}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 rounded-3 bg-light border">
+                                        <span class="text-muted d-block small" style="font-size: 0.68rem; text-transform: uppercase;">Destination Zone</span>
+                                        <strong class="text-dark small text-truncate d-block">{{ primary_taxi.destination|default:'Airport Corridor' }}</strong>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 rounded-3 bg-light border">
+                                        <span class="text-muted d-block small" style="font-size: 0.68rem; text-transform: uppercase;">Standard Tariff</span>
+                                        <strong class="text-success small d-block">&#8377; {{ primary_taxi.price|default:'120' }} / trip</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    {% if driver_obj.status == 'AVAILABLE' %}
-                        <span class="nest-badge nest-badge-completed">Duty Active</span>
-                    {% elif driver_obj.status == 'ON_TRIP' %}
-                        <span class="nest-badge nest-badge-pending">On Trip</span>
+                </div>
+
+                <!-- Right Column: Vehicle & Compliance Dossier -->
+                <div class="col-lg-5 col-xl-4">
+                    <div class="dashboard-card h-100">
+                        <div class="dashboard-card-header d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="nest-eyebrow mb-0">Vehicle Dossier</span>
+                                <h2 class="fs-5 fw-extrabold m-0">Assigned Fleet Specs</h2>
+                            </div>
+                            <span class="badge bg-dark text-white rounded-pill px-3 py-1 fw-bold small">
+                                {{ primary_taxi.get_type_display|default:primary_taxi.type|default:'Sedan' }}
+                            </span>
+                        </div>
+
+                        <div class="p-3 d-flex flex-column justify-content-between">
+                            <div>
+                                <!-- Vehicle Plate Showcase -->
+                                <div class="p-3 rounded-4 mb-3 text-center" style="background: linear-gradient(135deg, #F8FAFA 0%, #EEF4F4 100%); border: 1px solid rgba(0, 58, 64, 0.1);">
+                                    <span class="text-muted small text-uppercase fw-bold d-block mb-1" style="font-size: 0.68rem; letter-spacing: 0.08em;">Official Registration</span>
+                                    <div class="driver-plate-tag fs-5 px-3 py-1 my-1">
+                                        <span class="country-tag">IND</span>
+                                        <span>{{ primary_taxi.number|default:driver_obj.taxi_number|default:'GJ-03-MN-2900' }}</span>
+                                    </div>
+                                    <div class="fw-bold text-dark mt-1">{{ driver_obj.vehicle_name|default:'Toyota Camry Hybrid 2.5L' }}</div>
+                                </div>
+
+                                <!-- Compliance Checklist -->
+                                <ul class="list-unstyled mb-0">
+                                    <li class="d-flex align-items-center justify-content-between py-2 border-bottom">
+                                        <span class="text-muted small"><i class="bi bi-shield-check text-success me-2"></i>Commercial Permit</span>
+                                        <strong class="text-dark small">Verified Active</strong>
+                                    </li>
+                                    <li class="d-flex align-items-center justify-content-between py-2 border-bottom">
+                                        <span class="text-muted small"><i class="bi bi-patch-check text-success me-2"></i>PUC &amp; Fitness</span>
+                                        <strong class="text-dark small">Valid thru 2027</strong>
+                                    </li>
+                                    <li class="d-flex align-items-center justify-content-between py-2 border-bottom">
+                                        <span class="text-muted small"><i class="bi bi-file-earmark-medical text-success me-2"></i>Passenger Insurance</span>
+                                        <strong class="text-dark small">&#8377; 10 Lakh Covered</strong>
+                                    </li>
+                                    <li class="d-flex align-items-center justify-content-between py-2">
+                                        <span class="text-muted small"><i class="bi bi-telephone-outbound text-primary me-2"></i>Dispatch Hotline</span>
+                                        <strong class="text-primary small">1800-CABZY-HELP</strong>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="mt-3 pt-3 border-top d-flex gap-2">
+                                <a href="{% url 'driver-profile' %}" class="btn btn-outline-dark btn-sm rounded-pill flex-fill fw-bold py-2">
+                                    <i class="bi bi-person-badge me-1"></i> Edit Profile
+                                </a>
+                                <button type="button" class="btn btn-light btn-sm rounded-pill flex-fill fw-bold border py-2" onclick="window.print()">
+                                    <i class="bi bi-printer me-1"></i> Shift Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 4. ASSIGNED RIDES ROSTER (LIVE DISPATCH JOBS) -->
+            <div class="dashboard-card mb-4">
+                <div class="dashboard-card-header d-flex flex-wrap align-items-center justify-content-between gap-3">
+                    <div>
+                        <span class="nest-eyebrow mb-0">Passenger Queue</span>
+                        <h2 class="fs-4 fw-extrabold m-0">Assigned Trips &amp; Dispatch Roster</h2>
+                    </div>
+
+                    <!-- Filter badges -->
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <button class="btn btn-sm btn-dark rounded-pill px-3 fw-bold" onclick="filterRoster('all', this)">
+                            All Dispatches ({{ total_assigned }})
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning text-dark rounded-pill px-3 fw-bold" onclick="filterRoster('pending', this)">
+                            Pending ({{ pending_count }})
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold" onclick="filterRoster('confirmed', this)">
+                            Active Trips ({{ active_count }})
+                        </button>
+                        <button class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold" onclick="filterRoster('completed', this)">
+                            Completed ({{ completed_count }})
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-3 p-md-4">
+                    {% if bookings %}
+                        <div id="rosterListContainer">
+                            {% for b in bookings %}
+                            <div class="roster-card {% if b.status|lower == 'pending' %}pending-job{% elif b.status|lower == 'confirmed' %}confirmed-job{% elif b.status|lower == 'completed' %}completed-job{% endif %}" data-status="{{ b.status|lower }}">
+                                <div class="row g-3 align-items-center">
+                                    
+                                    <!-- 1. Ref & Status -->
+                                    <div class="col-lg-3 col-md-4">
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <span class="fs-6 fw-extrabold text-dark" style="font-family: monospace;">#BK-{{ b.id }}</span>
+                                            {% if b.status|lower == 'pending' %}
+                                                <span class="badge bg-warning text-dark fw-bold rounded-pill px-2 py-1 small">
+                                                    <i class="bi bi-hourglass-split"></i> Pending
+                                                </span>
+                                            {% elif b.status|lower == 'confirmed' %}
+                                                <span class="badge bg-primary text-white fw-bold rounded-pill px-2 py-1 small">
+                                                    <i class="bi bi-compass-fill"></i> Confirmed / Active
+                                                </span>
+                                            {% elif b.status|lower == 'completed' %}
+                                                <span class="badge bg-success text-white fw-bold rounded-pill px-2 py-1 small">
+                                                    <i class="bi bi-check-circle-fill"></i> Completed
+                                                </span>
+                                            {% else %}
+                                                <span class="badge bg-secondary text-white fw-bold rounded-pill px-2 py-1 small">
+                                                    {{ b.status }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="text-muted small">
+                                            <i class="bi bi-clock me-1"></i> Scheduled: <strong>{{ b.date|date:"d M Y, h:i A" }}</strong>
+                                        </div>
+                                    </div>
+
+                                    <!-- 2. Passenger & Route -->
+                                    <div class="col-lg-4 col-md-4">
+                                        <div class="fw-bold text-dark small mb-1">
+                                            <i class="bi bi-person-fill text-muted me-1"></i> {{ b.user.name }}
+                                            <span class="text-muted fw-normal ms-1">(Passenger)</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2 small text-dark">
+                                            <span class="text-success fw-bold text-truncate" style="max-width: 140px;">{{ b.taxi.source }}</span>
+                                            <i class="bi bi-arrow-right text-muted"></i>
+                                            <span class="text-danger fw-bold text-truncate" style="max-width: 140px;">{{ b.taxi.destination }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- 3. Fare -->
+                                    <div class="col-lg-2 col-md-4">
+                                        <div class="text-muted small" style="font-size: 0.7rem; text-transform: uppercase; font-weight: 700;">Collect Fare</div>
+                                        <div class="fs-5 fw-extrabold text-success">&#8377; {{ b.taxi.price }}</div>
+                                        <div class="text-muted small" style="font-size: 0.68rem;">Cash / UPI at Drop</div>
+                                    </div>
+
+                                    <!-- 4. Interactive Driver Action Controls -->
+                                    <div class="col-lg-3 col-md-12 text-lg-end">
+                                        <div class="d-flex flex-wrap align-items-center justify-content-lg-end gap-2">
+                                            {% if b.status|lower == 'pending' %}
+                                                <!-- Accept Trip Form -->
+                                                <form method="post" action="{% url 'driver-dashboard' %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="booking_id" value="{{ b.id }}">
+                                                    <input type="hidden" name="action" value="confirm">
+                                                    <button type="submit" class="btn-driver-accept shadow-sm">
+                                                        <i class="bi bi-check-lg"></i> Accept Ride
+                                                    </button>
+                                                </form>
+
+                                                <!-- Reject Trip Form -->
+                                                <form method="post" action="{% url 'driver-dashboard' %}" class="d-inline" onsubmit="return confirm('Are you sure you want to decline this ride request?');">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="booking_id" value="{{ b.id }}">
+                                                    <input type="hidden" name="action" value="cancel">
+                                                    <button type="submit" class="btn btn-outline-danger btn-driver-action-sm">
+                                                        Decline
+                                                    </button>
+                                                </form>
+
+                                            {% elif b.status|lower == 'confirmed' %}
+                                                <!-- Complete Trip Form -->
+                                                <form method="post" action="{% url 'driver-dashboard' %}" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="booking_id" value="{{ b.id }}">
+                                                    <input type="hidden" name="action" value="complete">
+                                                    <button type="submit" class="btn-driver-complete shadow-sm">
+                                                        <i class="bi bi-flag-fill"></i> Finish Trip
+                                                    </button>
+                                                </form>
+
+                                                <a href="https://www.google.com/maps/dir/?api=1&destination={{ b.taxi.destination|urlencode }}" target="_blank" rel="noopener" class="btn btn-outline-dark btn-driver-action-sm">
+                                                    <i class="bi bi-geo-alt-fill text-danger"></i> Nav
+                                                </a>
+
+                                            {% elif b.status|lower == 'completed' %}
+                                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 rounded-pill fw-bold small">
+                                                    <i class="bi bi-check2-all"></i> Ride Delivered
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted small">Ride Inactive</span>
+                                            {% endif %}
+
+                                            <!-- Contact Passenger Phone -->
+                                            {% if b.user.mobile %}
+                                            <a href="tel:+91{{ b.user.mobile }}" class="btn btn-outline-secondary btn-driver-action-sm" title="Call Passenger">
+                                                <i class="bi bi-telephone"></i>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
                     {% else %}
-                        <span class="nest-badge nest-badge-offline">Offline</span>
+                        <!-- Empty State with Radar Scan Animation -->
+                        <div class="text-center py-5 my-3 bg-light rounded-4 border p-4">
+                            <div class="d-inline-flex align-items-center justify-content-center bg-white text-muted rounded-circle shadow-sm mb-3" style="width: 76px; height: 76px; font-size: 2.2rem;">
+                                <i class="bi bi-broadcast text-primary"></i>
+                            </div>
+                            <h3 class="fs-4 fw-extrabold text-dark mb-1">Radar Scanning for New Trips</h3>
+                            <p class="text-muted small mb-3 mx-auto" style="max-width: 440px;">
+                                Your duty status is active. Incoming passenger booking requests in your coverage corridor will appear here in real time.
+                            </p>
+                            <span class="badge bg-success bg-opacity-15 text-success border border-success border-opacity-25 py-2 px-3 rounded-pill fw-bold small">
+                                <span class="live-beacon beacon-online me-1"></span> Live Dispatch Listening on Route {{ primary_taxi.source|default:'City' }}
+                            </span>
+                        </div>
                     {% endif %}
                 </div>
-
-                <div class="dashboard-card-body p-0">
-                    <div class="table-responsive">
-                        <table class="nest-table">
-                            <thead>
-                                <tr>
-                                    <th>Ride ID</th>
-                                    <th>Passenger Name</th>
-                                    <th>Pickup Address</th>
-                                    <th>Dropoff Address</th>
-                                    <th>Estimated Fare</th>
-                                    <th>Status</th>
-                                    <th class="text-end">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="fw-extrabold" style="color: var(--nest-copper);">#CB-9104</td>
-                                    <td class="fw-bold">Downtown Customer</td>
-                                    <td>Downtown Market, Gate 4</td>
-                                    <td>City Residency 12</td>
-                                    <td class="fw-bold text-success">&#8377; 620</td>
-                                    <td><span class="nest-badge nest-badge-pending">Assigned</span></td>
-                                    <td class="text-end">
-                                        <button class="btn-nest-accent py-1 px-3 fs-7">Start Navigation</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
+
         </div>
     </main>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Leaflet Map JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+<script>
+  // 1-Click Duty Status Submit
+  function submitDutyStatus(status) {
+    document.getElementById('dutyStatusInput').value = status;
+    document.getElementById('dutyStatusForm').submit();
+  }
+
+  // Roster Filter Chips
+  function filterRoster(status, btnElement) {
+    document.querySelectorAll('.dashboard-card-header .btn').forEach(btn => {
+      btn.classList.remove('btn-dark');
+      if (!btn.classList.contains('btn-outline-warning') && !btn.classList.contains('btn-outline-primary') && !btn.classList.contains('btn-outline-success')) {
+        btn.classList.add('btn-outline-dark');
+      }
+    });
+    btnElement.classList.remove('btn-outline-dark');
+    btnElement.classList.add('btn-dark');
+
+    const cards = document.querySelectorAll('.roster-card');
+    cards.forEach(card => {
+      const cardStatus = card.getAttribute('data-status');
+      if (status === 'all' || cardStatus === status) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // Initialize Interactive Driver Radar Map
+  document.addEventListener('DOMContentLoaded', function() {
+    try {
+      // Default coordinates: Ahmedabad / Gandhinagar corridor
+      const baseLat = 23.0225;
+      const baseLng = 72.5714;
+
+      const map = L.map('driverRadarMap', {
+        zoomControl: true,
+        attributionControl: false,
+        dragging: true,
+        scrollWheelZoom: false
+      }).setView([baseLat, baseLng], 13);
+
+      // OpenStreetMap Tiles
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 18,
+      }).addTo(map);
+
+      // Animated Pulse Circle for Driver Radar Range
+      L.circle([baseLat, baseLng], {
+        color: '#16a34a',
+        fillColor: '#22c55e',
+        fillOpacity: 0.15,
+        radius: 1800,
+        weight: 2,
+        dashArray: '5, 8'
+      }).addTo(map);
+
+      // Driver Vehicle Pin
+      const driverIcon = L.divIcon({
+        className: 'custom-driver-pin',
+        html: `<div style="background: #003A40; color: #FFF; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 3px solid #FFF; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"><i class="bi bi-car-front-fill"></i></div>`,
+        iconSize: [38, 38],
+        iconAnchor: [19, 19]
+      });
+
+      L.marker([baseLat, baseLng], { icon: driverIcon })
+        .addTo(map)
+        .bindPopup(`<strong>{{ driver_obj.name }} (You)</strong><br><small>{{ primary_taxi.number|default:'Active Fleet' }}</small>`)
+        .openPopup();
+
+      // Sample Dispatch Pins
+      const jobIcon = L.divIcon({
+        className: 'custom-job-pin',
+        html: `<div style="background: #D96B43; color: #FFF; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; border: 2px solid #FFF; box-shadow: 0 3px 8px rgba(0,0,0,0.25);"><i class="bi bi-geo-alt-fill"></i></div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 14]
+      });
+
+      L.marker([baseLat + 0.018, baseLng + 0.012], { icon: jobIcon })
+        .addTo(map)
+        .bindPopup(`<strong>Active Dispatch Zone</strong><br><small>{{ primary_taxi.destination|default:'City Airport T3' }}</small>`);
+
+    } catch (e) {
+      console.warn("Driver radar map initialization error:", e);
+    }
+  });
+</script>
 {% endblock %}
