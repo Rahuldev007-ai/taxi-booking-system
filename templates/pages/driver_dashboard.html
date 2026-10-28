@@ -514,7 +514,11 @@
                                 <h2 class="fs-5 fw-extrabold m-0">Assigned Fleet Specs</h2>
                             </div>
                             <span class="badge bg-dark text-white rounded-pill px-3 py-1 fw-bold small">
-                                {{ primary_taxi.get_type_display|default:primary_taxi.type|default:'Sedan' }}
+                                {% if primary_taxi %}
+                                    {{ primary_taxi.get_type_display|default:primary_taxi.type}}
+                                {{else}}
+                                    Sedan
+                                {% endif %}
                             </span>
                         </div>
 
@@ -760,59 +764,112 @@
     });
   }
 
-  // Initialize Interactive Driver Radar Map
+  // Initialize Interactive Driver Radar Map with Unblocked High-Res Tiles & Real Route Geocoding
   document.addEventListener('DOMContentLoaded', function() {
     try {
-      // Default coordinates: Ahmedabad / Gandhinagar corridor
-      const baseLat = 23.0225;
-      const baseLng = 72.5714;
+      const mapContainer = document.getElementById('driverRadarMap');
+      if (!mapContainer) return;
+
+      // Default baseline coordinates (Gujarat / Mumbai metropolitan corridor)
+      const defaultLat = 23.0225;
+      const defaultLng = 72.5714;
 
       const map = L.map('driverRadarMap', {
         zoomControl: true,
         attributionControl: false,
         dragging: true,
         scrollWheelZoom: false
-      }).setView([baseLat, baseLng], 13);
+      }).setView([defaultLat, defaultLng], 13);
 
-      // OpenStreetMap Tiles
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
+      // Primary: Esri WorldStreetMap (100% Free, Zero API Key Required, Never Blocked on localhost)
+      const primaryTiles = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19,
+        referrerPolicy: 'no-referrer',
+        attribution: '&copy; Esri &mdash; StreetMap'
       }).addTo(map);
 
-      // Animated Pulse Circle for Driver Radar Range
-      L.circle([baseLat, baseLng], {
-        color: '#16a34a',
-        fillColor: '#22c55e',
-        fillOpacity: 0.15,
-        radius: 1800,
-        weight: 2,
-        dashArray: '5, 8'
-      }).addTo(map);
-
-      // Driver Vehicle Pin
-      const driverIcon = L.divIcon({
-        className: 'custom-driver-pin',
-        html: `<div style="background: #003A40; color: #FFF; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; border: 3px solid #FFF; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"><i class="bi bi-car-front-fill"></i></div>`,
-        iconSize: [38, 38],
-        iconAnchor: [19, 19]
+      // Fallback: CartoDB Voyager tiles if needed
+      primaryTiles.on('tileerror', function() {
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+          subdomains: 'abcd',
+          maxZoom: 19,
+          referrerPolicy: 'no-referrer'
+        }).addTo(map);
       });
 
-      L.marker([baseLat, baseLng], { icon: driverIcon })
-        .addTo(map)
-        .bindPopup(`<strong>{{ driver_obj.name }} (You)</strong><br><small>{{ primary_taxi.number|default:'Active Fleet' }}</small>`)
-        .openPopup();
+      const sourceQuery = "{{ primary_taxi.source|default:'Thaltej, Ahmedabad'|escapejs }}";
+      const destQuery = "{{ primary_taxi.destination|default:'Navrangpura, Ahmedabad'|escapejs }}";
 
-      // Sample Dispatch Pins
-      const jobIcon = L.divIcon({
-        className: 'custom-job-pin',
-        html: `<div style="background: #D96B43; color: #FFF; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; border: 2px solid #FFF; box-shadow: 0 3px 8px rgba(0,0,0,0.25);"><i class="bi bi-geo-alt-fill"></i></div>`,
-        iconSize: [28, 28],
-        iconAnchor: [14, 14]
-      });
+      async function geocodeLocation(query, defaultFallback) {
+        try {
+          const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&limit=1`;
+          const resp = await fetch(url);
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data && data.features && data.features.length > 0) {
+              const coords = data.features[0].geometry.coordinates;
+              return { lat: coords[1], lng: coords[0] };
+            }
+          }
+        } catch (err) {
+          console.warn("Geocode error for:", query, err);
+        }
+        return defaultFallback;
+      }
 
-      L.marker([baseLat + 0.018, baseLng + 0.012], { icon: jobIcon })
-        .addTo(map)
-        .bindPopup(`<strong>Active Dispatch Zone</strong><br><small>{{ primary_taxi.destination|default:'City Airport T3' }}</small>`);
+      async function setupDriverRoute() {
+        const pickupCoords = await geocodeLocation(sourceQuery, { lat: defaultLat, lng: defaultLng });
+        const dropCoords = await geocodeLocation(destQuery, { lat: defaultLat + 0.025, lng: defaultLng + 0.022 });
+
+        // Radar Pulse Ring around Driver's Base Hub
+        L.circle([pickupCoords.lat, pickupCoords.lng], {
+          color: '#16a34a',
+          fillColor: '#22c55e',
+          fillOpacity: 0.16,
+          radius: 1800,
+          weight: 2,
+          dashArray: '6, 8'
+        }).addTo(map);
+
+        // Driver Vehicle Marker (Pickup Base)
+        const driverIcon = L.divIcon({
+          className: 'custom-driver-pin',
+          html: `<div style="background: #003A40; color: #FFF; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; border: 3px solid #FFF; box-shadow: 0 4px 14px rgba(0,0,0,0.3);"><i class="bi bi-car-front-fill"></i></div>`,
+          iconSize: [40, 40],
+          iconAnchor: [20, 20]
+        });
+
+        const driverMarker = L.marker([pickupCoords.lat, pickupCoords.lng], { icon: driverIcon })
+          .addTo(map)
+          .bindPopup(`<strong>{{ driver_obj.name }} (You &mdash; Active Base)</strong><br><small><i class="bi bi-geo-alt-fill text-success"></i> ${sourceQuery}</small><br><span class="badge bg-dark mt-1">{{ primary_taxi.number|default:'Active Fleet' }}</span>`)
+          .openPopup();
+
+        // Destination Marker
+        const destIcon = L.divIcon({
+          className: 'custom-dest-pin',
+          html: `<div style="background: #D96B43; color: #FFF; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; border: 2.5px solid #FFF; box-shadow: 0 3px 10px rgba(0,0,0,0.25);"><i class="bi bi-geo-alt-fill"></i></div>`,
+          iconSize: [32, 32],
+          iconAnchor: [16, 16]
+        });
+
+        const destMarker = L.marker([dropCoords.lat, dropCoords.lng], { icon: destIcon })
+          .addTo(map)
+          .bindPopup(`<strong>Destination Corridor</strong><br><small><i class="bi bi-flag-fill text-danger"></i> ${destQuery}</small>`);
+
+        // Draw Driving Route Polyline
+        const routeLine = L.polyline([[pickupCoords.lat, pickupCoords.lng], [dropCoords.lat, dropCoords.lng]], {
+          color: '#0284c7',
+          weight: 4,
+          opacity: 0.85,
+          dashArray: '8, 12'
+        }).addTo(map);
+
+        // Fit map bounds to show full corridor
+        const group = L.featureGroup([driverMarker, destMarker, routeLine]);
+        map.fitBounds(group.getBounds().pad(0.25));
+      }
+
+      setupDriverRoute();
 
     } catch (e) {
       console.warn("Driver radar map initialization error:", e);
