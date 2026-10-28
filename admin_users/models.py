@@ -28,6 +28,7 @@ class User(models.Model):
         return f"{self.name} ({self.email})"
     
 class Driver(models.Model):
+    """Task 54: Model named Driver with basic details, status, and taxi_number."""
     STATUS_CHOICES = [
             ('AVAILABLE', 'Available'),
             ('ON_TRIP', 'On Trip'),
@@ -88,6 +89,7 @@ class Taxi(models.Model):
 
 
 class TaxiDetails(models.Model):
+    """Task 54: Model named TaxiDetails along with columns: source, destination, and driver_details (FK)."""
     source = models.CharField(max_length=255)
     destination = models.CharField(max_length=255)
     driver_details = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name='taxi_details')
@@ -107,6 +109,7 @@ TaxiDetail = TaxiDetails
 
 
 class Booking(models.Model):
+    """Task 54: Model named Booking with fields: user, taxi, date, status (Pending)."""
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
         ('Confirmed', 'Confirmed'),
