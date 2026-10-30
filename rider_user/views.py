@@ -257,17 +257,36 @@ def booking_history(request):
     # Task 56: Fetch bookings related to that user
     all_bookings = Booking.objects.filter(user=user_obj).select_related('taxi', 'taxi__driver').order_by('-created_at')
 
-    # Status counts for dashboard summary pills
+    # Task 57: Support user action to cancel a ride
+    if request.method == "POST" and request.POST.get('action') == 'cancel_booking':
+        cancel_booking_id = request.POST.get('booking_id')
+        b_obj = get_object_or_404(Booking, id=cancel_booking_id, user=user_obj)
+        if b_obj.status.lower() in ['pending', 'approved', 'confirmed']:
+            b_obj.status = 'Cancelled'
+            b_obj.save()
+            messages.success(request, f"Booking #BK-{b_obj.id} has been cancelled successfully.")
+        else:
+            messages.warning(request, f"Booking #BK-{b_obj.id} cannot be cancelled as it is already {b_obj.status}.")
+        return redirect('booking-history')
+
+    # Task 57: Display booking status counts (Pending, Approved, Cancelled)
     total_count = all_bookings.count()
     pending_count = all_bookings.filter(status__iexact='Pending').count()
+    approved_count = all_bookings.filter(Q(status__iexact='Approved') | Q(status__iexact='Confirmed')).count()
     confirmed_count = all_bookings.filter(status__iexact='Confirmed').count()
     completed_count = all_bookings.filter(status__iexact='Completed').count()
     cancelled_count = all_bookings.filter(status__iexact='Cancelled').count()
 
-    # Server-side query parameter filter support (?status=pending / confirmed / etc.)
+    # Server-side query parameter filter support (?status=pending / approved / cancelled)
     status_filter = request.GET.get('status', '').strip().lower()
-    if status_filter in ['pending', 'confirmed', 'completed', 'cancelled']:
-        bookings = all_bookings.filter(status__iexact=status_filter)
+    if status_filter == 'pending':
+        bookings = all_bookings.filter(status__iexact='Pending')
+    elif status_filter in ['approved', 'confirmed']:
+        bookings = all_bookings.filter(Q(status__iexact='Approved') | Q(status__iexact='Confirmed'))
+    elif status_filter == 'cancelled':
+        bookings = all_bookings.filter(status__iexact='Cancelled')
+    elif status_filter == 'completed':
+        bookings = all_bookings.filter(status__iexact='Completed')
     else:
         status_filter = 'all'
         bookings = all_bookings
@@ -281,6 +300,7 @@ def booking_history(request):
         "all_bookings": all_bookings,
         "total_bookings": total_count,
         "pending_count": pending_count,
+        "approved_count": approved_count,
         "confirmed_count": confirmed_count,
         "completed_count": completed_count,
         "cancelled_count": cancelled_count,

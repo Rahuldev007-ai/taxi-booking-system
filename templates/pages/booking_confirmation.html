@@ -648,9 +648,24 @@
                   <span class="badge rounded-pill px-3 py-1 font-monospace pill-verified-res">
                     <i class="bi bi-shield-check text-success me-1"></i> VERIFIED RESERVATION
                   </span>
+                  <!-- Task 57: Display booking status (Pending, Approved, Cancelled) -->
+                  {% if booking.status|lower == 'pending' %}
                   <span class="badge bg-warning text-dark font-monospace fw-bold px-3 py-1 rounded-pill" style="font-size: 0.72rem;">
+                    <i class="bi bi-hourglass-split me-1"></i> Status: Pending
+                  </span>
+                  {% elif booking.status|lower == 'approved' or booking.status|lower == 'confirmed' %}
+                  <span class="badge bg-success text-white font-monospace fw-bold px-3 py-1 rounded-pill" style="font-size: 0.72rem;">
+                    <i class="bi bi-check-circle-fill me-1"></i> Status: Approved
+                  </span>
+                  {% elif booking.status|lower == 'cancelled' %}
+                  <span class="badge bg-danger text-white font-monospace fw-bold px-3 py-1 rounded-pill" style="font-size: 0.72rem;">
+                    <i class="bi bi-x-circle-fill me-1"></i> Status: Cancelled
+                  </span>
+                  {% else %}
+                  <span class="badge bg-info text-white font-monospace fw-bold px-3 py-1 rounded-pill" style="font-size: 0.72rem;">
                     Status: {{ booking.status }}
                   </span>
+                  {% endif %}
                 </div>
                 <h1 class="fs-2 fw-extrabold text-white m-0">Booking Confirmed!</h1>
                 <p class="text-white-50 small mt-1 mb-0">

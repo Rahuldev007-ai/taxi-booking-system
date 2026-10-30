@@ -114,8 +114,10 @@ TaxiDetail = TaxiDetails
 
 class Booking(models.Model):
     """Task 54: Model named Booking with fields: user, taxi, date, status (Pending)."""
+    # Task 57: Display booking status (Pending, Approved, Cancelled)
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
+        ('Approved', 'Approved'),
         ('Confirmed', 'Confirmed'),
         ('Completed', 'Completed'),
         ('Cancelled', 'Cancelled'),
@@ -133,6 +135,18 @@ class Booking(models.Model):
         verbose_name = 'Booking'
         verbose_name_plural = 'Bookings'
         ordering = ['-created_at']
+
+    @property
+    def is_pending(self):
+        return self.status.lower() == 'pending'
+
+    @property
+    def is_approved(self):
+        return self.status.lower() in ['approved', 'confirmed']
+
+    @property
+    def is_cancelled(self):
+        return self.status.lower() == 'cancelled'
 
     def __str__(self):
         return f"Booking #{self.id} - {self.user.name} for Taxi {self.taxi.number} ({self.status})"

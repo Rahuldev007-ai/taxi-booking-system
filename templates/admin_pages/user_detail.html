@@ -129,15 +129,26 @@
                                                     <div class="text-muted small font-monospace">+91 {{ b.taxi.driver.mobile }}</div>
                                                 </td>
                                                 <td class="fw-extrabold text-success">&#8377; {{ b.taxi.price }}</td>
+                                                <!-- Task 57: Display booking status (Pending, Approved, Cancelled) -->
                                                 <td>
                                                     {% if b.status|lower == 'pending' %}
-                                                        <span class="nest-badge nest-badge-pending">Pending</span>
-                                                    {% elif b.status|lower == 'confirmed' or b.status|lower == 'approved' %}
-                                                        <span class="nest-badge nest-badge-completed">Confirmed</span>
+                                                        <span class="nest-badge nest-badge-pending">
+                                                            <i class="bi bi-hourglass-split me-1"></i> Pending
+                                                        </span>
+                                                    {% elif b.status|lower == 'approved' or b.status|lower == 'confirmed' %}
+                                                        <span class="nest-badge nest-badge-completed">
+                                                            <i class="bi bi-check-circle-fill me-1"></i> Approved
+                                                        </span>
+                                                    {% elif b.status|lower == 'cancelled' %}
+                                                        <span class="nest-badge nest-badge-offline">
+                                                            <i class="bi bi-x-circle-fill me-1"></i> Cancelled
+                                                        </span>
                                                     {% elif b.status|lower == 'completed' %}
-                                                        <span class="nest-badge nest-badge-completed">Completed</span>
+                                                        <span class="nest-badge nest-badge-completed">
+                                                            <i class="bi bi-shield-fill-check me-1"></i> Completed
+                                                        </span>
                                                     {% else %}
-                                                        <span class="nest-badge nest-badge-offline">{{ b.status }}</span>
+                                                        <span class="nest-badge nest-badge-completed">{{ b.status }}</span>
                                                     {% endif %}
                                                 </td>
                                                 <td class="text-muted small">

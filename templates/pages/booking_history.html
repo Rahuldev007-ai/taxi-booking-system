@@ -128,6 +128,7 @@
   border: 1px solid #FDE68A;
 }
 
+.badge-status-approved,
 .badge-status-confirmed {
   background: #E0F2FE;
   color: #0369A1;
@@ -265,13 +266,13 @@
       </div>
     </div>
 
-    <!-- Summary Stats Row (Clickable Filters) -->
+    <!-- Summary Stats Row (Task 57: Display booking status Pending, Approved, Cancelled) -->
     <div class="row g-3 mb-4">
       <div class="col-6 col-md-3">
         <div class="stat-card-clickable active" id="statCardAll" onclick="filterBookings('all')">
           <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.7rem;">Total Rides</div>
           <div class="fs-3 fw-extrabold text-dark mt-1">{{ total_bookings }}</div>
-          <div class="text-muted small mt-1" style="font-size: 0.75rem;">Lifetime reservations</div>
+          <div class="text-muted small mt-1" style="font-size: 0.75rem;">All reservations</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
@@ -282,17 +283,17 @@
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="stat-card-clickable" id="statCardConfirmed" onclick="filterBookings('confirmed')">
-          <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.7rem;">Confirmed</div>
-          <div class="fs-3 fw-extrabold text-primary mt-1">{{ confirmed_count }}</div>
-          <div class="text-muted small mt-1" style="font-size: 0.75rem;">Active & ready</div>
+        <div class="stat-card-clickable" id="statCardApproved" onclick="filterBookings('approved')">
+          <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.7rem;">Approved</div>
+          <div class="fs-3 fw-extrabold text-primary mt-1">{{ approved_count }}</div>
+          <div class="text-muted small mt-1" style="font-size: 0.75rem;">Confirmed &amp; on route</div>
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <div class="stat-card-clickable" id="statCardCompleted" onclick="filterBookings('completed')">
-          <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.7rem;">Completed</div>
-          <div class="fs-3 fw-extrabold text-success mt-1">{{ completed_count }}</div>
-          <div class="text-muted small mt-1" style="font-size: 0.75rem;">Successfully finished</div>
+        <div class="stat-card-clickable" id="statCardCancelled" onclick="filterBookings('cancelled')">
+          <div class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.05em; font-size: 0.7rem;">Cancelled</div>
+          <div class="fs-3 fw-extrabold text-danger mt-1">{{ cancelled_count }}</div>
+          <div class="text-muted small mt-1" style="font-size: 0.75rem;">Cancelled bookings</div>
         </div>
       </div>
     </div>
@@ -300,7 +301,7 @@
     <!-- Toolbar: Filter Pills, Search & View Switcher -->
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
       
-      <!-- Filter Chips -->
+      <!-- Task 57: Filter Chips (Pending, Approved, Cancelled) -->
       <div class="d-flex flex-wrap align-items-center gap-2">
         <button class="history-filter-pill active" id="filterBtnAll" onclick="filterBookings('all')">
           All ({{ total_bookings }})
@@ -308,15 +309,15 @@
         <button class="history-filter-pill" id="filterBtnPending" onclick="filterBookings('pending')">
           <i class="bi bi-hourglass-split text-warning"></i> Pending ({{ pending_count }})
         </button>
-        <button class="history-filter-pill" id="filterBtnConfirmed" onclick="filterBookings('confirmed')">
-          <i class="bi bi-check-circle-fill text-primary"></i> Confirmed ({{ confirmed_count }})
+        <button class="history-filter-pill" id="filterBtnApproved" onclick="filterBookings('approved')">
+          <i class="bi bi-check-circle-fill text-primary"></i> Approved ({{ approved_count }})
         </button>
-        <button class="history-filter-pill" id="filterBtnCompleted" onclick="filterBookings('completed')">
-          <i class="bi bi-shield-fill-check text-success"></i> Completed ({{ completed_count }})
-        </button>
-        {% if cancelled_count > 0 %}
         <button class="history-filter-pill" id="filterBtnCancelled" onclick="filterBookings('cancelled')">
           <i class="bi bi-x-circle text-danger"></i> Cancelled ({{ cancelled_count }})
+        </button>
+        {% if completed_count > 0 %}
+        <button class="history-filter-pill" id="filterBtnCompleted" onclick="filterBookings('completed')">
+          <i class="bi bi-shield-fill-check text-success"></i> Completed ({{ completed_count }})
         </button>
         {% endif %}
       </div>
@@ -365,13 +366,18 @@
             <div class="col-lg-3 col-md-6">
               <div class="d-flex align-items-center gap-2 mb-2">
                 <span class="fs-6 fw-extrabold text-dark" style="font-family: monospace;">#BK-{{ b.id }}</span>
+                <!-- Task 57: Display booking status (Pending, Approved, Cancelled) -->
                 {% if b.status|lower == 'pending' %}
                   <span class="badge-status badge-status-pending">
                     <i class="bi bi-hourglass-split"></i> Pending
                   </span>
-                {% elif b.status|lower == 'confirmed' %}
-                  <span class="badge-status badge-status-confirmed">
-                    <i class="bi bi-check-circle-fill"></i> Confirmed
+                {% elif b.status|lower == 'approved' or b.status|lower == 'confirmed' %}
+                  <span class="badge-status badge-status-approved">
+                    <i class="bi bi-check-circle-fill"></i> Approved
+                  </span>
+                {% elif b.status|lower == 'cancelled' %}
+                  <span class="badge-status badge-status-cancelled">
+                    <i class="bi bi-x-circle-fill"></i> Cancelled
                   </span>
                 {% elif b.status|lower == 'completed' %}
                   <span class="badge-status badge-status-completed">
@@ -509,12 +515,15 @@
                 <strong class="text-dark">&#8377;{{ b.taxi.price }}</strong>
               </td>
               <td>
+                <!-- Task 57: Display booking status (Pending, Approved, Cancelled) -->
                 {% if b.status|lower == 'pending' %}
-                  <span class="badge-status badge-status-pending">Pending</span>
-                {% elif b.status|lower == 'confirmed' %}
-                  <span class="badge-status badge-status-confirmed">Confirmed</span>
+                  <span class="badge-status badge-status-pending"><i class="bi bi-hourglass-split me-1"></i> Pending</span>
+                {% elif b.status|lower == 'approved' or b.status|lower == 'confirmed' %}
+                  <span class="badge-status badge-status-approved"><i class="bi bi-check-circle-fill me-1"></i> Approved</span>
+                {% elif b.status|lower == 'cancelled' %}
+                  <span class="badge-status badge-status-cancelled"><i class="bi bi-x-circle-fill me-1"></i> Cancelled</span>
                 {% elif b.status|lower == 'completed' %}
-                  <span class="badge-status badge-status-completed">Completed</span>
+                  <span class="badge-status badge-status-completed"><i class="bi bi-shield-fill-check me-1"></i> Completed</span>
                 {% else %}
                   <span class="badge-status badge-status-cancelled">{{ b.status }}</span>
                 {% endif %}
