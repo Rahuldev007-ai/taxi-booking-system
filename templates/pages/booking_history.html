@@ -8,187 +8,220 @@
   /* ==========================================================================
      CABZY LUXURY BOOKING HISTORY & TRIP DOSSIER STYLES
      ========================================================================== */
-  .history-hero {
-    background: linear-gradient(135deg, #003A40 0%, #002226 100%);
-    color: #FFFFFF;
-    border-radius: 24px;
-    padding: 2.5rem 2rem;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 16px 36px rgba(0, 58, 64, 0.15);
-  }
-  .history-hero::after {
-    content: '';
-    position: absolute;
-    top: -60px;
-    right: -60px;
-    width: 240px;
-    height: 240px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(217, 107, 67, 0.22) 0%, transparent 70%);
-    pointer-events: none;
-  }
+ /* ==========================================================================
+   CABZY LUXURY BOOKING HISTORY & TRIP DOSSIER STYLES
+   ========================================================================== */
 
-  .stat-card-clickable {
-    background: #FFFFFF;
-    border: 1px solid rgba(0, 58, 64, 0.08);
-    border-radius: 18px;
-    padding: 1.25rem 1.5rem;
-    box-shadow: 0 6px 18px rgba(0, 58, 64, 0.04);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    cursor: pointer;
-    user-select: none;
-    position: relative;
-  }
-  .stat-card-clickable:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 26px rgba(0, 58, 64, 0.09);
-    border-color: rgba(0, 58, 64, 0.22);
-  }
-  .stat-card-clickable.active {
-    border-color: #003A40;
-    box-shadow: 0 0 0 2px #003A40, 0 10px 24px rgba(0, 58, 64, 0.1);
-  }
+/* Hero Banner Layout */
+.history-hero {
+  background: linear-gradient(135deg, #003A40 0%, #002226 100%);
+  color: #FFFFFF;
+  border-radius: 24px;
+  padding: 2.5rem 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 16px 36px rgba(0, 58, 64, 0.15);
+}
 
-  /* Booking Item Card */
-  .booking-item-card {
-    background: #FFFFFF;
-    border: 1px solid rgba(0, 58, 64, 0.08);
-    border-radius: 20px;
-    padding: 1.5rem;
-    margin-bottom: 1.25rem;
-    box-shadow: 0 4px 14px rgba(0, 58, 64, 0.04);
-    transition: all 0.2s ease;
-    position: relative;
-  }
-  .booking-item-card:hover {
-    border-color: rgba(0, 58, 64, 0.2);
-    box-shadow: 0 12px 28px rgba(0, 58, 64, 0.08);
-  }
-  .booking-item-card.is-latest {
-    border: 2px solid #16a34a;
-    background: linear-gradient(180deg, #FAFCFA 0%, #FFFFFF 100%);
-  }
+.history-hero::after {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(217, 107, 67, 0.22) 0%, transparent 70%);
+  pointer-events: none;
+}
 
-  /* Status Badges */
-  .badge-status {
-    padding: 0.4rem 0.85rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    white-space: nowrap;
-  }
-  .badge-status-pending {
-    background: #FEF3C7;
-    color: #92400E;
-    border: 1px solid #FDE68A;
-  }
-  .badge-status-confirmed {
-    background: #E0F2FE;
-    color: #0369A1;
-    border: 1px solid #BAE6FD;
-  }
-  .badge-status-completed {
-    background: #DCFCE7;
-    color: #15803D;
-    border: 1px solid #BBF7D0;
-  }
-  .badge-status-cancelled {
-    background: #FEE2E2;
-    color: #B91C1C;
-    border: 1px solid #FECACA;
-  }
+/* Interlocking Top Statistic Counter Cards */
+.stat-card-clickable {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 58, 64, 0.08);
+  border-radius: 18px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 6px 18px rgba(0, 58, 64, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
 
-  /* Route Connector Line */
-  .route-track {
-    position: relative;
-    padding-left: 28px;
-  }
-  .route-track::before {
-    content: '';
-    position: absolute;
-    left: 8px;
-    top: 14px;
-    bottom: 14px;
-    width: 2px;
-    border-left: 2px dashed #94a3b8;
-  }
-  .route-point {
-    position: relative;
-    margin-bottom: 10px;
-  }
-  .route-point:last-child {
-    margin-bottom: 0;
-  }
-  .route-dot {
-    position: absolute;
-    left: -28px;
-    top: 3px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.65rem;
-    color: #FFFFFF;
-  }
-  .route-dot.pickup { background: #16a34a; }
-  .route-dot.drop { background: #d96b43; }
+.stat-card-clickable:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 26px rgba(0, 58, 64, 0.09);
+  border-color: rgba(0, 58, 64, 0.22);
+}
 
-  /* Filter Tabs */
-  .history-filter-pill {
-    padding: 0.5rem 1.1rem;
-    border-radius: 999px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    border: 1px solid rgba(0, 58, 64, 0.15);
-    background: #FFFFFF;
-    color: #475569;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    white-space: nowrap;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .history-filter-pill:hover,
-  .history-filter-pill.active {
-    background: #003A40;
-    color: #FFFFFF;
-    border-color: #003A40;
-  }
+.stat-card-clickable.active {
+  border-color: #003A40;
+  box-shadow: 0 0 0 2px #003A40, 0 10px 24px rgba(0, 58, 64, 0.1);
+}
 
-  /* View Mode Switcher */
-  .view-mode-btn {
-    border: 1px solid rgba(0, 58, 64, 0.15);
-    background: #FFFFFF;
-    color: #475569;
-    padding: 0.45rem 0.9rem;
-    font-size: 0.82rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  .view-mode-btn.active {
-    background: #003A40;
-    color: #FFFFFF;
-    border-color: #003A40;
-  }
+/* Integrated Unified Row Search Inputs */
+#bookingSearchInput {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
 
-  /* Table View Enhancements */
-  .history-table-container {
-    background: #FFFFFF;
-    border-radius: 20px;
-    border: 1px solid rgba(0, 58, 64, 0.08);
-    box-shadow: 0 4px 14px rgba(0, 58, 64, 0.04);
-    overflow: hidden;
-  }
+#bookingSearchInput:focus {
+  background-color: #ffffff !important;
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* Unified View Mode Segmented Controls */
+.view-mode-btn {
+  border: 0 !important;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.view-mode-btn.active-view {
+  background-color: #ffffff !important;
+  color: #212529 !important;
+  border-color: rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+  font-weight: 700;
+}
+
+/* Booking Item Card Panels */
+.booking-item-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 58, 64, 0.08);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 4px 14px rgba(0, 58, 64, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-image 0.2s ease;
+  position: relative;
+}
+
+.booking-item-card:hover {
+  border-color: rgba(0, 58, 64, 0.2);
+  box-shadow: 0 12px 28px rgba(0, 58, 64, 0.08);
+}
+
+.booking-item-card.is-latest {
+  border: 2px solid #16a34a;
+  background: linear-gradient(180deg, #FAFCFA 0%, #FFFFFF 100%);
+}
+
+/* Contextual Status Badges */
+.badge-status {
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.badge-status-pending {
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+
+.badge-status-confirmed {
+  background: #E0F2FE;
+  color: #0369A1;
+  border: 1px solid #BAE6FD;
+}
+
+.badge-status-completed {
+  background: #DCFCE7;
+  color: #15803D;
+  border: 1px solid #BBF7D0;
+}
+
+.badge-status-cancelled {
+  background: #FEE2E2;
+  color: #B91C1C;
+  border: 1px solid #FECACA;
+}
+
+/* Route Tracking Connector Lines */
+.route-track {
+  position: relative;
+  padding-left: 28px;
+}
+
+.route-track::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  border-left: 2px dashed #94a3b8;
+}
+
+.route-point {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.route-point:last-child {
+  margin-bottom: 0;
+}
+
+.route-dot {
+  position: absolute;
+  left: -28px;
+  top: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  color: #FFFFFF;
+}
+
+.route-dot.pickup { background: #16a34a; }
+.route-dot.drop { background: #d96b43; }
+
+/* Filter Pill Tags */
+.history-filter-pill {
+  padding: 0.5rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 1px solid rgba(0, 58, 64, 0.15);
+  background: #FFFFFF;
+  color: #475569;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  white-space: nowrap;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.history-filter-pill:hover,
+.history-filter-pill.active {
+  background: #003A40;
+  color: #FFFFFF;
+  border-color: #003A40;
+}
+
+/* Table View Container Wrapper */
+.history-table-container {
+  background: #FFFFFF;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 58, 64, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 58, 64, 0.04);
+  overflow: hidden;
+}
+
 </style>
 {% endblock %}
 
@@ -289,25 +322,26 @@
       </div>
 
       <!-- Search & View Toggle -->
-      <div class="d-flex flex-wrap align-items-center gap-2">
-        <!-- Live Search Input -->
-        <div class="input-group input-group-sm" style="max-width: 240px;">
-          <span class="input-group-text bg-white border-end-0 rounded-start-pill text-muted ps-3">
-            <i class="bi bi-search"></i>
-          </span>
-          <input type="text" id="bookingSearchInput" class="form-control border-start-0 rounded-end-pill py-2 pe-3" placeholder="Search reference, taxi..." onkeyup="searchBookings()">
+      <div class="d-flex flex-row align-items-center justify-content-between gap-3 w-100 bg-white p-2 border rounded-4 shadow-sm" style="max-width: 600px;">
+    <!-- Live Search Input (Expanded to fill space gracefully) -->
+        <div class="input-group input-group-sm flex-grow-1 position-relative">
+            <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted" style="z-index: 5; pointer-events: none;">
+                <i class="bi bi-search"></i>
+            </span>
+            <input type="text" id="bookingSearchInput" class="form-control rounded-pill border py-2 pe-3" style="padding-left: 2.25rem; background-color: #f8f9fa;" placeholder="Search reference, taxi..." onkeyup="searchBookings()">
         </div>
 
-        <!-- View Switcher (Card vs Table) -->
-        <div class="btn-group btn-group-sm rounded-pill overflow-hidden shadow-sm" role="group">
-          <button type="button" class="btn view-mode-btn active" id="cardViewBtn" onclick="setViewMode('cards')">
-            <i class="bi bi-grid-fill me-1"></i> Cards
-          </button>
-          <button type="button" class="btn view-mode-btn" id="tableViewBtn" onclick="setViewMode('table')">
-            <i class="bi bi-table me-1"></i> Table
-          </button>
+        <!-- View Switcher (Clean, unified segmented control pill) -->
+        <div class="d-inline-flex p-1 bg-light rounded-pill border" role="group" aria-label="View mode switcher" style="min-width: 180px;">
+            <button type="button" class="btn btn-sm btn-white rounded-pill px-3 py-1 w-50 active-view shadow-sm view-mode-btn" id="cardViewBtn" onclick="setViewMode('cards')">
+                <i class="bi bi-grid-fill me-1"></i> Cards
+            </button>
+            <button type="button" class="btn btn-sm btn-light border-0 rounded-pill px-3 py-1 w-50 text-muted view-mode-btn" id="tableViewBtn" onclick="setViewMode('table')">
+                <i class="bi bi-table me-1"></i> Table
+            </button>
         </div>
-      </div>
+    </div>
+
 
     </div>
 

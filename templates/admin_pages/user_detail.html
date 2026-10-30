@@ -86,6 +86,77 @@
                             </a>
                         </div>
                     </div>
+
+                    <!-- Task 56: Bookings Related to this User -->
+                    <div class="dashboard-card mb-4 shadow-sm">
+                        <div class="dashboard-card-header d-flex justify-content-between align-items-center py-3 px-4 bg-white border-bottom">
+                            <div>
+                                <span class="nest-eyebrow mb-0">Rider Bookings Roster</span>
+                                <h3 class="fs-5 fw-extrabold m-0 text-dark">Bookings Placed by {{ user_obj.name }}</h3>
+                            </div>
+                            <span class="nest-badge nest-badge-completed font-monospace">
+                                Total: {{ total_user_bookings|default:user_bookings|length }} Bookings
+                            </span>
+                        </div>
+                        <div class="dashboard-card-body p-0">
+                            <div class="table-responsive">
+                                <table class="nest-table w-100">
+                                    <thead>
+                                        <tr>
+                                            <th>Ref #</th>
+                                            <th>Pickup &amp; Drop Route</th>
+                                            <th>Assigned Taxi</th>
+                                            <th>Assigned Driver</th>
+                                            <th>Fare</th>
+                                            <th>Status</th>
+                                            <th>Booking Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for b in user_bookings %}
+                                            <tr>
+                                                <td class="font-monospace fw-bold text-dark">#BK-{{ b.id }}</td>
+                                                <td>
+                                                    <div class="fw-semibold text-dark small"><i class="bi bi-circle-fill text-success" style="font-size: 0.5rem;"></i> {{ b.taxi.source }}</div>
+                                                    <div class="text-muted small"><i class="bi bi-geo-alt-fill text-danger" style="font-size: 0.6rem;"></i> {{ b.taxi.destination }}</div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-light text-dark border font-monospace">{{ b.taxi.number }}</span>
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary small">{{ b.taxi.get_type_display|default:b.taxi.type }}</span>
+                                                </td>
+                                                <td>
+                                                    <div class="fw-bold text-dark">{{ b.taxi.driver.name }}</div>
+                                                    <div class="text-muted small font-monospace">+91 {{ b.taxi.driver.mobile }}</div>
+                                                </td>
+                                                <td class="fw-extrabold text-success">&#8377; {{ b.taxi.price }}</td>
+                                                <td>
+                                                    {% if b.status|lower == 'pending' %}
+                                                        <span class="nest-badge nest-badge-pending">Pending</span>
+                                                    {% elif b.status|lower == 'confirmed' or b.status|lower == 'approved' %}
+                                                        <span class="nest-badge nest-badge-completed">Confirmed</span>
+                                                    {% elif b.status|lower == 'completed' %}
+                                                        <span class="nest-badge nest-badge-completed">Completed</span>
+                                                    {% else %}
+                                                        <span class="nest-badge nest-badge-offline">{{ b.status }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="text-muted small">
+                                                    {{ b.date|date:"d M Y, h:i A" }}
+                                                </td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="7" class="text-center py-4 text-muted">
+                                                    <i class="bi bi-calendar-x fs-2 d-block text-muted mb-2"></i>
+                                                    No bookings found for this customer.
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

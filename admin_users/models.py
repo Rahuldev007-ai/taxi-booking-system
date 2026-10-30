@@ -24,6 +24,10 @@ class User(models.Model):
     def check_password(self, raw_password):
         return check_password(raw_password, self.password)
 
+    def get_user_bookings(self):
+        """Task 56: Fetch bookings related to that user."""
+        return self.bookings.select_related('taxi', 'taxi__driver').all().order_by('-created_at')
+
     def __str__(self):
         return f"{self.name} ({self.email})"
     

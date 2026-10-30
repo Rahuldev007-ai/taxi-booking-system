@@ -667,9 +667,14 @@
             <span class="nest-eyebrow mb-0">Trip Log</span>
             <h3 class="fs-5 fw-extrabold mb-0">Your Recent Journeys</h3>
           </div>
-          <a href="#booking-form-card" class="btn-nest-primary btn-sm py-2 px-3 fs-7">
-            <i class="bi bi-plus-circle me-1"></i> New Booking
-          </a>
+          <div class="d-flex align-items-center gap-2">
+            <a href="{% url 'booking-history' %}" class="btn btn-sm btn-outline-dark rounded-pill py-2 px-3 fs-7">
+              <i class="bi bi-clock-history me-1"></i> Full History
+            </a>
+            <a href="#booking-form-card" class="btn-nest-primary btn-sm py-2 px-3 fs-7">
+              <i class="bi bi-plus-circle me-1"></i> New Booking
+            </a>
+          </div>
         </div>
 
         <div class="table-responsive">
@@ -686,39 +691,40 @@
               </tr>
             </thead>
             <tbody>
+              <!-- Task 56: Fetch and display bookings related to that user -->
+              {% for b in user_bookings %}
               <tr>
-                <td><strong>#CB-9082</strong></td>
-                <td>Central Station, Gate 2</td>
-                <td>International Airport T3</td>
-                <td>Executive Sedan</td>
-                <td>&#8377;450</td>
-                <td><span class="nest-badge nest-badge-completed">Completed</span></td>
+                <td><strong>#BK-{{ b.id }}</strong></td>
+                <td>{{ b.taxi.source }}</td>
+                <td>{{ b.taxi.destination }}</td>
+                <td>{{ b.taxi.get_type_display|default:b.taxi.type }} ({{ b.taxi.number }})</td>
+                <td>&#8377;{{ b.taxi.price }}</td>
+                <td>
+                  {% if b.status|lower == 'pending' %}
+                    <span class="nest-badge nest-badge-pending">Pending</span>
+                  {% elif b.status|lower == 'confirmed' or b.status|lower == 'approved' %}
+                    <span class="nest-badge nest-badge-completed">Confirmed</span>
+                  {% elif b.status|lower == 'completed' %}
+                    <span class="nest-badge nest-badge-completed">Completed</span>
+                  {% else %}
+                    <span class="nest-badge nest-badge-offline">{{ b.status }}</span>
+                  {% endif %}
+                </td>
                 <td class="text-end">
-                  <button class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3">Receipt</button>
+                  <a href="{% url 'booking-confirmation' b.id %}" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3">Receipt</a>
                 </td>
               </tr>
+              {% empty %}
               <tr>
-                <td><strong>#CB-8941</strong></td>
-                <td>Tech Park Building 4</td>
-                <td>Greenwood Avenue 88</td>
-                <td>Eco Mini</td>
-                <td>&#8377;180</td>
-                <td><span class="nest-badge nest-badge-completed">Completed</span></td>
-                <td class="text-end">
-                  <button class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3">Receipt</button>
+                <td colspan="7" class="text-center py-4 text-muted">
+                  <i class="bi bi-clock-history fs-3 d-block mb-2 text-muted"></i>
+                  <p class="mb-2">No bookings found for your account.</p>
+                  <a href="#booking-form-card" class="btn-nest-accent btn-sm py-1 px-3">
+                    <i class="bi bi-plus-circle me-1"></i> Book Your First Taxi
+                  </a>
                 </td>
               </tr>
-              <tr>
-                <td><strong>#CB-9104</strong></td>
-                <td>Downtown Market</td>
-                <td>City Residency 12</td>
-                <td>Luxury SUV</td>
-                <td>&#8377;620</td>
-                <td><span class="nest-badge nest-badge-pending">Driver Assigned</span></td>
-                <td class="text-end">
-                  <button class="btn btn-sm btn-nest-accent py-1 px-3">Live Track</button>
-                </td>
-              </tr>
+              {% endfor %}
             </tbody>
           </table>
         </div>

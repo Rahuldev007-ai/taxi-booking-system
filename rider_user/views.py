@@ -128,6 +128,12 @@ def user_dashboard(request):
     if request.session.get("is_driver"):
         return redirect('driver-dashboard')
     
+    user_id = request.session.get("user_id")
+    user_obj = get_object_or_404(User, id=user_id)
+
+    # Task 56: Fetch bookings related to that user
+    user_bookings = Booking.objects.filter(user=user_obj).select_related('taxi', 'taxi__driver').order_by('-created_at')
+
     source = request.GET.get('source', '').strip()
     destination = request.GET.get('destination', '').strip()
 
@@ -145,6 +151,9 @@ def user_dashboard(request):
         matching_taxis = Taxi.objects.select_related('driver').filter(query).order_by('price')
 
     context = {
+        "user_obj": user_obj,
+        "user_bookings": user_bookings,
+        "user_bookings_count": user_bookings.count(),
         "source": source,
         "destination": destination,
         "searched": searched,
@@ -233,7 +242,7 @@ def booking_confirmation(request, booking_id):
 
 
 def booking_history(request):
-    """Task 55: Create a booking history page for logged-in users with status filters and trip dossiers."""
+    """Task 55 & Task 56: Fetch bookings related to that user with status filters and trip dossiers."""
     if not request.session.get("user_id"):
         return render(request, "pages/login.html", {
             "error_message": "Unauthorized access. Please sign in to view your booking history.",
@@ -244,6 +253,8 @@ def booking_history(request):
 
     user_id = request.session.get("user_id")
     user_obj = get_object_or_404(User, id=user_id)
+
+    # Task 56: Fetch bookings related to that user
     all_bookings = Booking.objects.filter(user=user_obj).select_related('taxi', 'taxi__driver').order_by('-created_at')
 
     # Status counts for dashboard summary pills
@@ -266,6 +277,7 @@ def booking_history(request):
     return render(request, "pages/booking_history.html", {
         "user_obj": user_obj,
         "bookings": bookings,
+        "user_bookings": all_bookings,
         "all_bookings": all_bookings,
         "total_bookings": total_count,
         "pending_count": pending_count,

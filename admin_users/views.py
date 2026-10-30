@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import User, Driver, Taxi
+from .models import User, Driver, Taxi, Booking
 from .forms import TaxiForm
 from django.db.models import Q
 from django.contrib import messages
@@ -161,11 +161,16 @@ def admin_delete_user(request,user_id):
         
     return render(request, 'admin_pages/user_confirm_delete.html', {'user_obj': user_obj})
 
-def admin_user_detail(request,user_id):
+def admin_user_detail(request, user_id):
     user_obj = get_object_or_404(User, id=user_id)
-    
+    # Task 56: Fetch bookings related to that user
+    user_bookings = Booking.objects.filter(user=user_obj).select_related('taxi', 'taxi__driver').order_by('-created_at')
+
     return render(request, 'admin_pages/user_detail.html', {
-        'user_obj': user_obj
+        'user_obj': user_obj,
+        'user_bookings': user_bookings,
+        'total_user_bookings': user_bookings.count(),
+        'admin_full_name': request.session.get('admin_full_name', 'Administrator'),
     })
     
 def admin_drivers(request):
