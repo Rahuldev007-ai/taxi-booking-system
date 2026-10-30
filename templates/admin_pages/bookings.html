@@ -42,65 +42,83 @@
                         <h2 class="fs-5 fw-extrabold m-0">Active & Historical Bookings</h2>
                     </div>
 
-                    <div class="d-flex gap-2">
-                        <input type="text" class="nest-input form-control-sm py-2 px-3" placeholder="Search reference, customer..." style="width: 240px;">
-                        <button class="btn-nest-primary py-1 px-3 fs-7">
+                    <form method="get" action="{% url 'admin_bookings' %}" class="d-flex gap-2">
+                        <input type="text" name="q" value="{{ search_query|default:'' }}" class="nest-input form-control-sm py-2 px-3" placeholder="Search reference, customer, driver, taxi..." style="width: 260px;">
+                        <button type="submit" class="btn-nest-primary py-1 px-3 fs-7">
                             <i class="bi bi-search"></i>
                         </button>
-                    </div>
+                        {% if search_query %}
+                            <a href="{% url 'admin_bookings' %}" class="btn btn-sm btn-outline-secondary py-1 px-2 d-flex align-items-center">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        {% endif %}
+                    </form>
                 </div>
                 <div class="dashboard-card-body p-0">
                     <div class="table-responsive">
-                        <table class="nest-table">
+                        <!-- Task 58: Show relevant taxi and driver details for each booking -->
+                        <table class="nest-table w-100">
                             <thead>
                                 <tr>
                                     <th>Ref #</th>
                                     <th>Customer Info</th>
-                                    <th>Pickup & Dropoff</th>
-                                    <th>Assigned Driver</th>
+                                    <th>Pickup &amp; Dropoff Route</th>
+                                    <th>Assigned Taxi Details</th>
+                                    <th>Assigned Driver Details</th>
                                     <th>Fare Amount</th>
                                     <th>Status</th>
+                                    <th>Booking Date</th>
                                 </tr>
                             </thead>
                             <tbody>
+                                {% for b in bookings %}
                                 <tr>
-                                    <td class="fw-extrabold" style="color: var(--nest-copper);">#CB-8041</td>
+                                    <td class="font-monospace fw-extrabold" style="color: var(--nest-copper);">#BK-{{ b.id }}</td>
                                     <td>
-                                        <div class="fw-extrabold">Rahul Sharma</div>
-                                        <div class="text-muted small">+91 89987-65543</div>
+                                        <div class="fw-bold text-dark">{{ b.user.name }}</div>
+                                        <div class="text-muted small font-monospace">+91 {{ b.user.mobile }}</div>
                                     </td>
                                     <td>
-                                        <div><span class="text-muted me-1">From:</span> <strong>Avenue Hotel, Gate 1</strong></div>
-                                        <div><span class="text-muted me-1">To:</span> <strong>International Airport T3</strong></div>
+                                        <div class="fw-semibold text-dark small"><i class="bi bi-circle-fill text-success" style="font-size: 0.5rem;"></i> {{ b.taxi.source }}</div>
+                                        <div class="text-muted small"><i class="bi bi-geo-alt-fill text-danger" style="font-size: 0.6rem;"></i> {{ b.taxi.destination }}</div>
                                     </td>
+                                    <!-- Relevant Taxi Details -->
                                     <td>
-                                        <div class="fw-bold">Harsh Vardhan</div>
-                                        <div class="text-muted small">Sedan &bull; TX-9012</div>
+                                        <span class="badge bg-dark text-white fw-bold font-monospace">{{ b.taxi.number }}</span>
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary small">{{ b.taxi.get_type_display|default:b.taxi.type }}</span>
                                     </td>
-                                    <td class="fw-extrabold text-success">&#8377; 450.00</td>
+                                    <!-- Relevant Driver Details -->
                                     <td>
-                                        <span class="nest-badge nest-badge-pending">In Progress</span>
+                                        <div class="fw-bold text-dark">{{ b.taxi.driver.name }}</div>
+                                        <div class="text-muted small font-monospace">+91 {{ b.taxi.driver.mobile }}</div>
+                                        <div class="text-muted small font-monospace" style="font-size: 0.68rem;">DL: {{ b.taxi.driver.license_number }}</div>
+                                    </td>
+                                    <td class="fw-extrabold text-success">&#8377; {{ b.taxi.price }}</td>
+                                    <td>
+                                        {% if b.status|lower == 'pending' %}
+                                            <span class="nest-badge nest-badge-pending"><i class="bi bi-hourglass-split me-1"></i> Pending</span>
+                                        {% elif b.status|lower == 'approved' or b.status|lower == 'confirmed' %}
+                                            <span class="nest-badge nest-badge-completed"><i class="bi bi-check-circle-fill me-1"></i> Approved</span>
+                                        {% elif b.status|lower == 'cancelled' %}
+                                            <span class="nest-badge nest-badge-offline"><i class="bi bi-x-circle-fill me-1"></i> Cancelled</span>
+                                        {% elif b.status|lower == 'completed' %}
+                                            <span class="nest-badge nest-badge-completed"><i class="bi bi-shield-fill-check me-1"></i> Completed</span>
+                                        {% else %}
+                                            <span class="nest-badge nest-badge-completed">{{ b.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-muted small font-monospace">
+                                        {{ b.date|date:"d M Y, h:i A" }}
                                     </td>
                                 </tr>
+                                {% empty %}
                                 <tr>
-                                    <td class="fw-extrabold" style="color: var(--nest-copper);">#CB-7910</td>
-                                    <td>
-                                        <div class="fw-extrabold">Anita Roy</div>
-                                        <div class="text-muted small">+91 98223-11400</div>
-                                    </td>
-                                    <td>
-                                        <div><span class="text-muted me-1">From:</span> <strong>Greenwood Society</strong></div>
-                                        <div><span class="text-muted me-1">To:</span> <strong>Tech Park Phase 2</strong></div>
-                                    </td>
-                                    <td>
-                                        <div class="fw-bold">Vikram Singh</div>
-                                        <div class="text-muted small">Mini &bull; KA-04-E-1122</div>
-                                    </td>
-                                    <td class="fw-extrabold text-success">&#8377; 220.00</td>
-                                    <td>
-                                        <span class="nest-badge nest-badge-completed">Completed</span>
+                                    <td colspan="8" class="text-center py-5 text-muted">
+                                        <i class="bi bi-journal-x fs-1 d-block mb-2 text-muted"></i>
+                                        <p class="mb-0">No bookings found matching query.</p>
                                     </td>
                                 </tr>
+                                {% endfor %}
                             </tbody>
                         </table>
                     </div>

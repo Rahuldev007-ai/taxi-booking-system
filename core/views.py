@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from .models import AdminUser
 import random
-from admin_users.models import Driver
+from admin_users.models import Driver, Booking
+from django.db.models import Q
 from django.contrib import messages
 
 def admin_register(request):
@@ -235,4 +236,21 @@ def admin_reset_password(request):
 
 
 def admin_bookings(request):
-    return render(request, 'admin_pages/bookings.html')
+    """Task 58: Show relevant taxi and driver details for each booking in admin bookings directory."""
+    bookings = Booking.objects.select_related('user', 'taxi', 'taxi__driver').all().order_by('-created_at')
+    q = request.GET.get('q', '').strip()
+    if q:
+        bookings = bookings.filter(
+            Q(user__name__icontains=q) |
+            Q(taxi__number__icontains=q) |
+            Q(taxi__driver__name__icontains=q) |
+            Q(taxi__source__icontains=q) |
+            Q(taxi__destination__icontains=q) |
+            Q(status__icontains=q)
+        )
+    return render(request, 'admin_pages/bookings.html', {
+        'bookings': bookings,
+        'total_bookings': bookings.count(),
+        'search_query': q,
+        'admin_full_name': request.session.get('admin_full_name', 'Administrator'),
+    })

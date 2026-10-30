@@ -678,27 +678,39 @@
         </div>
 
         <div class="table-responsive">
-          <table class="nest-table">
+          <!-- Task 58: Show relevant taxi and driver details for each booking -->
+          <table class="nest-table w-100">
             <thead>
               <tr>
                 <th>Booking ID</th>
-                <th>Pickup Location</th>
-                <th>Destination</th>
-                <th>Vehicle Class</th>
-                <th>Fare</th>
+                <th>Route (Pickup &amp; Drop)</th>
+                <th>Assigned Taxi</th>
+                <th>Assigned Driver</th>
+                <th>Fare Price</th>
                 <th>Status</th>
                 <th class="text-end">Action</th>
               </tr>
             </thead>
             <tbody>
-              <!-- Task 56: Fetch and display bookings related to that user -->
               {% for b in user_bookings %}
               <tr>
-                <td><strong>#BK-{{ b.id }}</strong></td>
-                <td>{{ b.taxi.source }}</td>
-                <td>{{ b.taxi.destination }}</td>
-                <td>{{ b.taxi.get_type_display|default:b.taxi.type }} ({{ b.taxi.number }})</td>
-                <td>&#8377;{{ b.taxi.price }}</td>
+                <td class="font-monospace fw-bold text-dark">#BK-{{ b.id }}</td>
+                <td>
+                  <div class="fw-semibold text-dark small"><i class="bi bi-circle-fill text-success" style="font-size: 0.5rem;"></i> {{ b.taxi.source }}</div>
+                  <div class="text-muted small"><i class="bi bi-geo-alt-fill text-danger" style="font-size: 0.6rem;"></i> {{ b.taxi.destination }}</div>
+                </td>
+                <!-- Relevant Taxi Details -->
+                <td>
+                  <span class="badge bg-dark text-white fw-bold font-monospace">{{ b.taxi.number }}</span>
+                  <div class="text-muted small">{{ b.taxi.get_type_display|default:b.taxi.type }}</div>
+                </td>
+                <!-- Relevant Driver Details -->
+                <td>
+                  <div class="fw-bold text-dark small"><i class="bi bi-person-fill text-muted me-1"></i> {{ b.taxi.driver.name }}</div>
+                  <div class="text-muted small font-monospace"><i class="bi bi-telephone-fill text-success me-1"></i> +91 {{ b.taxi.driver.mobile }}</div>
+                  <div class="text-muted small font-monospace" style="font-size: 0.68rem;">DL: {{ b.taxi.driver.license_number }}</div>
+                </td>
+                <td class="fw-extrabold text-success">&#8377;{{ b.taxi.price }}</td>
                 <!-- Task 57: Display booking status (Pending, Approved, Cancelled) -->
                 <td>
                   {% if b.status|lower == 'pending' %}
@@ -722,7 +734,10 @@
                   {% endif %}
                 </td>
                 <td class="text-end">
-                  <a href="{% url 'booking-confirmation' b.id %}" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3">Receipt</a>
+                  <div class="d-inline-flex gap-1">
+                    <a href="{% url 'booking-confirmation' b.id %}" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3">Receipt</a>
+                    <a href="{% url 'user-taxi-detail' b.taxi.id %}" class="btn btn-sm btn-light border rounded-pill py-1 px-2" title="View Taxi"><i class="bi bi-info-circle"></i></a>
+                  </div>
                 </td>
               </tr>
               {% empty %}

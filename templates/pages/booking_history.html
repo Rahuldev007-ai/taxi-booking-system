@@ -414,17 +414,30 @@
               </div>
             </div>
 
-            <!-- Vehicle & Driver Details -->
+            <!-- Task 58: Relevant Taxi Details & Driver Details -->
             <div class="col-lg-3 col-md-6">
-              <div class="d-flex align-items-center gap-2 mb-1">
-                <span class="badge bg-light text-dark border fw-bold small">{{ b.taxi.get_type_display|default:b.taxi.type }}</span>
-                <span class="badge bg-dark text-white fw-bold small" style="font-family: monospace;">{{ b.taxi.number }}</span>
+              <!-- Taxi Details -->
+              <div class="mb-2 pb-2 border-bottom">
+                <div class="text-muted small fw-bold text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Assigned Taxi</div>
+                <div class="d-flex align-items-center gap-1 mt-1">
+                  <span class="badge bg-dark text-white fw-bold font-monospace" style="letter-spacing: 0.05em;">{{ b.taxi.number }}</span>
+                  <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 fw-bold small">{{ b.taxi.get_type_display|default:b.taxi.type }}</span>
+                </div>
               </div>
-              <div class="text-dark small fw-semibold">
-                <i class="bi bi-person-fill text-muted me-1"></i> {{ b.taxi.driver.name }}
-              </div>
-              <div class="text-muted small" style="font-size: 0.75rem;">
-                <i class="bi bi-telephone-fill me-1"></i> +91 {{ b.taxi.driver.mobile }}
+              <!-- Driver Details -->
+              <div>
+                <div class="text-muted small fw-bold text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">Assigned Driver</div>
+                <div class="text-dark small fw-bold text-truncate mt-1">
+                  <i class="bi bi-person-fill text-muted me-1"></i> {{ b.taxi.driver.name }}
+                </div>
+                <div class="text-muted small font-monospace">
+                  <a href="tel:{{ b.taxi.driver.mobile }}" class="text-decoration-none text-muted">
+                    <i class="bi bi-telephone-fill text-success me-1"></i> +91 {{ b.taxi.driver.mobile }}
+                  </a>
+                </div>
+                <div class="text-muted small font-monospace" style="font-size: 0.68rem;">
+                  DL: {{ b.taxi.driver.license_number }}
+                </div>
               </div>
             </div>
 
@@ -499,13 +512,16 @@
                   <i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ b.taxi.source }} &rarr; {{ b.taxi.destination }}
                 </div>
               </td>
+              <!-- Task 58: Relevant Taxi Details -->
               <td>
-                <span class="badge bg-dark text-white fw-bold small" style="font-family: monospace;">{{ b.taxi.number }}</span>
-                <span class="text-muted small ms-1">({{ b.taxi.get_type_display|default:b.taxi.type }})</span>
+                <span class="badge bg-dark text-white fw-bold small font-monospace">{{ b.taxi.number }}</span>
+                <div class="text-muted small">({{ b.taxi.get_type_display|default:b.taxi.type }})</div>
               </td>
+              <!-- Task 58: Relevant Driver Details -->
               <td>
-                <div class="small fw-semibold text-dark">{{ b.taxi.driver.name }}</div>
-                <div class="text-muted small" style="font-size: 0.72rem;">+91 {{ b.taxi.driver.mobile }}</div>
+                <div class="small fw-bold text-dark">{{ b.taxi.driver.name }}</div>
+                <div class="text-muted small font-monospace" style="font-size: 0.72rem;">+91 {{ b.taxi.driver.mobile }}</div>
+                <div class="text-muted small font-monospace" style="font-size: 0.68rem;">DL: {{ b.taxi.driver.license_number }}</div>
               </td>
               <td>
                 <div class="small fw-semibold text-dark">{{ b.date|date:"d M Y" }}</div>
