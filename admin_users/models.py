@@ -148,5 +148,11 @@ class Booking(models.Model):
     def is_cancelled(self):
         return self.status.lower() == 'cancelled'
 
+    def cancel(self):
+        """Allow user to cancel a booking (status -> Cancelled)."""
+        self.status = 'Cancelled'
+        self.save()
+        return self
+
     def __str__(self):
         return f"Booking #{self.id} - {self.user.name} for Taxi {self.taxi.number} ({self.status})"

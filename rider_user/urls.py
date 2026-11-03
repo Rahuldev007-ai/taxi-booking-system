@@ -18,6 +18,7 @@ from .views import (
     confirm_booking,
     booking_confirmation,
     booking_history,
+    cancel_booking,
 )
 
 urlpatterns = [
@@ -36,6 +37,9 @@ urlpatterns = [
     path("user/taxis/<int:taxi_id>/", user_taxi_detail, name="user-taxi-detail"),
     path("user/taxis/<int:taxi_id>/confirm/", confirm_booking, name="confirm-booking"),
     path("user/booking/confirmation/<int:booking_id>/", booking_confirmation, name="booking-confirmation"),
+    path("user/booking/<int:booking_id>/cancel/", cancel_booking, name="cancel-booking"),
+    path("user/bookings/<int:booking_id>/cancel/", cancel_booking, name="user-cancel-booking"),
+    path("booking/<int:booking_id>/cancel/", cancel_booking, name="booking-cancel"),
     path("user/booking-history/", booking_history, name="booking-history"),
     path("user/bookings/", booking_history, name="user-bookings"),
     path("driver/dashboard/", driver_dashboard, name="driver-dashboard"),

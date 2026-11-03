@@ -1,12 +1,266 @@
 {% extends 'components/base.html' %}
 {% load static %}
-{% block title %}CabZy — Premium Taxi & City Mobility{% endblock %}
+{% block title %}CabZy — Premium Taxi & City Mobility
+<style>
+/* ==========================================================================
+   ANIMATED ACTION DROPDOWN COMPONENT WITH HOVER EFFECTS
+   ========================================================================== */
+.custom-action-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Action Dropdown Trigger Button */
+.action-dropdown-btn {
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  padding: 0.36rem 0.95rem !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(0, 58, 64, 0.22) !important;
+  color: #003A40 !important;
+  letter-spacing: 0.02em;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  user-select: none;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.action-dropdown-btn:hover,
+.action-dropdown-btn:focus,
+.show > .action-dropdown-btn {
+  background-color: #003A40 !important;
+  color: #ffffff !important;
+  border-color: #003A40 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 58, 64, 0.18) !important;
+}
+
+/* Rotating arrow icon on open */
+.action-dropdown-btn .dropdown-arrow-icon {
+  font-size: 0.72rem;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-block;
+}
+
+.show > .action-dropdown-btn .dropdown-arrow-icon {
+  transform: rotate(180deg);
+}
+
+/* Floating Animated Dropdown Menu */
+.animated-dropdown-menu {
+  border-radius: 16px !important;
+  background: #ffffff !important;
+  box-shadow: 0 16px 38px rgba(0, 58, 64, 0.16), 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 58, 64, 0.09) !important;
+  min-width: 215px !important;
+  padding: 0.5rem !important;
+  margin-top: 6px !important;
+  z-index: 1060 !important;
+  animation: actionDropdownEntrance 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top right;
+}
+
+@keyframes actionDropdownEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Dropdown Menu Items with Animated Hover Effect */
+.animated-dropdown-item {
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  border-radius: 10px !important;
+  padding: 0.55rem 0.85rem !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer;
+  border: none !important;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.animated-dropdown-item:hover {
+  background-color: #f1f5f9 !important;
+  color: #003A40 !important;
+  transform: translateX(4px);
+}
+
+.animated-dropdown-item i {
+  font-size: 0.95rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animated-dropdown-item:hover i {
+  transform: scale(1.2);
+}
+
+/* Special Danger (Cancel) Item */
+.animated-dropdown-item.dropdown-item-danger {
+  color: #dc2626 !important;
+}
+
+.animated-dropdown-item.dropdown-item-danger:hover {
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
+}
+
+.animated-dropdown-item.dropdown-item-danger:hover i {
+  transform: scale(1.2) rotate(90deg);
+}
+
+/* Prevent vertical clipping in tables */
+.table-responsive {
+  padding-bottom: 2rem;
+}
+</style>
+
+{% endblock %}
 
 {% block extra_css %}
 <!-- Leaflet OpenStreetMap CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 <!-- Real-Time Map Stylesheet -->
 <link rel="stylesheet" href="{% static 'css/realtime_map.css' %}">
+
+<style>
+/* ==========================================================================
+   ANIMATED ACTION DROPDOWN COMPONENT WITH HOVER EFFECTS
+   ========================================================================== */
+.custom-action-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Action Dropdown Trigger Button */
+.action-dropdown-btn {
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  padding: 0.36rem 0.95rem !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(0, 58, 64, 0.22) !important;
+  color: #003A40 !important;
+  letter-spacing: 0.02em;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  user-select: none;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.action-dropdown-btn:hover,
+.action-dropdown-btn:focus,
+.show > .action-dropdown-btn {
+  background-color: #003A40 !important;
+  color: #ffffff !important;
+  border-color: #003A40 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 58, 64, 0.18) !important;
+}
+
+/* Rotating arrow icon on open */
+.action-dropdown-btn .dropdown-arrow-icon {
+  font-size: 0.72rem;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-block;
+}
+
+.show > .action-dropdown-btn .dropdown-arrow-icon {
+  transform: rotate(180deg);
+}
+
+/* Floating Animated Dropdown Menu */
+.animated-dropdown-menu {
+  border-radius: 16px !important;
+  background: #ffffff !important;
+  box-shadow: 0 16px 38px rgba(0, 58, 64, 0.16), 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 58, 64, 0.09) !important;
+  min-width: 215px !important;
+  padding: 0.5rem !important;
+  margin-top: 6px !important;
+  z-index: 1060 !important;
+  animation: actionDropdownEntrance 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top right;
+}
+
+@keyframes actionDropdownEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Dropdown Menu Items with Animated Hover Effect */
+.animated-dropdown-item {
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  border-radius: 10px !important;
+  padding: 0.55rem 0.85rem !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer;
+  border: none !important;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.animated-dropdown-item:hover {
+  background-color: #f1f5f9 !important;
+  color: #003A40 !important;
+  transform: translateX(4px);
+}
+
+.animated-dropdown-item i {
+  font-size: 0.95rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animated-dropdown-item:hover i {
+  transform: scale(1.2);
+}
+
+/* Special Danger (Cancel) Item */
+.animated-dropdown-item.dropdown-item-danger {
+  color: #dc2626 !important;
+}
+
+.animated-dropdown-item.dropdown-item-danger:hover {
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
+}
+
+.animated-dropdown-item.dropdown-item-danger:hover i {
+  transform: scale(1.2) rotate(90deg);
+}
+
+/* Prevent vertical clipping in tables */
+.table-responsive {
+  padding-bottom: 2rem;
+}
+</style>
+
 {% endblock %}
 
 {% block content %}
@@ -734,9 +988,39 @@
                   {% endif %}
                 </td>
                 <td class="text-end">
-                  <div class="d-inline-flex gap-1">
-                    <a href="{% url 'booking-confirmation' b.id %}" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-3">Receipt</a>
-                    <a href="{% url 'user-taxi-detail' b.taxi.id %}" class="btn btn-sm btn-light border rounded-pill py-1 px-2" title="View Taxi"><i class="bi bi-info-circle"></i></a>
+                  <!-- Animated Action Dropdown with Hover Effects -->
+                  <div class="dropdown custom-action-dropdown">
+                    <button class="btn btn-sm action-dropdown-btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      <span>Actions</span>
+                      <i class="bi bi-chevron-down dropdown-arrow-icon"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end animated-dropdown-menu">
+                      <li>
+                        <a class="dropdown-item animated-dropdown-item" href="{% url 'booking-confirmation' b.id %}">
+                          <i class="bi bi-receipt-cutoff text-primary"></i>
+                          <span>View Receipt</span>
+                        </a>
+                      </li>
+                      <li>
+                        <a class="dropdown-item animated-dropdown-item" href="{% url 'user-taxi-detail' b.taxi.id %}">
+                          <i class="bi bi-car-front-fill text-info"></i>
+                          <span>Vehicle Details</span>
+                        </a>
+                      </li>
+                      {% if b.status|lower == 'pending' or b.status|lower == 'approved' or b.status|lower == 'confirmed' %}
+                      <li><hr class="dropdown-divider my-1 opacity-25"></li>
+                      <li>
+                        <form method="post" action="{% url 'cancel-booking' b.id %}" onsubmit="return confirm('Are you sure you want to cancel booking #BK-{{ b.id }}?');">
+                          {% csrf_token %}
+                          <input type="hidden" name="next" value="{% url 'user-dashboard' %}">
+                          <button type="submit" class="dropdown-item animated-dropdown-item dropdown-item-danger">
+                            <i class="bi bi-x-circle-fill text-danger"></i>
+                            <span>Cancel Booking</span>
+                          </button>
+                        </form>
+                      </li>
+                      {% endif %}
+                    </ul>
                   </div>
                 </td>
               </tr>
@@ -875,6 +1159,133 @@
   </div>
 
   {% include 'components/footer.html' %}
+
+<style>
+/* ==========================================================================
+   ANIMATED ACTION DROPDOWN COMPONENT WITH HOVER EFFECTS
+   ========================================================================== */
+.custom-action-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Action Dropdown Trigger Button */
+.action-dropdown-btn {
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  padding: 0.36rem 0.95rem !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(0, 58, 64, 0.22) !important;
+  color: #003A40 !important;
+  letter-spacing: 0.02em;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  user-select: none;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.action-dropdown-btn:hover,
+.action-dropdown-btn:focus,
+.show > .action-dropdown-btn {
+  background-color: #003A40 !important;
+  color: #ffffff !important;
+  border-color: #003A40 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 58, 64, 0.18) !important;
+}
+
+/* Rotating arrow icon on open */
+.action-dropdown-btn .dropdown-arrow-icon {
+  font-size: 0.72rem;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-block;
+}
+
+.show > .action-dropdown-btn .dropdown-arrow-icon {
+  transform: rotate(180deg);
+}
+
+/* Floating Animated Dropdown Menu */
+.animated-dropdown-menu {
+  border-radius: 16px !important;
+  background: #ffffff !important;
+  box-shadow: 0 16px 38px rgba(0, 58, 64, 0.16), 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 58, 64, 0.09) !important;
+  min-width: 215px !important;
+  padding: 0.5rem !important;
+  margin-top: 6px !important;
+  z-index: 1060 !important;
+  animation: actionDropdownEntrance 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top right;
+}
+
+@keyframes actionDropdownEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Dropdown Menu Items with Animated Hover Effect */
+.animated-dropdown-item {
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  border-radius: 10px !important;
+  padding: 0.55rem 0.85rem !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer;
+  border: none !important;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.animated-dropdown-item:hover {
+  background-color: #f1f5f9 !important;
+  color: #003A40 !important;
+  transform: translateX(4px);
+}
+
+.animated-dropdown-item i {
+  font-size: 0.95rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animated-dropdown-item:hover i {
+  transform: scale(1.2);
+}
+
+/* Special Danger (Cancel) Item */
+.animated-dropdown-item.dropdown-item-danger {
+  color: #dc2626 !important;
+}
+
+.animated-dropdown-item.dropdown-item-danger:hover {
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
+}
+
+.animated-dropdown-item.dropdown-item-danger:hover i {
+  transform: scale(1.2) rotate(90deg);
+}
+
+/* Prevent vertical clipping in tables */
+.table-responsive {
+  padding-bottom: 2rem;
+}
+</style>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -905,4 +1316,131 @@
       });
     });
   </script>
+
+<style>
+/* ==========================================================================
+   ANIMATED ACTION DROPDOWN COMPONENT WITH HOVER EFFECTS
+   ========================================================================== */
+.custom-action-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Action Dropdown Trigger Button */
+.action-dropdown-btn {
+  border-radius: 999px !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  padding: 0.36rem 0.95rem !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(0, 58, 64, 0.22) !important;
+  color: #003A40 !important;
+  letter-spacing: 0.02em;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  user-select: none;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.action-dropdown-btn:hover,
+.action-dropdown-btn:focus,
+.show > .action-dropdown-btn {
+  background-color: #003A40 !important;
+  color: #ffffff !important;
+  border-color: #003A40 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 58, 64, 0.18) !important;
+}
+
+/* Rotating arrow icon on open */
+.action-dropdown-btn .dropdown-arrow-icon {
+  font-size: 0.72rem;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-block;
+}
+
+.show > .action-dropdown-btn .dropdown-arrow-icon {
+  transform: rotate(180deg);
+}
+
+/* Floating Animated Dropdown Menu */
+.animated-dropdown-menu {
+  border-radius: 16px !important;
+  background: #ffffff !important;
+  box-shadow: 0 16px 38px rgba(0, 58, 64, 0.16), 0 4px 12px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 58, 64, 0.09) !important;
+  min-width: 215px !important;
+  padding: 0.5rem !important;
+  margin-top: 6px !important;
+  z-index: 1060 !important;
+  animation: actionDropdownEntrance 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: top right;
+}
+
+@keyframes actionDropdownEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Dropdown Menu Items with Animated Hover Effect */
+.animated-dropdown-item {
+  font-size: 0.82rem !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  border-radius: 10px !important;
+  padding: 0.55rem 0.85rem !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  cursor: pointer;
+  border: none !important;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  text-decoration: none;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.animated-dropdown-item:hover {
+  background-color: #f1f5f9 !important;
+  color: #003A40 !important;
+  transform: translateX(4px);
+}
+
+.animated-dropdown-item i {
+  font-size: 0.95rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animated-dropdown-item:hover i {
+  transform: scale(1.2);
+}
+
+/* Special Danger (Cancel) Item */
+.animated-dropdown-item.dropdown-item-danger {
+  color: #dc2626 !important;
+}
+
+.animated-dropdown-item.dropdown-item-danger:hover {
+  background-color: #fef2f2 !important;
+  color: #b91c1c !important;
+}
+
+.animated-dropdown-item.dropdown-item-danger:hover i {
+  transform: scale(1.2) rotate(90deg);
+}
+
+/* Prevent vertical clipping in tables */
+.table-responsive {
+  padding-bottom: 2rem;
+}
+</style>
+
 {% endblock %}

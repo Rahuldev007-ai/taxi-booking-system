@@ -667,7 +667,7 @@
                   </span>
                   {% endif %}
                 </div>
-                <h1 class="fs-2 fw-extrabold text-white m-0">Booking Confirmed!</h1>
+                <h1 class="fs-2 fw-extrabold text-white m-0">{% if booking.status|lower == 'cancelled' %}Booking Cancelled{% else %}Booking Confirmed!{% endif %}</h1>
                 <p class="text-white-50 small mt-1 mb-0">
                   Your ride request is locked in. Driver partner <strong>{{ driver_obj.name }}</strong> has been notified for dispatch.
                 </p>
@@ -949,16 +949,28 @@
             </div>
 
             <!-- 7. PASSENGER NOTICE -->
-            <div class="alert alert-warning py-3 px-4 rounded-4 small mb-4 border-warning">
+            {% if booking.status|lower == 'cancelled' %}
+            <div class="alert alert-danger py-3 px-4 rounded-4 small mb-4 border-danger shadow-sm">
+              <div class="d-flex align-items-start gap-2">
+                <i class="bi bi-x-circle-fill fs-5 mt-1 text-danger"></i>
+                <div class="text-dark">
+                  <strong>Booking Status : Cancelled.</strong> 
+                  This booking #BK-{{ booking.id }} has been marked as <strong>Cancelled</strong>. Vehicle <strong>{{ taxi_obj.number }}</strong> is no longer scheduled for this ride.
+                </div>
+              </div>
+            </div>
+            {% else %}
+            <div class="alert alert-warning py-3 px-4 rounded-4 small mb-4 border-warning shadow-sm">
               <div class="d-flex align-items-start gap-2">
                 <i class="bi bi-exclamation-triangle-fill fs-5 mt-1 text-warning"></i>
                 <div class="text-dark">
-                  <strong>Booking Status : Pending.</strong> 
+                  <strong>Booking Status : {{ booking.status }}.</strong> 
                   Our dispatch server has assigned vehicle <strong>{{ taxi_obj.number }}</strong> for your route from <strong>{{ taxi_obj.source }}</strong> to <strong>{{ taxi_obj.destination }}</strong>.
                   Please show your booking reference <strong>#BK-{{ booking.id }}</strong> or verification PIN <strong>{{ ride_otp }}</strong> when boarding.
                 </div>
               </div>
             </div>
+            {% endif %}
 
             <!-- 8. ACTION BUTTONS (no-print) -->
             <div class="border-top pt-4 no-print">
@@ -987,6 +999,15 @@
                     <i class="bi bi-car-front"></i>
                     <span>Vehicle Info</span>
                   </a>
+                  {% if booking.status|lower == 'pending' or booking.status|lower == 'approved' or booking.status|lower == 'confirmed' %}
+                  <form method="post" action="{% url 'cancel-booking' booking.id %}" class="d-inline" onsubmit="return confirm('Are you sure you want to cancel booking #BK-{{ booking.id }}?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger confirmation-action-btn">
+                      <i class="bi bi-x-circle"></i>
+                      <span>Cancel Booking</span>
+                    </button>
+                  </form>
+                  {% endif %}
                 </div>
               </div>
             </div>

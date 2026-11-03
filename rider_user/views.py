@@ -134,6 +134,18 @@ def user_dashboard(request):
     # Task 56: Fetch bookings related to that user
     user_bookings = Booking.objects.filter(user=user_obj).select_related('taxi', 'taxi__driver').order_by('-created_at')
 
+    # Allow user to cancel a booking (status -> Cancelled)
+    if request.method == "POST" and request.POST.get('action') == 'cancel_booking':
+        booking_id = request.POST.get('booking_id')
+        b_obj = get_object_or_404(Booking, id=booking_id, user=user_obj)
+        if b_obj.status.lower() in ['pending', 'approved', 'confirmed']:
+            b_obj.status = 'Cancelled'
+            b_obj.save()
+            messages.success(request, f"Booking #BK-{b_obj.id} has been cancelled successfully.")
+        else:
+            messages.warning(request, f"Booking #BK-{b_obj.id} cannot be cancelled as it is already {b_obj.status}.")
+        return redirect('user-dashboard')
+
     source = request.GET.get('source', '').strip()
     destination = request.GET.get('destination', '').strip()
 
@@ -307,6 +319,32 @@ def booking_history(request):
         "current_status_filter": status_filter,
         "latest_booking_id": latest_booking_id,
     })
+
+def cancel_booking(request, booking_id):
+    """Allow user to cancel a booking (status -> Cancelled)."""
+    if not request.session.get("user_id"):
+        return render(request, "pages/login.html", {
+            "error_message": "Unauthorized access. Please sign in to cancel your booking.",
+        })
+
+    user_id = request.session.get("user_id")
+    user_obj = get_object_or_404(User, id=user_id)
+    booking_obj = get_object_or_404(Booking, id=booking_id, user=user_obj)
+
+    if booking_obj.status.lower() in ['pending', 'approved', 'confirmed']:
+        booking_obj.status = 'Cancelled'
+        booking_obj.save()
+        messages.success(request, f"Booking #BK-{booking_obj.id} has been cancelled successfully.")
+    elif booking_obj.status.lower() == 'cancelled':
+        messages.info(request, f"Booking #BK-{booking_obj.id} is already cancelled.")
+    else:
+        messages.warning(request, f"Booking #BK-{booking_obj.id} cannot be cancelled as its status is {booking_obj.status}.")
+
+    next_url = request.POST.get('next') or request.GET.get('next') or request.META.get('HTTP_REFERER')
+    if next_url and 'login' not in next_url:
+        return redirect(next_url)
+    return redirect('booking-history')
+
 
 def driver_dashboard(request):
     """Luxury Driver Partner Duty Console with Live Dispatch Roster and Trip Management."""
