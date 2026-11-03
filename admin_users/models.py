@@ -61,6 +61,10 @@ class Driver(models.Model):
     def check_password(self, raw_password):
         return check_password(raw_password, self.password)
 
+    @property
+    def taxi_detail(self):
+        return self.taxi_details.first()
+
     def __str__(self):
         return f"{self.name} (License: {self.license_number})"
 
@@ -105,11 +109,19 @@ class TaxiDetails(models.Model):
         verbose_name = 'Taxi Detail'
         verbose_name_plural = 'Taxi Details'
 
+    @property
+    def driver(self):
+        """Alias property to access driver details."""
+        return self.driver_details
+
+    @driver.setter
+    def driver(self, value):
+        self.driver_details = value
+
     def __str__(self):
         return f"{self.source} to {self.destination} (Driver: {self.driver_details.name if self.driver_details else 'None'})"
 
 
-TaxiDetail = TaxiDetails
 
 
 class Booking(models.Model):
@@ -154,5 +166,19 @@ class Booking(models.Model):
         self.save()
         return self
 
+    @property
+    def taxi_details(self):
+        """Alias property to access taxi details."""
+        return self.taxi
+
     def __str__(self):
         return f"Booking #{self.id} - {self.user.name} for Taxi {self.taxi.number} ({self.status})"
+
+# Task 54 & Task 60: Module aliases for compatibility across naming conventions
+TaxiDetail = TaxiDetails
+taxi_details = TaxiDetails
+Taxi_Details = TaxiDetails
+taxi_detail = TaxiDetails
+driver = Driver
+booking = Booking
+taxi = Taxi
