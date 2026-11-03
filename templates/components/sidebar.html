@@ -14,6 +14,10 @@
                     <i class="bi bi-grid-1x2-fill sidebar-link-icon"></i>
                     <span>Duty Dashboard</span>
                 </a>
+                <a href="{% url 'driver-bookings' %}" class="sidebar-link {% if request.resolver_match.url_name == 'driver-bookings' or request.resolver_match.url_name == 'driver-bookings-alt' or request.resolver_match.url_name == 'driver-assigned-bookings' %}active{% endif %}">
+                    <i class="bi bi-journal-check sidebar-link-icon"></i>
+                    <span>Assigned Bookings</span>
+                </a>
                 <a href="{% url 'driver-profile' %}" class="sidebar-link {% if request.resolver_match.url_name == 'driver-profile' or request.resolver_match.url_name == 'driver-profile-alt' %}active{% endif %}">
                     <i class="bi bi-person-vcard-fill sidebar-link-icon"></i>
                     <span>My Profile</span>
@@ -92,6 +96,10 @@
                 <a href="{% url 'driver-dashboard' %}" class="sidebar-link {% if request.resolver_match.url_name == 'driver-dashboard' or request.resolver_match.url_name == 'driver-dashboard-alt' %}active{% endif %}">
                     <i class="bi bi-grid-1x2-fill sidebar-link-icon"></i>
                     <span>Duty Dashboard</span>
+                </a>
+                <a href="{% url 'driver-bookings' %}" class="sidebar-link {% if request.resolver_match.url_name == 'driver-bookings' or request.resolver_match.url_name == 'driver-bookings-alt' or request.resolver_match.url_name == 'driver-assigned-bookings' %}active{% endif %}">
+                    <i class="bi bi-journal-check sidebar-link-icon"></i>
+                    <span>Assigned Bookings</span>
                 </a>
                 <a href="{% url 'driver-profile' %}" class="sidebar-link {% if request.resolver_match.url_name == 'driver-profile' or request.resolver_match.url_name == 'driver-profile-alt' %}active{% endif %}">
                     <i class="bi bi-person-vcard-fill sidebar-link-icon"></i>

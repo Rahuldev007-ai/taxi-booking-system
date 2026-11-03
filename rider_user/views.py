@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
 from admin_users.models import User, Driver, Taxi, Booking
 from django.utils import timezone
 from datetime import datetime
@@ -429,6 +430,114 @@ def driver_profile(request):
     return render(request, "pages/driver_profile.html", {
         "driver_obj": driver_obj
     })
+
+
+def driver_bookings(request):
+    """Task 61: Create view to fetch bookings assigned to the logged-in driver."""
+    if not request.session.get("user_id") or not request.session.get("is_driver"):
+        return render(request, "pages/login.html", {
+            "error_message": "Unauthorized access. Driver sign in required.",
+        })
+
+    driver_obj = get_object_or_404(Driver, id=request.session["user_id"])
+
+    # Handle Trip Action (Accept/Complete/Cancel)
+    if request.method == "POST":
+        booking_id = request.POST.get("booking_id")
+        action = request.POST.get("action")
+        if booking_id and action:
+            booking = get_object_or_404(Booking, id=booking_id, taxi__driver=driver_obj)
+            if action in ["confirm", "accept"]:
+                booking.status = "Approved"
+                booking.save()
+                driver_obj.status = "ON_TRIP"
+                driver_obj.save()
+                messages.success(request, f"Ride #BK-{booking.id} accepted! Status updated to Approved.")
+            elif action == "complete":
+                booking.status = "Completed"
+                booking.save()
+                driver_obj.status = "AVAILABLE"
+                driver_obj.save()
+                messages.success(request, f"Ride #BK-{booking.id} completed successfully! Fare recorded in wallet.")
+            elif action == "cancel":
+                booking.status = "Cancelled"
+                booking.save()
+                messages.warning(request, f"Ride #BK-{booking.id} has been marked as Cancelled.")
+            return redirect('driver-bookings')
+
+    # Fetch bookings assigned to the logged-in driver
+    all_assigned_bookings = Booking.objects.filter(taxi__driver=driver_obj).select_related('taxi', 'user').order_by('-created_at')
+
+    # Support query parameter filtering (status and search)
+    status_filter = request.GET.get('status', '').strip().lower()
+    q = request.GET.get('q', '').strip()
+
+    bookings = all_assigned_bookings
+    if status_filter in ['pending', 'approved', 'confirmed', 'completed', 'cancelled']:
+        if status_filter in ['approved', 'confirmed']:
+            bookings = bookings.filter(Q(status__iexact='Approved') | Q(status__iexact='Confirmed'))
+        else:
+            bookings = bookings.filter(status__iexact=status_filter)
+
+    if q:
+        bookings = bookings.filter(
+            Q(user__name__icontains=q) |
+            Q(user__mobile__icontains=q) |
+            Q(taxi__source__icontains=q) |
+            Q(taxi__destination__icontains=q) |
+            Q(taxi__number__icontains=q) |
+            Q(status__icontains=q)
+        )
+
+    # Metrics
+    total_assigned = all_assigned_bookings.count()
+    pending_count = all_assigned_bookings.filter(status__iexact='Pending').count()
+    active_count = all_assigned_bookings.filter(Q(status__iexact='Confirmed') | Q(status__iexact='Approved')).count()
+    completed_count = all_assigned_bookings.filter(status__iexact='Completed').count()
+    cancelled_count = all_assigned_bookings.filter(status__iexact='Cancelled').count()
+
+    # Support JSON API response if requested
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+        data = []
+        for b in bookings:
+            data.append({
+                'id': b.id,
+                'passenger_name': b.user.name,
+                'passenger_phone': b.user.mobile,
+                'pickup': b.taxi.source,
+                'dropoff': b.taxi.destination,
+                'taxi_number': b.taxi.number,
+                'taxi_type': b.taxi.type,
+                'fare': str(b.taxi.price),
+                'status': b.status,
+                'date': b.date.strftime("%d %b %Y, %I:%M %p") if b.date else None,
+            })
+        return JsonResponse({
+            'success': True,
+            'driver_id': driver_obj.id,
+            'driver_name': driver_obj.name,
+            'total_bookings': total_assigned,
+            'bookings': data
+        })
+
+    return render(request, "pages/driver_bookings.html", {
+        "driver_obj": driver_obj,
+        "bookings": bookings,
+        "all_assigned_bookings": all_assigned_bookings,
+        "total_assigned": total_assigned,
+        "pending_count": pending_count,
+        "active_count": active_count,
+        "completed_count": completed_count,
+        "cancelled_count": cancelled_count,
+        "current_status_filter": status_filter,
+        "search_query": q,
+    })
+
+
+# Task 61: View aliases
+fetch_driver_bookings = driver_bookings
+assigned_driver_bookings = driver_bookings
+
 
 def driver_login(request):
     if request.session.get("user_id") and request.session.get("is_driver"):

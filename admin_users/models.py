@@ -65,6 +65,10 @@ class Driver(models.Model):
     def taxi_detail(self):
         return self.taxi_details.first()
 
+    def get_assigned_bookings(self):
+        """Task 61: Fetch bookings assigned to the logged-in driver."""
+        return Booking.objects.filter(taxi__driver=self).select_related('taxi', 'user').order_by('-created_at')
+
     def __str__(self):
         return f"{self.name} (License: {self.license_number})"
 
