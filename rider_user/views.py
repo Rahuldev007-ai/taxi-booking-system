@@ -370,7 +370,7 @@ def driver_dashboard(request):
         action = request.POST.get("action")
         if booking_id and action:
             booking = get_object_or_404(Booking, id=booking_id, taxi__driver=driver_obj)
-            if action == "confirm":
+            if action in ["confirm", "accept"]:
                 booking.status = "Confirmed"
                 booking.save()
                 driver_obj.status = "ON_TRIP"
@@ -382,10 +382,10 @@ def driver_dashboard(request):
                 driver_obj.status = "AVAILABLE"
                 driver_obj.save()
                 messages.success(request, f"Ride #BK-{booking.id} completed successfully! Fare recorded in wallet.")
-            elif action == "cancel":
+            elif action in ["cancel", "reject", "decline"]:
                 booking.status = "Cancelled"
                 booking.save()
-                messages.warning(request, f"Ride #BK-{booking.id} has been marked as Cancelled.")
+                messages.warning(request, f"Ride #BK-{booking.id} has been marked as Rejected/Cancelled.")
             return redirect('driver-dashboard')
 
     # Fetch assigned taxis for this driver
@@ -471,10 +471,10 @@ def driver_bookings(request):
                 driver_obj.status = "AVAILABLE"
                 driver_obj.save()
                 messages.success(request, f"Ride #BK-{booking.id} completed successfully! Fare recorded in wallet.")
-            elif action == "cancel":
+            elif action in ["cancel", "reject", "decline"]:
                 booking.status = "Cancelled"
                 booking.save()
-                messages.warning(request, f"Ride #BK-{booking.id} has been marked as Cancelled.")
+                messages.warning(request, f"Ride #BK-{booking.id} has been marked as Rejected/Cancelled.")
             return redirect('driver-bookings')
 
     # Fetch bookings assigned to the logged-in driver
@@ -621,6 +621,60 @@ def pending_bookings(request):
 # Task 62: Pending bookings view aliases
 filter_pending_bookings = pending_bookings
 driver_pending_bookings = pending_bookings
+
+
+
+def accept_booking(request, booking_id):
+    """Task 64: Accept booking view (status -> Approved/Confirmed)."""
+    booking = get_object_or_404(Booking, id=booking_id)
+    booking.status = "Approved"
+    booking.save()
+    if booking.taxi and hasattr(booking.taxi, 'driver') and booking.taxi.driver:
+        booking.taxi.driver.status = "ON_TRIP"
+        booking.taxi.driver.save()
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+        return JsonResponse({
+            'success': True,
+            'booking_id': booking.id,
+            'status': booking.status,
+            'message': f"Booking #{booking.id} accepted successfully."
+        })
+
+    messages.success(request, f"Booking #{booking.id} accepted successfully! Status updated to Approved.")
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    if request.session.get('is_driver'):
+        return redirect('driver-bookings')
+    return redirect('admin_bookings')
+
+
+def reject_booking(request, booking_id):
+    """Task 64: Reject booking view (status -> Cancelled/Rejected)."""
+    booking = get_object_or_404(Booking, id=booking_id)
+    booking.status = "Cancelled"
+    booking.save()
+    if booking.taxi and hasattr(booking.taxi, 'driver') and booking.taxi.driver:
+        if booking.taxi.driver.status == "ON_TRIP":
+            booking.taxi.driver.status = "AVAILABLE"
+            booking.taxi.driver.save()
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+        return JsonResponse({
+            'success': True,
+            'booking_id': booking.id,
+            'status': booking.status,
+            'message': f"Booking #{booking.id} rejected."
+        })
+
+    messages.warning(request, f"Booking #{booking.id} has been rejected.")
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    if request.session.get('is_driver'):
+        return redirect('driver-bookings')
+    return redirect('admin_bookings')
 
 def driver_login(request):
     if request.session.get("user_id") and request.session.get("is_driver"):

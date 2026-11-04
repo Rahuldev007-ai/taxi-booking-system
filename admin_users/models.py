@@ -141,6 +141,7 @@ class Booking(models.Model):
         ('Confirmed', 'Confirmed'),
         ('Completed', 'Completed'),
         ('Cancelled', 'Cancelled'),
+        ('Rejected', 'Rejected'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')
@@ -173,6 +174,29 @@ class Booking(models.Model):
         self.status = 'Cancelled'
         self.save()
         return self
+
+    def accept(self):
+        """Task 64: Accept booking (status -> Approved)."""
+        self.status = 'Approved'
+        self.save()
+        if self.taxi and hasattr(self.taxi, 'driver') and self.taxi.driver:
+            self.taxi.driver.status = 'ON_TRIP'
+            self.taxi.driver.save()
+        return self
+
+    def reject(self):
+        """Task 64: Reject booking (status -> Cancelled)."""
+        self.status = 'Cancelled'
+        self.save()
+        if self.taxi and hasattr(self.taxi, 'driver') and self.taxi.driver:
+            if self.taxi.driver.status == 'ON_TRIP':
+                self.taxi.driver.status = 'AVAILABLE'
+                self.taxi.driver.save()
+        return self
+
+    @property
+    def is_rejected(self):
+        return self.status.lower() in ['cancelled', 'rejected']
 
     @classmethod
     def get_pending_bookings(cls):

@@ -84,6 +84,7 @@
                                     <th>Price</th>
                                     <th>Status</th>
                                     <th>Booking Date</th>
+                                    <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -126,10 +127,31 @@
                                     <td class="text-muted small font-monospace">
                                         {{ b.date|date:"d M Y, h:i A" }}
                                     </td>
+                                    <!-- Task 64: Add "Accept" and "Reject" buttons for pending bookings -->
+                                    <td class="text-end">
+                                        {% if b.status|lower == 'pending' %}
+                                        <div class="d-flex align-items-center justify-content-end gap-1">
+                                            <form method="post" action="{% url 'booking-accept' b.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-success rounded-pill px-2 py-1 fw-bold btn-accept" style="font-size: 0.72rem;">
+                                                    <i class="bi bi-check-lg"></i> Accept
+                                                </button>
+                                            </form>
+                                            <form method="post" action="{% url 'booking-reject' b.id %}" class="d-inline" onsubmit="return confirm('Reject booking #BK-{{ b.id }}?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-2 py-1 fw-bold btn-reject" style="font-size: 0.72rem;">
+                                                    <i class="bi bi-x-lg"></i> Reject
+                                                </button>
+                                            </form>
+                                        </div>
+                                        {% else %}
+                                        <span class="text-muted small">—</span>
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 {% empty %}
                                 <tr>
-                                    <td colspan="8" class="text-center py-5 text-muted">
+                                    <td colspan="9" class="text-center py-5 text-muted">
                                         <i class="bi bi-journal-x fs-1 d-block mb-2 text-muted"></i>
                                         <p class="mb-0">No bookings found matching query.</p>
                                     </td>

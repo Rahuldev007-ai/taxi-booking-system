@@ -661,23 +661,22 @@
                                     <div class="col-lg-3 col-md-12 text-lg-end">
                                         <div class="d-flex flex-wrap align-items-center justify-content-lg-end gap-2">
                                             {% if b.status|lower == 'pending' %}
-                                                <!-- Accept Trip Form -->
+                                                <!-- Task 64: Add "Accept" and "Reject" buttons -->
                                                 <form method="post" action="{% url 'driver-dashboard' %}" class="d-inline">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="booking_id" value="{{ b.id }}">
-                                                    <input type="hidden" name="action" value="confirm">
-                                                    <button type="submit" class="btn-driver-accept shadow-sm">
-                                                        <i class="bi bi-check-lg"></i> Accept Ride
+                                                    <input type="hidden" name="action" value="accept">
+                                                    <button type="submit" class="btn btn-sm btn-success rounded-pill px-3 py-1 fw-bold btn-driver-accept btn-accept shadow-sm">
+                                                        <i class="bi bi-check-lg me-1"></i> Accept
                                                     </button>
                                                 </form>
 
-                                                <!-- Reject Trip Form -->
-                                                <form method="post" action="{% url 'driver-dashboard' %}" class="d-inline" onsubmit="return confirm('Are you sure you want to decline this ride request?');">
+                                                <form method="post" action="{% url 'driver-dashboard' %}" class="d-inline" onsubmit="return confirm('Are you sure you want to reject this ride request?');">
                                                     {% csrf_token %}
                                                     <input type="hidden" name="booking_id" value="{{ b.id }}">
-                                                    <input type="hidden" name="action" value="cancel">
-                                                    <button type="submit" class="btn btn-outline-danger btn-driver-action-sm">
-                                                        Decline
+                                                    <input type="hidden" name="action" value="reject">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold btn-driver-reject btn-reject">
+                                                        <i class="bi bi-x-lg me-1"></i> Reject
                                                     </button>
                                                 </form>
 
