@@ -184,6 +184,39 @@ class Booking(models.Model):
         """Task 62: Filter bookings with 'Pending' status."""
         return cls.objects.filter(status__iexact='Pending')
 
+    # Task 63: Direct properties to display taxi, user name, source, destination, and price
+    @property
+    def user_name(self):
+        """Task 63: Property to display user name directly."""
+        return self.user.name if self.user else ""
+
+    @property
+    def source(self):
+        """Task 63: Property to display source directly."""
+        return self.taxi.source if self.taxi else ""
+
+    @property
+    def destination(self):
+        """Task 63: Property to display destination directly."""
+        return self.taxi.destination if self.taxi else ""
+
+    @property
+    def price(self):
+        """Task 63: Property to display price directly."""
+        return self.taxi.price if self.taxi else None
+
+    def get_booking_details(self):
+        """Task 63: Display taxi, user name, source, destination, and price."""
+        return {
+            'taxi': self.taxi.number if self.taxi else '',
+            'taxi_number': self.taxi.number if self.taxi else '',
+            'taxi_obj': self.taxi,
+            'user_name': self.user_name,
+            'source': self.source,
+            'destination': self.destination,
+            'price': self.price,
+        }
+
     @property
     def taxi_details(self):
         """Alias property to access taxi details."""
