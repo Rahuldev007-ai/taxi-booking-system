@@ -395,6 +395,18 @@ def driver_dashboard(request):
     # Fetch real bookings assigned to this driver's taxi
     assigned_bookings = Booking.objects.filter(taxi__driver=driver_obj).select_related('taxi', 'user').order_by('-created_at')
 
+    # Task 62: Filter bookings with 'Pending' status and other states
+    status_filter = request.GET.get('status', '').strip().lower()
+    display_bookings = assigned_bookings
+    if status_filter == 'pending':
+        display_bookings = assigned_bookings.filter(status__iexact='Pending')
+    elif status_filter in ['confirmed', 'approved', 'active']:
+        display_bookings = assigned_bookings.filter(Q(status__iexact='Confirmed') | Q(status__iexact='Approved'))
+    elif status_filter == 'completed':
+        display_bookings = assigned_bookings.filter(status__iexact='Completed')
+    elif status_filter == 'cancelled':
+        display_bookings = assigned_bookings.filter(status__iexact='Cancelled')
+
     total_assigned = assigned_bookings.count()
     pending_count = assigned_bookings.filter(status__iexact='Pending').count()
     active_count = assigned_bookings.filter(status__iexact='Confirmed').count()
@@ -411,7 +423,7 @@ def driver_dashboard(request):
         "driver_obj": driver_obj,
         "assigned_taxis": assigned_taxis,
         "primary_taxi": primary_taxi,
-        "bookings": assigned_bookings,
+        "bookings": display_bookings,
         "total_assigned": total_assigned,
         "pending_count": pending_count,
         "active_count": active_count,
@@ -538,6 +550,72 @@ def driver_bookings(request):
 fetch_driver_bookings = driver_bookings
 assigned_driver_bookings = driver_bookings
 
+
+
+
+def pending_bookings(request):
+    """Task 62: Filter bookings with 'Pending' status."""
+    driver_obj = None
+    if request.session.get("user_id") and request.session.get("is_driver"):
+        driver_obj = Driver.objects.filter(id=request.session["user_id"]).first()
+
+    if driver_obj:
+        all_assigned = Booking.objects.filter(taxi__driver=driver_obj).select_related('taxi', 'user')
+        pending_list = all_assigned.filter(status__iexact='Pending').order_by('-created_at')
+        total_assigned = all_assigned.count()
+        pending_count = pending_list.count()
+        active_count = all_assigned.filter(Q(status__iexact='Confirmed') | Q(status__iexact='Approved')).count()
+        completed_count = all_assigned.filter(status__iexact='Completed').count()
+        cancelled_count = all_assigned.filter(status__iexact='Cancelled').count()
+    else:
+        pending_list = Booking.objects.filter(status__iexact='Pending').select_related('taxi', 'user', 'taxi__driver').order_by('-created_at')
+        total_assigned = pending_list.count()
+        pending_count = total_assigned
+        active_count = 0
+        completed_count = 0
+        cancelled_count = 0
+
+    # Handle JSON API request
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'application/json' in request.headers.get('Accept', ''):
+        data = []
+        for b in pending_list:
+            data.append({
+                'id': b.id,
+                'taxi': b.taxi.number if b.taxi else '',
+                'taxi_type': b.taxi.type if b.taxi else '',
+                'user_name': b.user.name if b.user else '',
+                'passenger_name': b.user.name if b.user else '',
+                'passenger_phone': b.user.mobile if b.user else '',
+                'source': b.taxi.source if b.taxi else '',
+                'destination': b.taxi.destination if b.taxi else '',
+                'price': str(b.taxi.price) if b.taxi else '0.00',
+                'status': b.status,
+                'date': b.date.strftime("%d %b %Y, %I:%M %p") if b.date else None,
+            })
+        return JsonResponse({
+            'success': True,
+            'status_filtered': 'Pending',
+            'count': pending_list.count(),
+            'bookings': data
+        })
+
+    return render(request, "pages/driver_bookings.html", {
+        "driver_obj": driver_obj,
+        "bookings": pending_list,
+        "all_assigned_bookings": pending_list,
+        "total_assigned": total_assigned,
+        "pending_count": pending_count,
+        "active_count": active_count,
+        "completed_count": completed_count,
+        "cancelled_count": cancelled_count,
+        "current_status_filter": "pending",
+        "search_query": "",
+    })
+
+
+# Task 62: Pending bookings view aliases
+filter_pending_bookings = pending_bookings
+driver_pending_bookings = pending_bookings
 
 def driver_login(request):
     if request.session.get("user_id") and request.session.get("is_driver"):

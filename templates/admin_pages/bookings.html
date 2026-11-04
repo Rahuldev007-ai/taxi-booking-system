@@ -42,6 +42,22 @@
                         <h2 class="fs-5 fw-extrabold m-0">Active & Historical Bookings</h2>
                     </div>
 
+                    <!-- Task 62: Filter bookings with "Pending" status and other states -->
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        <a href="{% url 'admin_bookings' %}" class="btn btn-sm {% if not current_status %}btn-dark{% else %}btn-outline-secondary{% endif %} rounded-pill px-3 fw-bold">
+                            All ({{ total_all|default:total_bookings }})
+                        </a>
+                        <a href="{% url 'admin_bookings' %}?status=pending" class="btn btn-sm {% if current_status == 'pending' %}btn-warning text-dark{% else %}btn-outline-warning text-dark{% endif %} rounded-pill px-3 fw-bold">
+                            <i class="bi bi-hourglass-split me-1"></i> Pending ({{ pending_count }})
+                        </a>
+                        <a href="{% url 'admin_bookings' %}?status=approved" class="btn btn-sm {% if current_status == 'approved' or current_status == 'confirmed' %}btn-primary{% else %}btn-outline-primary{% endif %} rounded-pill px-3 fw-bold">
+                            <i class="bi bi-check-circle-fill me-1"></i> Approved ({{ approved_count }})
+                        </a>
+                        <a href="{% url 'admin_bookings' %}?status=completed" class="btn btn-sm {% if current_status == 'completed' %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill px-3 fw-bold">
+                            <i class="bi bi-shield-fill-check me-1"></i> Completed ({{ completed_count }})
+                        </a>
+                    </div>
+
                     <form method="get" action="{% url 'admin_bookings' %}" class="d-flex gap-2">
                         <input type="text" name="q" value="{{ search_query|default:'' }}" class="nest-input form-control-sm py-2 px-3" placeholder="Search reference, customer, driver, taxi..." style="width: 260px;">
                         <button type="submit" class="btn-nest-primary py-1 px-3 fs-7">

@@ -69,6 +69,10 @@ class Driver(models.Model):
         """Task 61: Fetch bookings assigned to the logged-in driver."""
         return Booking.objects.filter(taxi__driver=self).select_related('taxi', 'user').order_by('-created_at')
 
+    def get_pending_bookings(self):
+        """Task 62: Filter bookings with 'Pending' status assigned to the logged-in driver."""
+        return self.get_assigned_bookings().filter(status__iexact='Pending')
+
     def __str__(self):
         return f"{self.name} (License: {self.license_number})"
 
@@ -169,6 +173,16 @@ class Booking(models.Model):
         self.status = 'Cancelled'
         self.save()
         return self
+
+    @classmethod
+    def get_pending_bookings(cls):
+        """Task 62: Filter bookings with 'Pending' status."""
+        return cls.objects.filter(status__iexact='Pending').select_related('taxi', 'user').order_by('-created_at')
+
+    @classmethod
+    def filter_pending(cls):
+        """Task 62: Filter bookings with 'Pending' status."""
+        return cls.objects.filter(status__iexact='Pending')
 
     @property
     def taxi_details(self):

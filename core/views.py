@@ -235,9 +235,19 @@ def admin_reset_password(request):
     })
 
 
-def admin_bookings(request):
-    """Task 58: Show relevant taxi and driver details for each booking in admin bookings directory."""
-    bookings = Booking.objects.select_related('user', 'taxi', 'taxi__driver').all().order_by('-created_at')
+def admin_bookings(request, status_filter=None):
+    """Task 58 & Task 62: Show relevant taxi and driver details, filter by status (Pending, etc.)."""
+    all_bookings = Booking.objects.select_related('user', 'taxi', 'taxi__driver').all().order_by('-created_at')
+    
+    # Filter by status if provided in URL or GET params
+    status = (status_filter or request.GET.get('status', '')).strip().lower()
+    bookings = all_bookings
+    if status:
+        if status in ['approved', 'confirmed']:
+            bookings = bookings.filter(Q(status__iexact='Approved') | Q(status__iexact='Confirmed'))
+        else:
+            bookings = bookings.filter(status__iexact=status)
+
     q = request.GET.get('q', '').strip()
     if q:
         bookings = bookings.filter(
@@ -248,9 +258,21 @@ def admin_bookings(request):
             Q(taxi__destination__icontains=q) |
             Q(status__icontains=q)
         )
+
+    pending_count = all_bookings.filter(status__iexact='Pending').count()
+    approved_count = all_bookings.filter(Q(status__iexact='Approved') | Q(status__iexact='Confirmed')).count()
+    completed_count = all_bookings.filter(status__iexact='Completed').count()
+    cancelled_count = all_bookings.filter(status__iexact='Cancelled').count()
+
     return render(request, 'admin_pages/bookings.html', {
         'bookings': bookings,
         'total_bookings': bookings.count(),
+        'total_all': all_bookings.count(),
+        'pending_count': pending_count,
+        'approved_count': approved_count,
+        'completed_count': completed_count,
+        'cancelled_count': cancelled_count,
+        'current_status': status,
         'search_query': q,
         'admin_full_name': request.session.get('admin_full_name', 'Administrator'),
     })
